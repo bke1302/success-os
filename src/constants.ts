@@ -1,4 +1,4 @@
-import type { ChecklistItem } from '../types'
+import type { ChecklistItem } from './types/index'
 
 export const CHECKLIST_ITEMS: Omit<ChecklistItem, 'done'>[] = [
   { id: 'c1', emoji: '📖', label: "קראתי ספר / למדתי 30 דק'" },
