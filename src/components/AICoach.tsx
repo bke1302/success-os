@@ -1,5 +1,6 @@
 import { Zap, Loader2 } from 'lucide-react'
 
+// 
 interface Props {
   journal: string
   onJournalChange: (v: string) => void
@@ -65,9 +66,8 @@ export function AICoach({
 
       {(response || error) && (
         <div
-          className={`mt-3 p-4 bg-card2 rounded-xl border-r-4 text-sm leading-relaxed animate-fadeIn whitespace-pre-wrap ${
-            error ? 'border-red-500 text-red-400' : 'border-accent text-text'
-          }`}
+          className={`mt-3 p-4 bg-card2 rounded-xl border-r-4 text-sm leading-relaxed animate-fadeIn whitespace-pre-wrap ${error ? 'border-red-500 text-red-400' : 'border-accent text-text'
+            }`}
           dir="rtl"
         >
           {error || response}
