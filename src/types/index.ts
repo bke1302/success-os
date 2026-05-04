@@ -1,7 +1,6 @@
 export interface ChecklistItem {
   id: string
   label: string
-  emoji: string
   done: boolean
 }
 

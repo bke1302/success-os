@@ -1,6 +1,5 @@
 import { Zap, Loader2 } from 'lucide-react'
 
-// 
 interface Props {
   journal: string
   onJournalChange: (v: string) => void
@@ -11,79 +10,58 @@ interface Props {
   hasApiKey: boolean
 }
 
-export function AICoach({
-  journal,
-  onJournalChange,
-  onAnalyze,
-  loading,
-  response,
-  error,
-  hasApiKey,
-}: Props) {
+export function AICoach({ journal, onJournalChange, onAnalyze, loading, response, error, hasApiKey }: Props) {
   return (
-    <div className="bg-card border border-border rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-[10px] tracking-[3px] uppercase text-muted font-medium">
-          🤖 AI Coach
-        </p>
-        <span className="bg-[#76b900] text-black text-[10px] font-bold px-2.5 py-1 rounded-md tracking-wider">
-          ⚡ NVIDIA NIM
-        </span>
+    <div className="bg-surface rounded-card p-6 h-full flex flex-col">
+      <div className="flex items-center justify-between mb-5">
+        <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted">Daily Debrief</p>
+        <div className="flex items-center gap-1.5 bg-surface2 rounded-lg px-2.5 py-1.5">
+          <Zap className="w-3 h-3 text-sub" strokeWidth={1.5} />
+          <span className="text-[9px] tracking-[2px] uppercase font-semibold text-sub">AI Coach</span>
+        </div>
       </div>
 
       <textarea
         value={journal}
         onChange={(e) => onJournalChange(e.target.value)}
-        placeholder="מה עשית היום? היה לך חשק? הצלחת בכל הדברים?"
-        className="w-full bg-card2 border border-border rounded-xl p-3 text-text text-sm resize-none h-24 outline-none focus:border-accent/40 transition-colors placeholder:text-muted"
+        placeholder="מה קרה היום? עמדת ביעדים? היכן נכשלת? מה למדת?"
+        className="flex-1 min-h-[100px] w-full bg-surface2 rounded-xl p-4 text-sm text-text resize-none outline-none focus:ring-1 focus:ring-white/10 transition-all placeholder:text-muted leading-relaxed"
         dir="rtl"
       />
 
       {!hasApiKey && (
-        <p className="text-[11px] text-muted mb-2 text-right">
-          💡 ללא API Key תקבל פידבק אוטומטי
-        </p>
+        <p className="text-[10px] text-muted mt-2 text-right">ללא API Key — פידבק אוטומטי</p>
       )}
 
       <button
         onClick={onAnalyze}
         disabled={loading}
-        className="w-full py-3 rounded-xl font-semibold text-sm tracking-wider text-black disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 flex items-center justify-center gap-2"
-        style={{ background: 'linear-gradient(90deg, #ff6b35, #f5c518)' }}
+        className="mt-4 w-full py-3.5 rounded-xl font-semibold text-sm bg-white text-black disabled:opacity-20 disabled:cursor-not-allowed hover:bg-white/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
       >
         {loading ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin" />
-            מנתח...
-          </>
+          <><Loader2 className="w-4 h-4 animate-spin" /> מנתח</>
         ) : (
-          <>
-            <Zap className="w-4 h-4" />
-            קבל פידבק מ-AI
-          </>
+          <><Zap className="w-4 h-4" /> קבל פידבק</>
         )}
       </button>
 
-      {(response || error) && (
-        <div
-          className={`mt-3 p-4 bg-card2 rounded-xl border-r-4 text-sm leading-relaxed animate-fadeIn whitespace-pre-wrap ${error ? 'border-red-500 text-red-400' : 'border-accent text-text'
-            }`}
-          dir="rtl"
-        >
-          {error || response}
+      {loading && !response && (
+        <div className="flex items-center gap-2 mt-4">
+          {[0, 150, 300].map((d) => (
+            <span key={d} className="w-1.5 h-1.5 bg-white rounded-full animate-pulse2" style={{ animationDelay: `${d}ms` }} />
+          ))}
+          <span className="text-[10px] text-muted ml-1 tracking-wide">מעבד</span>
         </div>
       )}
 
-      {loading && !response && (
-        <div className="mt-3 flex items-center gap-2 text-muted text-xs p-3">
-          {[0, 200, 400].map((delay) => (
-            <span
-              key={delay}
-              className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse2"
-              style={{ animationDelay: `${delay}ms` }}
-            />
-          ))}
-          <span className="mr-1">ה-AI מנתח את היום שלך...</span>
+      {(response || error) && (
+        <div
+          className={`mt-4 p-4 rounded-xl text-sm leading-relaxed animate-fadeUp whitespace-pre-wrap ${
+            error ? 'bg-red-500/10 text-red-400' : 'bg-surface2 text-sub'
+          }`}
+          dir="rtl"
+        >
+          {error || response}
         </div>
       )}
     </div>

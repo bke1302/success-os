@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Save } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 
 interface Props {
@@ -12,30 +12,19 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
   const [show, setShow] = useState(false)
   const [saved, setSaved] = useState(false)
 
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  }
-
   return (
-    <div className="flex flex-col gap-5">
+    <div className="max-w-md flex flex-col gap-4">
+
       {/* API Key */}
-      <div className="bg-card border border-border rounded-2xl p-5">
-        <p className="text-[10px] tracking-[3px] uppercase text-muted mb-1 font-medium">
-          🔑 NVIDIA NIM API Key
-        </p>
-        <p className="text-xs text-muted mb-4 opacity-70">
-          מ־{' '}
-          <a
-            href="https://build.nvidia.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent underline"
-          >
+      <div className="bg-surface rounded-card p-6">
+        <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-5">NVIDIA NIM API Key</p>
+        <p className="text-xs text-sub mb-4 leading-relaxed">
+          השג מפתח ב{' '}
+          <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer"
+            className="text-white underline underline-offset-4">
             build.nvidia.com
           </a>
         </p>
-
         <div className="flex gap-2">
           <div className="relative flex-1">
             <input
@@ -44,68 +33,56 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
               onChange={(e) => onApiKeyChange(e.target.value)}
               placeholder="nvapi-..."
               dir="ltr"
-              className="w-full bg-card2 border border-border rounded-xl px-3 py-3 text-sm text-text outline-none focus:border-accent/40 transition-colors placeholder:text-muted pr-10"
+              className="w-full bg-surface2 rounded-xl px-4 py-3 text-sm text-text outline-none focus:ring-1 focus:ring-white/10 transition-all placeholder:text-muted pr-10"
             />
             <button
               onClick={() => setShow(!show)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-text transition-colors"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-white transition-colors"
             >
               {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           <button
-            onClick={handleSave}
-            className="bg-accent text-black px-4 rounded-xl font-semibold text-sm flex items-center gap-1.5 hover:opacity-90 transition-opacity"
+            onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2000) }}
+            className="bg-white text-black px-5 rounded-xl text-sm font-semibold hover:bg-white/90 active:scale-95 transition-all"
           >
-            <Save className="w-4 h-4" />
-            {saved ? 'נשמר!' : 'שמור'}
+            {saved ? 'Saved' : 'Save'}
           </button>
         </div>
       </div>
 
       {/* Model info */}
-      <div className="bg-card border border-border rounded-2xl p-5">
-        <p className="text-[10px] tracking-[3px] uppercase text-muted mb-3 font-medium">
-          ⚙️ מידע על המודל
-        </p>
-        <div className="flex flex-col gap-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted">מודל</span>
-            <span className="text-text font-mono text-xs">z-ai/glm4.7</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted">ספק</span>
-            <span className="text-[#76b900] font-bold text-xs">NVIDIA NIM</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted">עלות</span>
-            <span className="text-success text-xs">חינמי (קרדיט ראשוני)</span>
-          </div>
+      <div className="bg-surface rounded-card p-6">
+        <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-5">Model</p>
+        <div className="flex flex-col gap-3">
+          {[
+            { label: 'Model',    value: 'z-ai/glm4.7'          },
+            { label: 'Provider', value: 'NVIDIA NIM'            },
+            { label: 'Cost',     value: 'Free (initial credit)' },
+          ].map(({ label, value }) => (
+            <div key={label} className="flex justify-between items-center py-2 border-b border-border last:border-0">
+              <span className="text-xs text-muted">{label}</span>
+              <span className="text-sm text-text font-mono">{value}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Danger zone */}
-      <div className="bg-card border border-red-900/40 rounded-2xl p-5">
-        <p className="text-[10px] tracking-[3px] uppercase text-red-400 mb-4 font-medium">
-          ⚠️ אזור מסוכן
-        </p>
-        <div className="flex flex-col gap-3">
+      {/* Danger */}
+      <div className="bg-surface rounded-card p-6">
+        <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-5">Danger Zone</p>
+        <div className="flex flex-col gap-2">
           <button
-            onClick={() => {
-              if (confirm('לאפס את היום הנוכחי?')) onResetDay()
-            }}
-            className="w-full py-3 rounded-xl border border-accent2/40 text-accent2 text-sm font-medium hover:bg-accent2/10 transition-colors"
+            onClick={() => { if (confirm('לאפס את היום הנוכחי?')) onResetDay() }}
+            className="w-full py-3 rounded-xl bg-surface2 text-sub text-sm font-medium hover:text-white transition-colors"
           >
-            🔄 איפוס יום נוכחי
+            Reset Day
           </button>
           <button
-            onClick={() => {
-              if (confirm('למחוק את כל ההיסטוריה? פעולה זו לא ניתנת לביטול!'))
-                onClearHistory()
-            }}
-            className="w-full py-3 rounded-xl border border-red-500/40 text-red-400 text-sm font-medium hover:bg-red-500/10 transition-colors"
+            onClick={() => { if (confirm('למחוק את כל ההיסטוריה?')) onClearHistory() }}
+            className="w-full py-3 rounded-xl bg-red-500/10 text-red-400 text-sm font-medium hover:bg-red-500/15 transition-colors"
           >
-            🗑️ מחיקת כל ההיסטוריה
+            Clear History
           </button>
         </div>
       </div>
