@@ -9,48 +9,98 @@ interface Props {
 }
 
 const grade = (s: number) =>
-  s >= 80 ? 'Elite' : s >= 60 ? 'Solid' : s >= 40 ? 'Grind' : 'Zero'
+  s >= 80 ? 'ELITE' : s >= 60 ? 'SOLID' : s >= 40 ? 'GRIND' : 'ZERO'
+
+const gradeColor = (s: number) =>
+  s >= 80 ? '#f5c842' : s >= 60 ? '#d4a43a' : s >= 40 ? '#8a8aaa' : '#545470'
 
 export function ScoreCard({ score, done, total, streak, dayCount }: Props) {
-  return (
-    <div className="bg-surface rounded-card p-6">
-      <div className="flex items-center justify-between">
+  const radius           = 80
+  const strokeWidth      = 8
+  const normalizedRadius = radius - strokeWidth / 2
+  const circumference    = normalizedRadius * 2 * Math.PI
+  const offset           = circumference - (score / 100) * circumference
 
-        {/* Score number */}
-        <div>
-          <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-1">Daily Score</p>
-          <div className="flex items-end gap-3">
-            <span className="font-display text-[72px] leading-none text-white">{score}</span>
-            <span className="text-sm text-sub mb-2 font-medium">{grade(score)}</span>
-          </div>
-          {/* Bar */}
-          <div className="w-40 h-0.5 bg-border rounded-full mt-2 overflow-hidden">
-            <div
-              className="h-full bg-white rounded-full transition-all duration-700"
-              style={{ width: `${score}%` }}
+  return (
+    <div className="bg-surface rounded-card p-6 border border-border relative overflow-hidden">
+      {/* Gold top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70" />
+
+      <div className="flex items-center gap-8 flex-wrap">
+
+        {/* Circular progress ring */}
+        <div className="relative shrink-0 flex items-center justify-center" style={{ width: 176, height: 176 }}>
+          <svg
+            width={176}
+            height={176}
+            style={score > 0 ? { filter: 'drop-shadow(0 0 16px rgba(212,164,58,0.4))' } : undefined}
+          >
+            <defs>
+              <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stopColor="#f5c842" />
+                <stop offset="100%" stopColor="#d4a43a" />
+              </linearGradient>
+            </defs>
+            {/* Background ring */}
+            <circle
+              cx={88}
+              cy={88}
+              r={normalizedRadius}
+              fill="none"
+              stroke="#26263a"
+              strokeWidth={strokeWidth}
             />
+            {/* Progress ring */}
+            <circle
+              cx={88}
+              cy={88}
+              r={normalizedRadius}
+              fill="none"
+              stroke="url(#ringGrad)"
+              strokeWidth={strokeWidth}
+              strokeDasharray={`${circumference} ${circumference}`}
+              strokeDashoffset={offset}
+              strokeLinecap="round"
+              transform="rotate(-90 88 88)"
+              style={{ transition: 'stroke-dashoffset 1000ms ease' }}
+            />
+          </svg>
+          {/* Score centered inside ring */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="font-display text-7xl leading-none" style={{ color: gradeColor(score) }}>
+              {score}
+            </span>
+            <span
+              className="text-[10px] tracking-[4px] uppercase font-bold mt-1"
+              style={{ color: gradeColor(score) }}
+            >
+              {grade(score)}
+            </span>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-16 bg-border" />
+        {/* Vertical divider */}
+        <div className="w-px self-stretch bg-border" />
 
-        {/* Stats */}
-        <div className="flex gap-6">
+        {/* Stats column */}
+        <div className="flex flex-col gap-5">
           {[
             { n: done,         l: 'Done'  },
             { n: total - done, l: 'Left'  },
             { n: dayCount,     l: 'Day #' },
           ].map(({ n, l }) => (
             <div key={l} className="text-center">
-              <div className="font-display text-3xl text-white leading-none">{n}</div>
+              <div className="font-display text-3xl text-text leading-none">{n}</div>
               <div className="text-[9px] tracking-[3px] uppercase font-semibold text-muted mt-1">{l}</div>
             </div>
           ))}
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-16 bg-border" />
+        {/* Horizontal divider */}
+        <div className="h-px w-full bg-border hidden" />
+
+        {/* Vertical divider 2 */}
+        <div className="w-px self-stretch bg-border" />
 
         {/* Streak */}
         <div>
@@ -61,15 +111,19 @@ export function ScoreCard({ score, done, total, streak, dayCount }: Props) {
                 key={d}
                 className={`w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
                   i < streak
-                    ? 'bg-white text-black'
-                    : 'bg-surface2 text-muted'
+                    ? 'text-black'
+                    : 'bg-surface2 border border-border text-muted'
                 }`}
+                style={i < streak ? {
+                  background: 'linear-gradient(135deg, #f5c842, #d4a43a)',
+                } : undefined}
               >
                 {d}
               </div>
             ))}
           </div>
         </div>
+
       </div>
     </div>
   )

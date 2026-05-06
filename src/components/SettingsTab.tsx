@@ -16,12 +16,17 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
     <div className="max-w-md flex flex-col gap-4">
 
       {/* API Key */}
-      <div className="bg-surface rounded-card p-6">
+      <div className="bg-surface rounded-card p-6 border border-border relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70" />
         <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-5">NVIDIA NIM API Key</p>
         <p className="text-xs text-sub mb-4 leading-relaxed">
           השג מפתח ב{' '}
-          <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer"
-            className="text-white underline underline-offset-4">
+          <a
+            href="https://build.nvidia.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gold underline underline-offset-4 hover:text-gold2 transition-colors"
+          >
             build.nvidia.com
           </a>
         </p>
@@ -33,18 +38,19 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
               onChange={(e) => onApiKeyChange(e.target.value)}
               placeholder="nvapi-..."
               dir="ltr"
-              className="w-full bg-surface2 rounded-xl px-4 py-3 text-sm text-text outline-none focus:ring-1 focus:ring-white/10 transition-all placeholder:text-muted pr-10"
+              className="w-full bg-surface2 rounded-xl px-4 py-3 text-sm text-text outline-none focus:ring-1 focus:ring-gold/30 transition-all placeholder:text-muted pr-10 border border-border"
             />
             <button
               onClick={() => setShow(!show)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-white transition-colors"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-gold transition-colors"
             >
               {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           <button
             onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2000) }}
-            className="bg-white text-black px-5 rounded-xl text-sm font-semibold hover:bg-white/90 active:scale-95 transition-all"
+            className="px-5 rounded-xl text-sm font-semibold text-black hover:opacity-90 active:scale-95 transition-all"
+            style={{ background: 'linear-gradient(90deg, #d4a43a, #f5c842)' }}
           >
             {saved ? 'Saved' : 'Save'}
           </button>
@@ -52,7 +58,8 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
       </div>
 
       {/* Model info */}
-      <div className="bg-surface rounded-card p-6">
+      <div className="bg-surface rounded-card p-6 border border-border relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70" />
         <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-5">Model</p>
         <div className="flex flex-col gap-3">
           {[
@@ -68,13 +75,13 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
         </div>
       </div>
 
-      {/* Danger */}
-      <div className="bg-surface rounded-card p-6">
+      {/* Danger zone */}
+      <div className="bg-surface rounded-card p-6 border border-red-900/30 relative overflow-hidden">
         <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-5">Danger Zone</p>
         <div className="flex flex-col gap-2">
           <button
             onClick={() => { if (confirm('לאפס את היום הנוכחי?')) onResetDay() }}
-            className="w-full py-3 rounded-xl bg-surface2 text-sub text-sm font-medium hover:text-white transition-colors"
+            className="w-full py-3 rounded-xl bg-surface2 text-sub text-sm font-medium hover:text-text border border-border transition-colors"
           >
             Reset Day
           </button>
@@ -86,6 +93,7 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
           </button>
         </div>
       </div>
+
     </div>
   )
 }

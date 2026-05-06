@@ -8,23 +8,24 @@ export default {
         display: ['Bebas Neue', 'sans-serif'],
       },
       colors: {
-        bg:       '#16161f',
-        surface:  '#1e1e2a',
-        surface2: '#272733',
-        border:   '#32323f',
-        muted:    '#5a5a72',
-        sub:      '#9090aa',
-        text:     '#f0f0f8',
-        gold:     '#c9973a',
-        gold2:    '#e8b84b',
-        goldDim:  '#7a5a22',
+        bg:       '#0b0b10',
+        surface:  '#121218',
+        surface2: '#1c1c26',
+        border:   '#26263a',
+        muted:    '#545470',
+        sub:      '#8a8aaa',
+        text:     '#eeeeff',
+        gold:     '#d4a43a',
+        gold2:    '#f5c842',
+        goldDim:  '#6b4e18',
       },
       borderRadius: {
         card: '16px',
       },
       animation: {
-        pulse2: 'pulse2 1.2s ease-in-out infinite',
-        fadeUp: 'fadeUp 0.45s ease forwards',
+        pulse2:  'pulse2 1.2s ease-in-out infinite',
+        fadeUp:  'fadeUp 0.45s ease forwards',
+        shimmer: 'shimmer 2s linear infinite',
       },
       keyframes: {
         pulse2: {
@@ -34,6 +35,10 @@ export default {
         fadeUp: {
           from: { opacity: '0', transform: 'translateY(8px)' },
           to:   { opacity: '1', transform: 'translateY(0)'   },
+        },
+        shimmer: {
+          from: { backgroundPosition: '-200% 0' },
+          to:   { backgroundPosition: '200% 0'  },
         },
       },
     },
