@@ -12,72 +12,98 @@ interface Props {
 
 export function AICoach({ journal, onJournalChange, onAnalyze, loading, response, error, hasApiKey }: Props) {
   return (
-    <div className="bg-surface rounded-card p-6 border border-border flex flex-col relative overflow-hidden">
-      {/* Gold top accent line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70" />
-
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted">Daily Debrief</p>
-        <div
-          className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border"
-          style={{ borderColor: 'rgba(212,164,58,0.4)', background: 'rgba(212,164,58,0.06)' }}
-        >
-          <Zap className="w-3 h-3 text-gold" strokeWidth={1.5} />
-          <span className="text-[9px] tracking-[2px] uppercase font-semibold text-gold">AI Coach</span>
-        </div>
-      </div>
-
-      <textarea
-        value={journal}
-        onChange={(e) => onJournalChange(e.target.value)}
-        placeholder="מה קרה היום? עמדת ביעדים? היכן נכשלת? מה למדת?"
-        className="flex-1 min-h-[100px] w-full bg-surface2 rounded-xl p-4 text-base text-white font-medium resize-none outline-none focus:ring-1 focus:ring-gold/30 transition-all placeholder:text-muted leading-relaxed border border-border"
-        dir="rtl"
+    <div
+      className="rounded-2xl relative overflow-hidden"
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        backdropFilter: 'blur(20px)',
+      }}
+    >
+      {/* Gold top accent */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: 'linear-gradient(to right, transparent, rgba(232,160,32,0.6), transparent)' }}
       />
 
-      {!hasApiKey && (
-        <p className="text-[10px] text-muted mt-2 text-right">ללא API Key — פידבק אוטומטי</p>
-      )}
-
-      <button
-        onClick={onAnalyze}
-        disabled={loading}
-        className="mt-4 w-full py-3.5 rounded-xl font-semibold text-sm tracking-wide uppercase text-black disabled:opacity-20 disabled:cursor-not-allowed hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-        style={{ background: 'linear-gradient(90deg, #d4a43a, #f5c842)' }}
-      >
-        {loading ? (
-          <><Loader2 className="w-4 h-4 animate-spin" /> מנתח</>
-        ) : (
-          <><Zap className="w-4 h-4" /> קבל פידבק</>
-        )}
-      </button>
-
-      {loading && !response && (
-        <div className="flex items-center gap-2 mt-4">
-          {[0, 150, 300].map((d) => (
-            <span
-              key={d}
-              className="w-1.5 h-1.5 rounded-full animate-pulse2"
-              style={{ background: '#d4a43a', animationDelay: `${d}ms` }}
-            />
-          ))}
-          <span className="text-[10px] text-muted ml-1 tracking-wide">מעבד</span>
+      <div className="p-5 flex flex-col gap-3">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <p className="text-[8px] tracking-[5px] uppercase font-bold text-muted">DAILY DEBRIEF</p>
+          <div
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 border"
+            style={{ borderColor: 'rgba(232,160,32,0.35)', background: 'rgba(232,160,32,0.08)', color: '#e8a020' }}
+          >
+            <Zap className="w-3 h-3" strokeWidth={1.5} />
+            <span className="text-[8px] tracking-[2px] uppercase font-bold">AI</span>
+          </div>
         </div>
-      )}
 
-      {(response || error) && (
-        <div
-          className={`mt-4 p-4 rounded-xl text-sm leading-relaxed animate-fadeUp whitespace-pre-wrap border-r-2 ${
-            error
-              ? 'bg-red-500/10 text-red-400 border border-red-500/20 border-r-red-500/50'
-              : 'bg-surface2 text-sub border border-border/50 border-r-gold/50'
-          }`}
+        {/* Textarea */}
+        <textarea
+          value={journal}
+          onChange={(e) => onJournalChange(e.target.value)}
+          placeholder="מה קרה היום? עמדת ביעדים? היכן נכשלת?"
+          className="w-full rounded-xl p-4 text-sm text-white font-medium resize-none outline-none transition-all placeholder:text-muted leading-relaxed"
+          style={{
+            height: '88px',
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}
           dir="rtl"
+        />
+
+        {!hasApiKey && (
+          <p className="text-[9px] text-muted text-right">ללא API Key — פידבק אוטומטי</p>
+        )}
+
+        {/* Analyze button */}
+        <button
+          onClick={onAnalyze}
+          disabled={loading}
+          className="w-full py-3 rounded-xl font-bold text-[10px] tracking-[4px] uppercase text-black disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          style={{ background: 'linear-gradient(90deg, #e8a020, #f5c435)', boxShadow: '0 0 20px rgba(232,160,32,0.2)' }}
         >
-          {error || response}
-        </div>
-      )}
+          {loading ? (
+            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> מנתח...</>
+          ) : (
+            <><Zap className="w-3.5 h-3.5" /> GET FEEDBACK</>
+          )}
+        </button>
+
+        {/* Loading dots */}
+        {loading && !response && (
+          <div className="flex items-center gap-2">
+            {[0, 150, 300].map((d) => (
+              <span
+                key={d}
+                className="w-1.5 h-1.5 rounded-full animate-pulse2"
+                style={{ background: '#e8a020', animationDelay: `${d}ms` }}
+              />
+            ))}
+            <span className="text-[10px] text-muted tracking-wide">מעבד</span>
+          </div>
+        )}
+
+        {/* Response */}
+        {(response || error) && (
+          <div
+            className={`p-4 rounded-xl text-sm leading-relaxed animate-fadeUp whitespace-pre-wrap border-r-2 ${
+              error
+                ? 'text-red-400'
+                : 'text-sub'
+            }`}
+            style={
+              error
+                ? { background: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.5)' }
+                : { background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(232,160,32,0.4)' }
+            }
+            dir="rtl"
+          >
+            {error || response}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

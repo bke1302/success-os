@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, History, Settings, Target } from 'lucide-react'
+import { History, Settings, LayoutDashboard } from 'lucide-react'
 import { ChecklistCard }   from './components/ChecklistCard'
-import { ScoreCard }       from './components/ScoreCard'
 import { AICoach }         from './components/AICoach'
 import { HistoryTab }      from './components/HistoryTab'
 import { SettingsTab }     from './components/SettingsTab'
-import { ChartBackground } from './components/ChartBackground'
+import { ScorePanel }      from './components/ScorePanel'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useAI }           from './hooks/useAI'
 import { QUOTES }          from './constants'
@@ -14,8 +13,7 @@ import type { DayLog, TabId } from './types'
 const TOTAL_CHECKS = 5
 
 export default function App() {
-  const [tab,         setTab]         = useState<TabId>('today')
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [tab, setTab] = useState<TabId>('today')
 
   const [checks,   setChecks]   = useLocalStorage<Record<string, boolean>>('ss_checks',  {})
   const [journal,  setJournal]  = useLocalStorage<string>  ('ss_journal',  '')
@@ -49,12 +47,17 @@ export default function App() {
 
   const handleResetDay = () => {
     if (journal || done > 0) {
-      setHistory((p) => [...p, {
-        date: new Date().toLocaleDateString('he-IL'),
-        score, journal, mainTask,
-        checks: { ...checks },
-        aiResponse: response,
-      }])
+      setHistory((p) => [
+        ...p,
+        {
+          date:       new Date().toLocaleDateString('he-IL'),
+          score,
+          journal,
+          mainTask,
+          checks:     { ...checks },
+          aiResponse: response,
+        },
+      ])
     }
     setChecks({})
     setJournal('')
@@ -65,236 +68,157 @@ export default function App() {
   }
 
   const tabs: { id: TabId; label: string; Icon: typeof LayoutDashboard }[] = [
-    { id: 'today',    label: 'Today',    Icon: LayoutDashboard },
-    { id: 'history',  label: 'History',  Icon: History         },
-    { id: 'settings', label: 'Settings', Icon: Settings        },
+    { id: 'today',    label: 'TODAY',    Icon: LayoutDashboard },
+    { id: 'history',  label: 'HISTORY',  Icon: History         },
+    { id: 'settings', label: 'SETTINGS', Icon: Settings        },
   ]
 
   return (
-    <div className="min-h-screen bg-bg text-text flex" dir="rtl">
-
-      {/* Gold chart background */}
-      <ChartBackground />
-
-      {/* ── Collapsible Sidebar (right side) ── */}
-      <aside
-        onMouseEnter={() => setSidebarOpen(true)}
-        onMouseLeave={() => setSidebarOpen(false)}
-        className={`fixed right-0 top-0 h-screen bg-surface border-l border-border
-                    flex flex-col z-20 transition-all duration-300 ease-in-out overflow-hidden
-                    ${sidebarOpen ? 'w-52 shadow-2xl shadow-black/60' : 'w-14'}`}
+    <div
+      className="h-screen flex flex-col overflow-hidden"
+      style={{ background: 'radial-gradient(ellipse at 20% 60%, #110e2a 0%, #080612 50%, #07070e 100%)' }}
+    >
+      {/* ── Top Navigation ── */}
+      <header
+        className="shrink-0 flex items-center justify-between px-8 h-14 z-20"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(7,7,14,0.7)', backdropFilter: 'blur(20px)' }}
       >
-        {/* Gold accent edge */}
-        <div className="absolute top-0 bottom-0 right-0 w-px bg-gradient-to-b from-gold/40 via-gold/10 to-transparent" />
-
         {/* Logo */}
-        <div className="px-4 py-5 border-b border-border shrink-0 overflow-hidden">
-          {sidebarOpen ? (
-            <div className="animate-fadeUp">
-              <div
-                className="font-display text-3xl tracking-widest leading-none"
-                style={{
-                  background: 'linear-gradient(135deg, #f5c842, #d4a43a)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                SUCCESS
-              </div>
-              <div
-                className="font-display text-3xl tracking-widest leading-none"
-                style={{
-                  background: 'linear-gradient(135deg, #f5c842, #d4a43a)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                OS
-              </div>
-              <p className="text-[8px] tracking-[4px] uppercase font-semibold text-muted mt-2">Performance</p>
-            </div>
-          ) : (
-            <div
-              className="font-display text-2xl tracking-widest text-center"
-              style={{
-                background: 'linear-gradient(135deg, #f5c842, #d4a43a)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              S
-            </div>
-          )}
+        <div className="flex items-center gap-3">
+          <div
+            className="font-display text-2xl tracking-[6px]"
+            style={{ background: 'linear-gradient(135deg, #f5c435, #e8a020)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+          >
+            APEX
+          </div>
+          <div className="w-px h-4 bg-white/10" />
+          <p className="text-[8px] tracking-[3px] uppercase font-medium text-muted">SUCCESS OS</p>
         </div>
 
-        {/* Nav */}
-        <nav className="flex flex-col gap-1 p-2 flex-1 mt-1">
+        {/* Tabs */}
+        <nav className="flex items-center gap-1">
           {tabs.map(({ id, label, Icon }) => (
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`flex items-center gap-3 py-3 rounded-xl transition-all duration-150
-                          ${sidebarOpen ? 'px-4 justify-start' : 'px-0 justify-center'}
-                          ${tab === id
-                            ? 'bg-gold/15 border border-gold/30 text-gold2'
-                            : 'text-muted hover:text-text hover:bg-surface2 border border-transparent'
-                          }`}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] tracking-[3px] font-bold uppercase transition-all duration-150"
+              style={
+                tab === id
+                  ? { background: 'rgba(232,160,32,0.12)', border: '1px solid rgba(232,160,32,0.35)', color: '#f5c435' }
+                  : { background: 'transparent', border: '1px solid transparent', color: '#4a4868' }
+              }
             >
-              <Icon className="w-4 h-4 shrink-0" strokeWidth={tab === id ? 2 : 1.5} />
-              {sidebarOpen && (
-                <span className="text-xs font-semibold whitespace-nowrap animate-fadeUp">{label}</span>
-              )}
+              <Icon className="w-3.5 h-3.5" strokeWidth={tab === id ? 2 : 1.5} />
+              {label}
             </button>
           ))}
         </nav>
 
-        {/* Quote in sidebar bottom */}
-        {sidebarOpen && (
-          <div className="p-4 border-t border-border animate-fadeUp">
-            <p
-              className="text-[10px] leading-relaxed text-muted italic transition-opacity duration-500"
-              style={{ opacity: quoteVisible ? 1 : 0 }}
-            >
-              {QUOTES[quoteIndex]}
-            </p>
-          </div>
-        )}
-      </aside>
-
-      {/* ── Main content ── */}
-      <main className="flex-1 mr-14 flex flex-col min-h-screen relative z-10">
-
-        {/* Quote Banner */}
-        <div className="relative overflow-hidden border-b border-border px-10 py-6 text-center">
-          {/* Large quote watermark */}
-          <div
-            className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
-            aria-hidden
-          >
-            <span
-              className="font-display text-[200px] leading-none"
-              style={{ color: '#f5c842', opacity: 0.03 }}
-            >
-              "
-            </span>
-          </div>
-
-          {/* Gold glow blur under quote */}
-          <div
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-16 blur-2xl rounded-full"
-            style={{ background: 'radial-gradient(ellipse, #d4a43a, transparent)', opacity: 0.2 }}
-          />
-
-          {/* Date + MINDSET label */}
-          <p className="text-[8px] tracking-[6px] uppercase font-semibold text-muted mb-4">
-            {new Date().toLocaleDateString('he-IL', {
-              weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-            })}
-            {' · '}
-            MINDSET
+        {/* Date + quote */}
+        <div className="text-right">
+          <p className="text-[8px] tracking-[3px] uppercase font-bold text-muted">
+            {new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}
           </p>
-
-          {/* Quote text */}
           <p
-            className="relative text-xl italic font-medium text-text max-w-2xl mx-auto leading-relaxed transition-opacity duration-500"
-            style={{ opacity: quoteVisible ? 1 : 0 }}
+            className="text-[9px] italic text-sub mt-0.5 max-w-[220px] truncate transition-opacity duration-500"
+            style={{ opacity: quoteVisible ? 0.7 : 0 }}
           >
             {QUOTES[quoteIndex]}
           </p>
-
-          {/* Navigation dots */}
-          <div className="flex items-center justify-center gap-1.5 mt-5">
-            {QUOTES.map((_, i) => (
-              <div
-                key={i}
-                className="rounded-full transition-all duration-300"
-                style={{
-                  width:        i === quoteIndex ? '16px' : '4px',
-                  height:       '4px',
-                  background:   i === quoteIndex ? '#d4a43a' : 'transparent',
-                  border:       i === quoteIndex ? 'none' : '1px solid #26263a',
-                }}
-              />
-            ))}
-          </div>
         </div>
+      </header>
 
-        {/* Content Area */}
-        <div className="flex-1 px-8 py-6">
+      {/* ── Body ── */}
+      <div className="flex flex-1 overflow-hidden">
 
-          {/* TODAY TAB */}
-          {tab === 'today' && (
-            <div className="flex flex-col gap-4 max-w-5xl">
-
-              {/* 1. ScoreCard full width */}
-              <ScoreCard
+        {/* Today: split-screen */}
+        {tab === 'today' && (
+          <>
+            {/* Left — Score Panel */}
+            <div className="w-72 shrink-0 h-full">
+              <ScorePanel
                 score={score}
                 done={done}
                 total={TOTAL_CHECKS}
                 streak={streak}
                 dayCount={dayCount}
+                onResetDay={handleResetDay}
               />
+            </div>
 
-              {/* 2. Two-column grid */}
-              <div className="grid grid-cols-2 gap-4">
+            {/* Right — Action Panel */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="px-8 py-7 flex flex-col gap-5 max-w-2xl">
 
-                {/* Col 1 (right in RTL): ChecklistCard */}
                 <ChecklistCard checks={checks} onToggle={handleToggle} />
 
-                {/* Col 2 (left in RTL): Mission + AICoach + End Day */}
-                <div className="flex flex-col gap-4">
-
-                  {/* Mission card */}
-                  <div className="bg-surface rounded-card p-6 border border-border relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70" />
-                    <div className="flex items-center gap-2 mb-4">
-                      <Target className="w-3.5 h-3.5 text-gold" strokeWidth={1.5} />
-                      <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted">Primary Objective</p>
-                    </div>
-                    <textarea
-                      value={mainTask}
-                      onChange={(e) => setMainTask(e.target.value)}
-                      placeholder="המשימה האחת שתגדיר את ההצלחה של היום"
-                      className="w-full bg-surface2 rounded-xl p-4 text-base text-white font-medium resize-none h-28 outline-none focus:ring-1 focus:ring-gold/30 transition-all placeholder:text-muted leading-relaxed border border-border"
-                      dir="rtl"
-                    />
-                  </div>
-
-                  <AICoach
-                    journal={journal}
-                    onJournalChange={setJournal}
-                    onAnalyze={handleAnalyze}
-                    loading={loading}
-                    response={response}
-                    error={error}
-                    hasApiKey={!!apiKey}
+                {/* Mission */}
+                <div
+                  className="rounded-2xl p-5 relative overflow-hidden"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', backdropFilter: 'blur(20px)' }}
+                >
+                  <div
+                    className="absolute top-0 left-0 right-0 h-px"
+                    style={{ background: 'linear-gradient(to right, transparent, rgba(232,160,32,0.6), transparent)' }}
                   />
-
-                  {/* End Day button */}
-                  <button
-                    onClick={handleResetDay}
-                    className="w-full py-3.5 rounded-xl bg-surface border border-border text-sub text-sm font-medium hover:text-text hover:bg-surface2 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                  >
-                    <History className="w-4 h-4" strokeWidth={1.5} />
-                    End Day — Start Fresh
-                  </button>
+                  <p className="text-[8px] tracking-[5px] uppercase font-bold text-muted mb-3">PRIMARY OBJECTIVE</p>
+                  <textarea
+                    value={mainTask}
+                    onChange={(e) => setMainTask(e.target.value)}
+                    placeholder="המשימה האחת שאם תעשה אותה — היום הוא הצלחה"
+                    className="w-full rounded-xl p-4 text-sm text-white font-medium resize-none outline-none transition-all placeholder:text-muted leading-relaxed"
+                    style={{ height: '88px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+                    dir="rtl"
+                  />
                 </div>
+
+                <AICoach
+                  journal={journal}
+                  onJournalChange={setJournal}
+                  onAnalyze={handleAnalyze}
+                  loading={loading}
+                  response={response}
+                  error={error}
+                  hasApiKey={!!apiKey}
+                />
+
               </div>
             </div>
-          )}
+          </>
+        )}
 
-          {tab === 'history'  && <HistoryTab history={history} />}
+        {/* History */}
+        {tab === 'history' && (
+          <div className="flex-1 overflow-y-auto px-12 py-8">
+            <h2
+              className="font-display text-4xl tracking-[6px] mb-8"
+              style={{ background: 'linear-gradient(135deg, #f5c435, #e8a020)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            >
+              HISTORY
+            </h2>
+            <HistoryTab history={history} />
+          </div>
+        )}
 
-          {tab === 'settings' && (
+        {/* Settings */}
+        {tab === 'settings' && (
+          <div className="flex-1 overflow-y-auto px-12 py-8">
+            <h2
+              className="font-display text-4xl tracking-[6px] mb-8"
+              style={{ background: 'linear-gradient(135deg, #f5c435, #e8a020)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            >
+              SETTINGS
+            </h2>
             <SettingsTab
               apiKey={apiKey}
               onApiKeyChange={setApiKey}
               onResetDay={handleResetDay}
               onClearHistory={() => setHistory([])}
             />
-          )}
-        </div>
-      </main>
+          </div>
+        )}
+
+      </div>
     </div>
   )
 }

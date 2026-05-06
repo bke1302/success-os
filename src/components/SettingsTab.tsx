@@ -8,17 +8,29 @@ interface Props {
   onClearHistory: () => void
 }
 
+function GoldAccent() {
+  return (
+    <div
+      className="absolute top-0 left-0 right-0 h-px"
+      style={{ background: 'linear-gradient(to right, transparent, #e8a020, transparent)', opacity: 0.7 }}
+    />
+  )
+}
+
 export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory }: Props) {
-  const [show, setShow] = useState(false)
+  const [show,  setShow]  = useState(false)
   const [saved, setSaved] = useState(false)
 
   return (
     <div className="max-w-md flex flex-col gap-4">
 
       {/* API Key */}
-      <div className="bg-surface rounded-card p-6 border border-border relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70" />
-        <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-5">NVIDIA NIM API Key</p>
+      <div
+        className="rounded-card p-6 relative overflow-hidden"
+        style={{ background: '#131220', border: '1px solid #252336' }}
+      >
+        <GoldAccent />
+        <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted mb-2">NVIDIA NIM API Key</p>
         <p className="text-xs text-sub mb-4 leading-relaxed">
           השג מפתח ב{' '}
           <a
@@ -38,7 +50,7 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
               onChange={(e) => onApiKeyChange(e.target.value)}
               placeholder="nvapi-..."
               dir="ltr"
-              className="w-full bg-surface2 rounded-xl px-4 py-3 text-sm text-text outline-none focus:ring-1 focus:ring-gold/30 transition-all placeholder:text-muted pr-10 border border-border"
+              className="w-full bg-s2 rounded-xl px-4 py-3 text-sm text-text outline-none focus:ring-1 focus:ring-gold/30 transition-all placeholder:text-muted pr-10 border border-border"
             />
             <button
               onClick={() => setShow(!show)}
@@ -49,18 +61,21 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
           </div>
           <button
             onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2000) }}
-            className="px-5 rounded-xl text-sm font-semibold text-black hover:opacity-90 active:scale-95 transition-all"
-            style={{ background: 'linear-gradient(90deg, #d4a43a, #f5c842)' }}
+            className="px-5 rounded-xl text-sm font-bold text-black hover:opacity-90 active:scale-95 transition-all"
+            style={{ background: 'linear-gradient(90deg, #e8a020, #f5c435)' }}
           >
-            {saved ? 'Saved' : 'Save'}
+            {saved ? '✓' : 'Save'}
           </button>
         </div>
       </div>
 
       {/* Model info */}
-      <div className="bg-surface rounded-card p-6 border border-border relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70" />
-        <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-5">Model</p>
+      <div
+        className="rounded-card p-6 relative overflow-hidden"
+        style={{ background: '#131220', border: '1px solid #252336' }}
+      >
+        <GoldAccent />
+        <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted mb-5">MODEL</p>
         <div className="flex flex-col gap-3">
           {[
             { label: 'Model',    value: 'z-ai/glm4.7'          },
@@ -76,12 +91,15 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
       </div>
 
       {/* Danger zone */}
-      <div className="bg-surface rounded-card p-6 border border-red-900/30 relative overflow-hidden">
-        <p className="text-[9px] tracking-[4px] uppercase font-semibold text-muted mb-5">Danger Zone</p>
+      <div
+        className="rounded-card p-6 relative overflow-hidden"
+        style={{ background: '#131220', border: '1px solid rgba(239,68,68,0.2)' }}
+      >
+        <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted mb-5">DANGER ZONE</p>
         <div className="flex flex-col gap-2">
           <button
             onClick={() => { if (confirm('לאפס את היום הנוכחי?')) onResetDay() }}
-            className="w-full py-3 rounded-xl bg-surface2 text-sub text-sm font-medium hover:text-text border border-border transition-colors"
+            className="w-full py-3 rounded-xl bg-s2 text-sub text-sm font-medium hover:text-text border border-border transition-colors"
           >
             Reset Day
           </button>

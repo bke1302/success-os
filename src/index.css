@@ -6,19 +6,37 @@
   *, *::before, *::after { box-sizing: border-box; }
 
   body {
-    background-color: #0b0b10;
-    color: #eeeeff;
+    background-color: #07070e;
+    color: #f0eeff;
     font-family: 'Space Grotesk', sans-serif;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
-  textarea, input {
-    background: transparent;
-    font-family: inherit;
-  }
+  textarea, input { background: transparent; font-family: inherit; }
 
   ::-webkit-scrollbar        { width: 3px; }
   ::-webkit-scrollbar-track  { background: transparent; }
-  ::-webkit-scrollbar-thumb  { background: #26263a; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.08); border-radius: 2px; }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .glass-strong {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .gold-text {
+    background: linear-gradient(135deg,#f5c435,#e8a020);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
