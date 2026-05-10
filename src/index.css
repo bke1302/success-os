@@ -13,6 +13,12 @@
     overflow: hidden;
   }
 
+  /* Mobile: allow natural scroll, disable tap highlight */
+  @media (max-width: 767px) {
+    body { overflow: auto; -webkit-tap-highlight-color: transparent; }
+    textarea, input { font-size: 16px; } /* prevent iOS zoom on focus */
+  }
+
   textarea, input { background: transparent; font-family: inherit; }
 
   ::-webkit-scrollbar        { width: 3px; }

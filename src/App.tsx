@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { History, Settings, LayoutDashboard } from 'lucide-react'
-import { ChecklistCard }   from './components/ChecklistCard'
-import { AICoach }         from './components/AICoach'
-import { HistoryTab }      from './components/HistoryTab'
-import { SettingsTab }     from './components/SettingsTab'
-import { ScorePanel }      from './components/ScorePanel'
-import { useLocalStorage } from './hooks/useLocalStorage'
-import { useAI }           from './hooks/useAI'
-import { QUOTES }          from './constants'
+import { ChecklistCard }      from './components/ChecklistCard'
+import { AICoach }            from './components/AICoach'
+import { HistoryTab }         from './components/HistoryTab'
+import { SettingsTab }        from './components/SettingsTab'
+import { ScorePanel, ScoreBanner } from './components/ScorePanel'
+import { useLocalStorage }    from './hooks/useLocalStorage'
+import { useAI }              from './hooks/useAI'
+import { QUOTES }             from './constants'
 import type { DayLog, TabId } from './types'
 
 const TOTAL_CHECKS = 5
@@ -73,14 +73,57 @@ export default function App() {
     { id: 'settings', label: 'SETTINGS', Icon: Settings        },
   ]
 
+  /* shared today content (used by both mobile & desktop) */
+  const todayContent = (
+    <div className="px-4 md:px-8 py-5 md:py-7 flex flex-col gap-4 md:gap-5 md:max-w-2xl">
+      <ChecklistCard checks={checks} onToggle={handleToggle} />
+
+      {/* Mission */}
+      <div
+        className="rounded-2xl p-5 relative overflow-hidden"
+        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', backdropFilter: 'blur(20px)' }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: 'linear-gradient(to right, transparent, rgba(232,160,32,0.6), transparent)' }}
+        />
+        <p className="text-[8px] tracking-[5px] uppercase font-bold text-muted mb-3">PRIMARY OBJECTIVE</p>
+        <textarea
+          value={mainTask}
+          onChange={(e) => setMainTask(e.target.value)}
+          placeholder="המשימה האחת שאם תעשה אותה — היום הוא הצלחה"
+          className="w-full rounded-xl p-4 text-sm text-white font-medium resize-none outline-none transition-all placeholder:text-muted leading-relaxed"
+          style={{ height: '88px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+          dir="rtl"
+        />
+      </div>
+
+      <AICoach
+        journal={journal}
+        onJournalChange={setJournal}
+        onAnalyze={handleAnalyze}
+        loading={loading}
+        response={response}
+        error={error}
+        hasApiKey={!!apiKey}
+      />
+    </div>
+  )
+
   return (
     <div
-      className="h-screen flex flex-col overflow-hidden"
-      style={{ background: 'radial-gradient(ellipse at 20% 60%, #110e2a 0%, #080612 50%, #07070e 100%)' }}
+      className="flex flex-col"
+      style={{
+        minHeight: '100dvh',
+        background: 'radial-gradient(ellipse at 20% 60%, #110e2a 0%, #080612 50%, #07070e 100%)',
+      }}
     >
-      {/* ── Top Navigation ── */}
+
+      {/* ══════════════════════════════════════════════
+          DESKTOP: top nav bar (hidden on mobile)
+      ══════════════════════════════════════════════ */}
       <header
-        className="shrink-0 flex items-center justify-between px-8 h-14 z-20"
+        className="hidden md:flex shrink-0 items-center justify-between px-8 h-14 z-20"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(7,7,14,0.7)', backdropFilter: 'blur(20px)' }}
       >
         {/* Logo */}
@@ -128,66 +171,47 @@ export default function App() {
         </div>
       </header>
 
-      {/* ── Body ── */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* ══════════════════════════════════════════════
+          MOBILE: compact top bar (hidden on desktop)
+      ══════════════════════════════════════════════ */}
+      <header
+        className="md:hidden flex items-center justify-between px-5 h-12 shrink-0 z-20"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(7,7,14,0.85)', backdropFilter: 'blur(20px)' }}
+      >
+        <div
+          className="font-display text-xl tracking-[5px]"
+          style={{ background: 'linear-gradient(135deg, #f5c435, #e8a020)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+        >
+          APEX
+        </div>
+        <p
+          className="text-[9px] italic text-sub transition-opacity duration-500 max-w-[180px] truncate"
+          style={{ opacity: quoteVisible ? 0.65 : 0 }}
+        >
+          {QUOTES[quoteIndex]}
+        </p>
+        <p className="text-[8px] tracking-[2px] font-bold text-muted">
+          {new Date().toLocaleDateString('he-IL', { day: 'numeric', month: 'numeric' })}
+        </p>
+      </header>
 
-        {/* Today: split-screen */}
+      {/* ══════════════════════════════════════════════
+          DESKTOP body: split screen (hidden on mobile)
+      ══════════════════════════════════════════════ */}
+      <div className="hidden md:flex flex-1 overflow-hidden" style={{ height: 'calc(100dvh - 56px)' }}>
+
         {tab === 'today' && (
           <>
-            {/* Left — Score Panel */}
             <div className="w-72 shrink-0 h-full">
               <ScorePanel
-                score={score}
-                done={done}
-                total={TOTAL_CHECKS}
-                streak={streak}
-                dayCount={dayCount}
-                onResetDay={handleResetDay}
+                score={score} done={done} total={TOTAL_CHECKS}
+                streak={streak} dayCount={dayCount} onResetDay={handleResetDay}
               />
             </div>
-
-            {/* Right — Action Panel */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="px-8 py-7 flex flex-col gap-5 max-w-2xl">
-
-                <ChecklistCard checks={checks} onToggle={handleToggle} />
-
-                {/* Mission */}
-                <div
-                  className="rounded-2xl p-5 relative overflow-hidden"
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', backdropFilter: 'blur(20px)' }}
-                >
-                  <div
-                    className="absolute top-0 left-0 right-0 h-px"
-                    style={{ background: 'linear-gradient(to right, transparent, rgba(232,160,32,0.6), transparent)' }}
-                  />
-                  <p className="text-[8px] tracking-[5px] uppercase font-bold text-muted mb-3">PRIMARY OBJECTIVE</p>
-                  <textarea
-                    value={mainTask}
-                    onChange={(e) => setMainTask(e.target.value)}
-                    placeholder="המשימה האחת שאם תעשה אותה — היום הוא הצלחה"
-                    className="w-full rounded-xl p-4 text-sm text-white font-medium resize-none outline-none transition-all placeholder:text-muted leading-relaxed"
-                    style={{ height: '88px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
-                    dir="rtl"
-                  />
-                </div>
-
-                <AICoach
-                  journal={journal}
-                  onJournalChange={setJournal}
-                  onAnalyze={handleAnalyze}
-                  loading={loading}
-                  response={response}
-                  error={error}
-                  hasApiKey={!!apiKey}
-                />
-
-              </div>
-            </div>
+            <div className="flex-1 overflow-y-auto">{todayContent}</div>
           </>
         )}
 
-        {/* History */}
         {tab === 'history' && (
           <div className="flex-1 overflow-y-auto px-12 py-8">
             <h2
@@ -200,7 +224,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Settings */}
         {tab === 'settings' && (
           <div className="flex-1 overflow-y-auto px-12 py-8">
             <h2
@@ -210,15 +233,94 @@ export default function App() {
               SETTINGS
             </h2>
             <SettingsTab
-              apiKey={apiKey}
-              onApiKeyChange={setApiKey}
-              onResetDay={handleResetDay}
-              onClearHistory={() => setHistory([])}
+              apiKey={apiKey} onApiKeyChange={setApiKey}
+              onResetDay={handleResetDay} onClearHistory={() => setHistory([])}
             />
           </div>
         )}
 
       </div>
+
+      {/* ══════════════════════════════════════════════
+          MOBILE body: vertical stack (hidden on desktop)
+      ══════════════════════════════════════════════ */}
+      <div className="md:hidden flex flex-col flex-1" style={{ paddingBottom: '64px' }}>
+
+        {/* Score banner — only on today tab */}
+        {tab === 'today' && (
+          <ScoreBanner
+            score={score} done={done} total={TOTAL_CHECKS}
+            streak={streak} dayCount={dayCount} onResetDay={handleResetDay}
+          />
+        )}
+
+        {/* Page title for history/settings */}
+        {tab !== 'today' && (
+          <div className="px-5 pt-5 pb-3">
+            <h2
+              className="font-display text-3xl tracking-[5px]"
+              style={{ background: 'linear-gradient(135deg, #f5c435, #e8a020)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            >
+              {tab === 'history' ? 'HISTORY' : 'SETTINGS'}
+            </h2>
+          </div>
+        )}
+
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto">
+          {tab === 'today'    && todayContent}
+          {tab === 'history'  && <div className="px-4 py-2 pb-6"><HistoryTab history={history} /></div>}
+          {tab === 'settings' && (
+            <div className="px-4 py-2 pb-6">
+              <SettingsTab
+                apiKey={apiKey} onApiKeyChange={setApiKey}
+                onResetDay={handleResetDay} onClearHistory={() => setHistory([])}
+              />
+            </div>
+          )}
+        </div>
+
+      </div>
+
+      {/* ══════════════════════════════════════════════
+          MOBILE: fixed bottom navigation
+      ══════════════════════════════════════════════ */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 flex items-center z-30"
+        style={{
+          height: '64px',
+          background: 'rgba(7,7,14,0.92)',
+          backdropFilter: 'blur(20px)',
+          borderTop: '1px solid rgba(255,255,255,0.07)',
+        }}
+      >
+        {tabs.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className="flex-1 flex flex-col items-center justify-center gap-1 py-2 transition-all duration-150"
+          >
+            <Icon
+              className="w-5 h-5"
+              strokeWidth={tab === id ? 2 : 1.5}
+              style={{ color: tab === id ? '#f5c435' : '#4a4868' }}
+            />
+            <span
+              className="text-[8px] tracking-[2px] font-bold uppercase"
+              style={{ color: tab === id ? '#f5c435' : '#4a4868' }}
+            >
+              {label}
+            </span>
+            {tab === id && (
+              <div
+                className="absolute bottom-0 w-8 h-0.5 rounded-t-full"
+                style={{ background: 'linear-gradient(90deg, #e8a020, #f5c435)' }}
+              />
+            )}
+          </button>
+        ))}
+      </nav>
+
     </div>
   )
 }
