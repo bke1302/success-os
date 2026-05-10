@@ -1,4 +1,4 @@
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Bell, BellOff } from 'lucide-react'
 import { useState } from 'react'
 
 interface Props {
@@ -6,6 +6,8 @@ interface Props {
   onApiKeyChange: (v: string) => void
   onResetDay: () => void
   onClearHistory: () => void
+  notificationsEnabled: boolean
+  onToggleNotifications: () => void
 }
 
 function GoldAccent() {
@@ -17,7 +19,7 @@ function GoldAccent() {
   )
 }
 
-export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory }: Props) {
+export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory, notificationsEnabled, onToggleNotifications }: Props) {
   const [show,  setShow]  = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -67,6 +69,32 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
             {saved ? '✓' : 'Save'}
           </button>
         </div>
+      </div>
+
+      {/* Notifications */}
+      <div
+        className="rounded-card p-6 relative overflow-hidden"
+        style={{ background: '#131220', border: '1px solid #252336' }}
+      >
+        <GoldAccent />
+        <div className="flex justify-between items-center mb-2">
+          <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted">התראות מוטיבציה</p>
+          {notificationsEnabled ? <Bell className="w-4 h-4 text-gold" /> : <BellOff className="w-4 h-4 text-muted" />}
+        </div>
+        <p className="text-xs text-sub mb-4 leading-relaxed">
+          קבל משפטי מוטיבציה מתחלפים כהתראות למסך (פופ-אפים), כדי להישאר בפוקוס ולהמשיך לזוז.
+        </p>
+        <button
+          onClick={onToggleNotifications}
+          className="w-full py-3 rounded-xl text-sm font-bold transition-all border"
+          style={
+            notificationsEnabled
+              ? { background: 'rgba(232,160,32,0.1)', color: '#f5c435', borderColor: 'rgba(232,160,32,0.3)' }
+              : { background: '#1a192b', color: '#8b8a9e', borderColor: '#252336' }
+          }
+        >
+          {notificationsEnabled ? 'פועל - לחץ לכיבוי' : 'הפעל התראות קופצות'}
+        </button>
       </div>
 
       {/* Model info */}

@@ -7,6 +7,7 @@ import { SettingsTab }        from './components/SettingsTab'
 import { ScorePanel, ScoreBanner } from './components/ScorePanel'
 import { useLocalStorage }    from './hooks/useLocalStorage'
 import { useAI }              from './hooks/useAI'
+import { useNotifications }   from './hooks/useNotifications'
 import { QUOTES }             from './constants'
 import type { DayLog, TabId } from './types'
 
@@ -24,6 +25,7 @@ export default function App() {
   const [history,  setHistory]  = useLocalStorage<DayLog[]>('ss_history',  [])
 
   const { response, loading, error, analyze, clear } = useAI()
+  const { enabled: notifsEnabled, toggleNotifications } = useNotifications()
 
   const [quoteIndex,   setQuoteIndex]   = useState(() => new Date().getDay() % QUOTES.length)
   const [quoteVisible, setQuoteVisible] = useState(true)
@@ -235,6 +237,8 @@ export default function App() {
             <SettingsTab
               apiKey={apiKey} onApiKeyChange={setApiKey}
               onResetDay={handleResetDay} onClearHistory={() => setHistory([])}
+              notificationsEnabled={notifsEnabled}
+              onToggleNotifications={toggleNotifications}
             />
           </div>
         )}
@@ -275,6 +279,8 @@ export default function App() {
               <SettingsTab
                 apiKey={apiKey} onApiKeyChange={setApiKey}
                 onResetDay={handleResetDay} onClearHistory={() => setHistory([])}
+                notificationsEnabled={notifsEnabled}
+                onToggleNotifications={toggleNotifications}
               />
             </div>
           )}
