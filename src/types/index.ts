@@ -1,27 +1,30 @@
-export interface ChecklistItem {
-  id: string
-  label: string
-  done: boolean
+export interface MorningEntry {
+  gratitudes: [string, string, string]
+  incantation: string
+  commitment: string
+  energyLevel: number  // 1-10
+  completedAt: string  // ISO
 }
 
-export interface DayLog {
-  date: string
-  score: number
-  journal: string
-  mainTask: string
-  mainTaskDone?: boolean
-  checks: Record<string, boolean>
-  aiResponse?: string
+export interface EveningEntry {
+  win: string
+  lesson: string
+  commitmentDone: boolean
+  score: number        // 1-10
+  completedAt: string  // ISO
+}
+
+export interface DayEntry {
+  date: string         // YYYY-MM-DD
+  morning?: MorningEntry
+  evening?: EveningEntry
 }
 
 export interface AppState {
-  checks: Record<string, boolean>
-  journal: string
-  mainTask: string
-  apiKey: string
+  entries: DayEntry[]
   streak: number
-  dayCount: number
-  history: DayLog[]
+  totalDays: number
+  currentView: 'prime' | 'wins'
 }
 
-export type TabId = 'today' | 'history' | 'settings'
+export type DayPhase = 'morning' | 'day' | 'evening'
