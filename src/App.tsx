@@ -13,23 +13,78 @@ import type { DayLog, TabId } from './types'
 
 const TOTAL_CHECKS = 5
 
+function todayStr() {
+  return new Date().toLocaleDateString('he-IL')
+}
+
+// Returns how many calendar days apart two he-IL date strings are
+function daysBetween(a: string, b: string): number {
+  const parse = (s: string) => {
+    const [d, m, y] = s.split('.').map(Number)
+    return new Date(y, m - 1, d).getTime()
+  }
+  return Math.round(Math.abs(parse(a) - parse(b)) / 86_400_000)
+}
+
 export default function App() {
   const [tab, setTab] = useState<TabId>('today')
 
-  const [checks,   setChecks]   = useLocalStorage<Record<string, boolean>>('ss_checks',  {})
-  const [journal,  setJournal]  = useLocalStorage<string>  ('ss_journal',  '')
-  const [mainTask, setMainTask] = useLocalStorage<string>  ('ss_maintask', '')
-  const [apiKey,   setApiKey]   = useLocalStorage<string>  ('ss_apikey',   '')
-  const [streak,   setStreak]   = useLocalStorage<number>  ('ss_streak',   3)
-  const [dayCount, setDayCount] = useLocalStorage<number>  ('ss_day',      1)
-  const [history,  setHistory]  = useLocalStorage<DayLog[]>('ss_history',  [])
+  const [checks,        setChecks]        = useLocalStorage<Record<string, boolean>>('ss_checks',    {})
+  const [journal,       setJournal]       = useLocalStorage<string>  ('ss_journal',    '')
+  const [mainTask,      setMainTask]      = useLocalStorage<string>  ('ss_maintask',   '')
+  const [mainTaskDone,  setMainTaskDone]  = useLocalStorage<boolean> ('ss_maintaskdone', false)
+  const [apiKey,        setApiKey]        = useLocalStorage<string>  ('ss_apikey',     '')
+  const [streak,        setStreak]        = useLocalStorage<number>  ('ss_streak',     0)
+  const [dayCount,      setDayCount]      = useLocalStorage<number>  ('ss_day',        1)
+  const [history,       setHistory]       = useLocalStorage<DayLog[]>('ss_history',    [])
+  const [lastDate,      setLastDate]      = useLocalStorage<string>  ('ss_lastdate',   '')
+  const [customLabels,  setCustomLabels]  = useLocalStorage<string[]>('ss_labels',     [])
 
   const { response, loading, error, analyze, clear } = useAI()
-  const { enabled: notifsEnabled, toggleNotifications } = useNotifications()
+  const { enabled: notifsEnabled, toggleNotifications, reminderTime, setReminderTime } = useNotifications()
 
   const [quoteIndex,   setQuoteIndex]   = useState(() => new Date().getDay() % QUOTES.length)
   const [quoteVisible, setQuoteVisible] = useState(true)
 
+  // ── Auto new-day detection ──────────────────────────────────────────────
+  useEffect(() => {
+    const today = todayStr()
+    if (lastDate && lastDate !== today) {
+      // A new calendar day started — auto-save yesterday and reset
+      const prevDone  = Object.values(checks).filter(Boolean).length
+      const prevScore = Math.round((prevDone / TOTAL_CHECKS) * 100)
+
+      if (journal || prevDone > 0) {
+        setHistory(p => [
+          ...p,
+          {
+            date:         lastDate,
+            score:        prevScore,
+            journal,
+            mainTask,
+            mainTaskDone,
+            checks:       { ...checks },
+            aiResponse:   response,
+          },
+        ])
+      }
+
+      setChecks({})
+      setJournal('')
+      setMainTask('')
+      setMainTaskDone(false)
+      clear()
+      setDayCount(d => d + 1)
+
+      // Streak: if the gap is exactly 1 day and previous day was good (≥3), continue
+      const gap = daysBetween(lastDate, today)
+      setStreak(gap === 1 && prevDone >= 3 ? Math.min(streak + 1, 365) : (prevDone >= 3 ? 1 : 0))
+    }
+    setLastDate(today)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // On mount only — captures fresh localStorage values
+
+  // ── Rotating quotes ────────────────────────────────────────────────────
   useEffect(() => {
     const id = setInterval(() => {
       setQuoteVisible(false)
@@ -42,7 +97,8 @@ export default function App() {
   }, [])
 
   const done  = Object.values(checks).filter(Boolean).length
-  const score = Math.round((done / TOTAL_CHECKS) * 100)
+  // +20 bonus if primary objective is marked done (capped at 100)
+  const score = Math.min(100, Math.round((done / TOTAL_CHECKS) * 100) + (mainTaskDone ? 20 : 0))
 
   const handleToggle  = (id: string) => setChecks((p) => ({ ...p, [id]: !p[id] }))
   const handleAnalyze = () => void analyze(journal, score, done, apiKey)
@@ -52,21 +108,24 @@ export default function App() {
       setHistory((p) => [
         ...p,
         {
-          date:       new Date().toLocaleDateString('he-IL'),
+          date:         todayStr(),
           score,
           journal,
           mainTask,
-          checks:     { ...checks },
-          aiResponse: response,
+          mainTaskDone,
+          checks:       { ...checks },
+          aiResponse:   response,
         },
       ])
     }
     setChecks({})
     setJournal('')
     setMainTask('')
+    setMainTaskDone(false)
     clear()
     setDayCount((d) => d + 1)
-    setStreak(done >= 3 ? Math.min(streak + 1, 7) : 1)
+    setStreak(done >= 3 ? Math.min(streak + 1, 365) : 0)
+    setLastDate(todayStr())
   }
 
   const tabs: { id: TabId; label: string; Icon: typeof LayoutDashboard }[] = [
@@ -75,29 +134,60 @@ export default function App() {
     { id: 'settings', label: 'SETTINGS', Icon: Settings        },
   ]
 
-  /* shared today content (used by both mobile & desktop) */
+  /* shared today content */
   const todayContent = (
     <div className="px-4 md:px-8 py-5 md:py-7 flex flex-col gap-4 md:gap-5 md:max-w-2xl">
-      <ChecklistCard checks={checks} onToggle={handleToggle} />
+      <ChecklistCard checks={checks} onToggle={handleToggle} customLabels={customLabels} />
 
       {/* Mission */}
       <div
         className="rounded-2xl p-5 relative overflow-hidden"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', backdropFilter: 'blur(20px)' }}
+        style={{
+          background: mainTaskDone ? 'rgba(232,160,32,0.05)' : 'rgba(255,255,255,0.03)',
+          border: mainTaskDone ? '1px solid rgba(232,160,32,0.25)' : '1px solid rgba(255,255,255,0.07)',
+          backdropFilter: 'blur(20px)',
+          transition: 'all 0.4s ease',
+        }}
       >
         <div
           className="absolute top-0 left-0 right-0 h-px"
           style={{ background: 'linear-gradient(to right, transparent, rgba(232,160,32,0.6), transparent)' }}
         />
-        <p className="text-[8px] tracking-[5px] uppercase font-bold text-muted mb-3">PRIMARY OBJECTIVE</p>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[8px] tracking-[5px] uppercase font-bold text-muted">PRIMARY OBJECTIVE</p>
+          {mainTask.trim() && (
+            <button
+              onClick={() => setMainTaskDone(v => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] tracking-[2px] uppercase font-bold transition-all duration-300"
+              style={
+                mainTaskDone
+                  ? { background: 'rgba(232,160,32,0.15)', border: '1px solid rgba(232,160,32,0.4)', color: '#f5c435' }
+                  : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#4a4868' }
+              }
+            >
+              {mainTaskDone ? '✓ עשיתי!' : 'סמן כבוצע'}
+            </button>
+          )}
+        </div>
         <textarea
           value={mainTask}
           onChange={(e) => setMainTask(e.target.value)}
           placeholder="המשימה האחת שאם תעשה אותה — היום הוא הצלחה"
-          className="w-full rounded-xl p-4 text-sm text-white font-medium resize-none outline-none transition-all placeholder:text-muted leading-relaxed"
-          style={{ height: '88px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+          className="w-full rounded-xl p-4 text-sm font-medium resize-none outline-none transition-all placeholder:text-muted leading-relaxed"
+          style={{
+            height: '88px',
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            color: mainTaskDone ? 'rgba(245,196,53,0.6)' : 'white',
+            textDecoration: mainTaskDone ? 'line-through' : 'none',
+          }}
           dir="rtl"
         />
+        {mainTaskDone && (
+          <p className="text-[9px] tracking-[2px] uppercase font-bold mt-2 text-center" style={{ color: '#f5c435' }}>
+            +20 BONUS POINTS
+          </p>
+        )}
       </div>
 
       <AICoach
@@ -122,13 +212,12 @@ export default function App() {
     >
 
       {/* ══════════════════════════════════════════════
-          DESKTOP: top nav bar (hidden on mobile)
+          DESKTOP: top nav bar
       ══════════════════════════════════════════════ */}
       <header
         className="hidden md:flex shrink-0 items-center justify-between px-8 h-14 z-20"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(7,7,14,0.7)', backdropFilter: 'blur(20px)' }}
       >
-        {/* Logo */}
         <div className="flex items-center gap-3">
           <div
             className="font-display text-2xl tracking-[6px]"
@@ -140,7 +229,6 @@ export default function App() {
           <p className="text-[8px] tracking-[3px] uppercase font-medium text-muted">SUCCESS OS</p>
         </div>
 
-        {/* Tabs */}
         <nav className="flex items-center gap-1">
           {tabs.map(({ id, label, Icon }) => (
             <button
@@ -159,7 +247,6 @@ export default function App() {
           ))}
         </nav>
 
-        {/* Date + quote */}
         <div className="text-right">
           <p className="text-[8px] tracking-[3px] uppercase font-bold text-muted">
             {new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}
@@ -174,7 +261,7 @@ export default function App() {
       </header>
 
       {/* ══════════════════════════════════════════════
-          MOBILE: compact top bar (hidden on desktop)
+          MOBILE: compact top bar
       ══════════════════════════════════════════════ */}
       <header
         className="md:hidden flex items-center justify-between px-5 h-12 shrink-0 z-20"
@@ -198,7 +285,7 @@ export default function App() {
       </header>
 
       {/* ══════════════════════════════════════════════
-          DESKTOP body: split screen (hidden on mobile)
+          DESKTOP body: split screen
       ══════════════════════════════════════════════ */}
       <div className="hidden md:flex flex-1 overflow-hidden" style={{ height: 'calc(100dvh - 56px)' }}>
 
@@ -239,6 +326,10 @@ export default function App() {
               onResetDay={handleResetDay} onClearHistory={() => setHistory([])}
               notificationsEnabled={notifsEnabled}
               onToggleNotifications={toggleNotifications}
+              reminderTime={reminderTime}
+              onReminderTimeChange={setReminderTime}
+              customLabels={customLabels}
+              onCustomLabelsChange={setCustomLabels}
             />
           </div>
         )}
@@ -246,11 +337,10 @@ export default function App() {
       </div>
 
       {/* ══════════════════════════════════════════════
-          MOBILE body: vertical stack (hidden on desktop)
+          MOBILE body
       ══════════════════════════════════════════════ */}
       <div className="md:hidden flex flex-col flex-1" style={{ paddingBottom: '64px' }}>
 
-        {/* Score banner — only on today tab */}
         {tab === 'today' && (
           <ScoreBanner
             score={score} done={done} total={TOTAL_CHECKS}
@@ -258,7 +348,6 @@ export default function App() {
           />
         )}
 
-        {/* Page title for history/settings */}
         {tab !== 'today' && (
           <div className="px-5 pt-5 pb-3">
             <h2
@@ -270,7 +359,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto">
           {tab === 'today'    && todayContent}
           {tab === 'history'  && <div className="px-4 py-2 pb-6"><HistoryTab history={history} /></div>}
@@ -281,6 +369,10 @@ export default function App() {
                 onResetDay={handleResetDay} onClearHistory={() => setHistory([])}
                 notificationsEnabled={notifsEnabled}
                 onToggleNotifications={toggleNotifications}
+                reminderTime={reminderTime}
+                onReminderTimeChange={setReminderTime}
+                customLabels={customLabels}
+                onCustomLabelsChange={setCustomLabels}
               />
             </div>
           )}
@@ -304,7 +396,7 @@ export default function App() {
           <button
             key={id}
             onClick={() => setTab(id)}
-            className="flex-1 flex flex-col items-center justify-center gap-1 py-2 transition-all duration-150"
+            className="flex-1 flex flex-col items-center justify-center gap-1 py-2 transition-all duration-150 relative"
           >
             <Icon
               className="w-5 h-5"

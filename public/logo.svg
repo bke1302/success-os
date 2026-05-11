@@ -1,4 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <rect width="512" height="512" rx="100" fill="#2563eb" />
-  <path d="M140 260l70 70 170-170" stroke="white" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5c435"/>
+      <stop offset="100%" stop-color="#e8a020"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8a020" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#f5c435" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Dark background -->
+  <rect width="512" height="512" rx="90" fill="#07070e"/>
+  <!-- Subtle glow -->
+  <ellipse cx="256" cy="220" rx="200" ry="150" fill="url(#glow)"/>
+  <!-- "A" letter — APEX -->
+  <text x="256" y="360" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="310" font-weight="bold"
+        fill="url(#gold)">A</text>
+  <!-- Bottom label -->
+  <text x="256" y="430" text-anchor="middle"
+        font-family="'Arial', sans-serif"
+        font-size="38" font-weight="bold" letter-spacing="14"
+        fill="rgba(240,238,255,0.25)">APEX</text>
 </svg>

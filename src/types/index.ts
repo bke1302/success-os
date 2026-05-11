@@ -9,6 +9,7 @@ export interface DayLog {
   score: number
   journal: string
   mainTask: string
+  mainTaskDone?: boolean
   checks: Record<string, boolean>
   aiResponse?: string
 }

@@ -1,5 +1,6 @@
-import { Eye, EyeOff, Bell, BellOff } from 'lucide-react'
+import { Eye, EyeOff, Bell, BellOff, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
+import { CHECKLIST_ITEMS } from '../constants'
 
 interface Props {
   apiKey: string
@@ -8,6 +9,10 @@ interface Props {
   onClearHistory: () => void
   notificationsEnabled: boolean
   onToggleNotifications: () => void
+  reminderTime: string
+  onReminderTimeChange: (t: string) => void
+  customLabels: string[]
+  onCustomLabelsChange: (labels: string[]) => void
 }
 
 function GoldAccent() {
@@ -19,9 +24,21 @@ function GoldAccent() {
   )
 }
 
-export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory, notificationsEnabled, onToggleNotifications }: Props) {
+export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory, notificationsEnabled, onToggleNotifications, reminderTime, onReminderTimeChange, customLabels, onCustomLabelsChange }: Props) {
   const [show,  setShow]  = useState(false)
   const [saved, setSaved] = useState(false)
+
+  const getLabel = (i: number) => customLabels[i]?.trim() || CHECKLIST_ITEMS[i].label
+
+  const handleLabelChange = (i: number, value: string) => {
+    const updated = [...customLabels]
+    updated[i] = value
+    onCustomLabelsChange(updated)
+  }
+
+  const handleResetLabels = () => {
+    onCustomLabelsChange([])
+  }
 
   return (
     <div className="max-w-md flex flex-col gap-4">
@@ -97,6 +114,40 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
         </button>
       </div>
 
+      {/* Smart Reminder */}
+      <div
+        className="rounded-card p-6 relative overflow-hidden"
+        style={{ background: '#131220', border: '1px solid #252336' }}
+      >
+        <GoldAccent />
+        <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted mb-2">תזכורת חכמה</p>
+        <p className="text-xs text-sub mb-4 leading-relaxed" dir="rtl">
+          קבל עדכון יומי בשעה שתבחר — כמה משימות עשית ומה נשאר
+        </p>
+        <div className="flex gap-2 items-center">
+          <input
+            type="time"
+            value={reminderTime}
+            onChange={e => onReminderTimeChange(e.target.value)}
+            className="flex-1 bg-s2 rounded-xl px-4 py-3 text-sm text-text outline-none focus:ring-1 focus:ring-gold/30 transition-all border border-border"
+            style={{ colorScheme: 'dark' }}
+          />
+          {reminderTime && (
+            <button
+              onClick={() => onReminderTimeChange('')}
+              className="px-4 py-3 rounded-xl text-xs font-bold text-muted hover:text-text border border-border bg-s2 transition-colors"
+            >
+              בטל
+            </button>
+          )}
+        </div>
+        {reminderTime && (
+          <p className="text-[9px] text-muted mt-2" dir="rtl">
+            תזכורת פעילה בשעה {reminderTime} בכל יום
+          </p>
+        )}
+      </div>
+
       {/* Model info */}
       <div
         className="rounded-card p-6 relative overflow-hidden"
@@ -114,6 +165,41 @@ export function SettingsTab({ apiKey, onApiKeyChange, onResetDay, onClearHistory
               <span className="text-xs text-muted">{label}</span>
               <span className="text-sm text-text font-mono">{value}</span>
             </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Custom Checklist */}
+      <div
+        className="rounded-card p-6 relative overflow-hidden"
+        style={{ background: '#131220', border: '1px solid #252336' }}
+      >
+        <GoldAccent />
+        <div className="flex justify-between items-center mb-2">
+          <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted">DAILY PROTOCOL</p>
+          <button
+            onClick={handleResetLabels}
+            className="flex items-center gap-1 text-[8px] tracking-[2px] uppercase font-bold text-muted hover:text-gold transition-colors"
+            title="שחזר ברירת מחדל"
+          >
+            <RotateCcw className="w-3 h-3" strokeWidth={1.5} />
+            Reset
+          </button>
+        </div>
+        <p className="text-xs text-sub mb-4 leading-relaxed" dir="rtl">
+          ערוך את 5 ההרגלים היומיים שלך
+        </p>
+        <div className="flex flex-col gap-2">
+          {CHECKLIST_ITEMS.map((item, i) => (
+            <input
+              key={item.id}
+              type="text"
+              value={getLabel(i)}
+              onChange={e => handleLabelChange(i, e.target.value)}
+              className="w-full bg-s2 rounded-xl px-4 py-3 text-sm text-text outline-none focus:ring-1 focus:ring-gold/30 transition-all border border-border placeholder:text-muted"
+              dir="rtl"
+              maxLength={80}
+            />
           ))}
         </div>
       </div>
