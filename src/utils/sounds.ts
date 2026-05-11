@@ -72,6 +72,32 @@ export function playTimerDone() {
   })
 }
 
+/** Breath phase tone — distinct pitch per phase */
+export function playBreathTone(phase: 'inhale' | 'hold' | 'exhale'): void {
+  const c = ctx(); if (!c) return
+  const osc = c.createOscillator(), g = c.createGain()
+  osc.connect(g); g.connect(c.destination)
+  osc.type = 'sine'
+  if (phase === 'inhale') {
+    osc.frequency.setValueAtTime(880, c.currentTime)
+    osc.frequency.exponentialRampToValueAtTime(1100, c.currentTime + 0.25)
+    g.gain.setValueAtTime(0.14, c.currentTime)
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.4)
+    osc.start(); osc.stop(c.currentTime + 0.4)
+  } else if (phase === 'hold') {
+    osc.frequency.setValueAtTime(528, c.currentTime)
+    g.gain.setValueAtTime(0.10, c.currentTime)
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.3)
+    osc.start(); osc.stop(c.currentTime + 0.3)
+  } else {
+    osc.frequency.setValueAtTime(330, c.currentTime)
+    osc.frequency.exponentialRampToValueAtTime(220, c.currentTime + 0.3)
+    g.gain.setValueAtTime(0.12, c.currentTime)
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.5)
+    osc.start(); osc.stop(c.currentTime + 0.5)
+  }
+}
+
 /** Short chime for achievement unlock */
 export function playAchievement() {
   const c = ctx(); if (!c) return

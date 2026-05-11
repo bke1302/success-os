@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Sunset, ChevronLeft, Zap } from 'lucide-react'
 import { QUOTES } from '../constants'
 import type { EveningEntry } from '../types'
+import { requestAndScheduleReminder, getReminderTime } from '../utils/reminder'
 
 interface Props {
   commitment: string
@@ -49,7 +50,8 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
   const [quoteIdx,     setQuoteIdx]     = useState(() => Math.floor(Math.random() * QUOTES.length))
   const [quoteVisible, setQuoteVisible] = useState(true)
   const [remaining,    setRemaining]    = useState(timeLeft)
-  const [stateTip,     setStateTip]     = useState<string | null>(null)
+  const [stateTip,      setStateTip]      = useState<string | null>(null)
+  const [reminderStatus, setReminderStatus] = useState<'idle'|'scheduled'|'denied'|'unsupported'>('idle')
 
   useEffect(() => {
     const qid = setInterval(() => {
@@ -161,6 +163,33 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
               <p className="text-sm text-sub mt-2 leading-relaxed" dir="rtl">📖 {evening.lesson}</p>
             )}
           </div>
+        )}
+
+        {/* Reminder button — shown after day is done */}
+        {evening && reminderStatus === 'idle' && (
+          <button
+            onClick={async () => setReminderStatus(await requestAndScheduleReminder())}
+            className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200"
+            style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', color: 'rgba(167,170,255,0.9)' }}
+            dir="rtl"
+          >
+            🔔 תזכיר לי מחר בבוקר
+          </button>
+        )}
+        {evening && reminderStatus === 'scheduled' && (
+          <div
+            className="rounded-xl px-4 py-3 text-center"
+            style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.2)' }}
+          >
+            <p className="text-xs font-semibold" style={{ color: 'rgba(167,170,255,0.9)' }} dir="rtl">
+              ✓ תזכורת נקבעה ל-{getReminderTime()} — השאר את הטאב פתוח
+            </p>
+          </div>
+        )}
+        {evening && reminderStatus === 'denied' && (
+          <p className="text-xs text-center text-muted px-2" dir="rtl">
+            אפשר הרשאות התראות בדפדפן שלך כדי לקבל תזכורות בוקר.
+          </p>
         )}
 
         {/* RAISE YOUR STATE button */}

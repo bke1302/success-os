@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { StepWizard }   from '../components/StepWizard'
-import { EnergySlider } from '../components/EnergySlider'
+import { useState, useEffect } from 'react'
+import { StepWizard }    from '../components/StepWizard'
+import { EnergySlider }  from '../components/EnergySlider'
+import { BreathTimer }   from '../components/BreathTimer'
 import {
   getTodayIncantation,
   GRATITUDE_PROMPTS,
@@ -8,6 +9,7 @@ import {
 } from '../constants'
 import type { MorningEntry } from '../types'
 import { playCheck, playComplete } from '../utils/sounds'
+import { isSpeechSupported, speakHebrew, stopSpeech } from '../utils/speech'
 
 interface Props {
   onComplete: (data: MorningEntry) => void
@@ -23,7 +25,20 @@ export function MorningPrime({ onComplete, dayCount }: Props) {
   const [purpose,      setPurpose]      = useState('')
   const [commitment,   setCommitment]   = useState('')
   const [energy,       setEnergy]       = useState(7)
+  const [isSpeaking,   setIsSpeaking]   = useState(false)
   const incantation = getTodayIncantation()
+
+  // Stop speech on unmount
+  useEffect(() => () => stopSpeech(), [])
+
+  const handleSpeak = () => {
+    speakHebrew(incantation, () => setIsSpeaking(false))
+    setIsSpeaking(true)
+  }
+  const handleStopSpeak = () => {
+    stopSpeech()
+    setIsSpeaking(false)
+  }
 
   const setGratitude = (i: number, v: string) => {
     const g = [...gratitudes] as [string,string,string]; g[i] = v; setGratitudes(g)
@@ -39,67 +54,19 @@ export function MorningPrime({ onComplete, dayCount }: Props) {
     : customId.trim()
 
   const steps = [
-    // ── STEP 1: STATE ACTIVATION ────────────────────────────────────────────
+    // ── STEP 1: BREATHWORK ──────────────────────────────────────────────────
     {
       title:    'שנה את הגוף תחילה',
-      subtitle: 'הפיזיולוגיה שלך קובעת את מצב הנפש שלך. לא להיפך.',
+      subtitle: 'עמוד. כתפיים אחורה. 3 סבבי נשימה — ואז אנחנו מתחילים.',
       canAdvance: breathsDone,
       content: (
-        <div className="flex flex-col items-center gap-8 py-4 text-center">
-
-          <div
-            className="w-full rounded-3xl p-7 relative overflow-hidden"
-            style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}
-          >
-            <div className="absolute top-0 left-0 right-0 h-px"
-              style={{ background: 'linear-gradient(to right,transparent,rgba(239,68,68,0.7),transparent)' }} />
-
-            <div className="flex flex-col gap-5" dir="rtl">
-              <div className="flex items-start gap-3">
-                <span className="text-xl">1️⃣</span>
-                <p className="text-base font-semibold text-white text-right leading-relaxed">
-                  <span style={{ color: '#ef4444' }}>עמוד. </span>
-                  לא לשבת — עמוד. כתפיים אחורה. ראש למעלה. עיניים פקוחות.
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-xl">2️⃣</span>
-                <p className="text-base font-semibold text-white text-right leading-relaxed">
-                  <span style={{ color: '#ef4444' }}>3 נשימות כוח: </span>
-                  שאף עמוק 4 שניות → החזק 2 שניות → נשוף בכוח 6 שניות.
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-xl">3️⃣</span>
-                <p className="text-base font-semibold text-white text-right leading-relaxed">
-                  <span style={{ color: '#ef4444' }}>חייך עכשיו. </span>
-                  גם אם מלאכותי — המוח לא מבדיל. חיוך משחרר דופמין.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <p className="text-xs text-muted tracking-widest uppercase">
-            MOTION CREATES EMOTION · TONY ROBBINS
-          </p>
-
-          <button
-            onClick={() => { setBreathsDone(true); playCheck() }}
-            className="w-full py-5 rounded-2xl font-bold text-lg transition-all duration-300"
-            style={
-              breathsDone
-                ? { background: 'linear-gradient(135deg,#f5c435,#e8a020)', color: '#000', boxShadow: '0 0 30px rgba(245,196,53,0.4)' }
-                : { background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444' }
-            }
-            dir="rtl"
-          >
-            {breathsDone ? '✓ המצב שלי השתנה!' : 'עשיתי את זה — גוף אחר, מוח אחר'}
-          </button>
-        </div>
+        <BreathTimer
+          onComplete={() => { setBreathsDone(true); playCheck() }}
+        />
       ),
     },
 
-    // ── STEP 2: GRATITUDE (feel it, don't just list it) ─────────────────────
+    // ── STEP 2: GRATITUDE ───────────────────────────────────────────────────
     {
       title:    'תרגיש אסירות תודה',
       subtitle: 'לא תרגיל — חוויה. אי אפשר להיות מפחד ואסיר תודה בו זמנית.',
@@ -148,7 +115,7 @@ export function MorningPrime({ onComplete, dayCount }: Props) {
       ),
     },
 
-    // ── STEP 3: VISION — 3 TO THRIVE ────────────────────────────────────────
+    // ── STEP 3: VISION ──────────────────────────────────────────────────────
     {
       title:    '3 יעדים — כבר מושגים',
       subtitle: 'לא "אני רוצה" — "זה כבר קורה." ראה זאת בצבעים, בתנועה, עם רגש.',
@@ -191,7 +158,7 @@ export function MorningPrime({ onComplete, dayCount }: Props) {
       ),
     },
 
-    // ── STEP 4: IDENTITY ─────────────────────────────────────────────────────
+    // ── STEP 4: IDENTITY ────────────────────────────────────────────────────
     {
       title:    'מי אתה היום?',
       subtitle: 'אתה לא מקבל מה שאתה רוצה — אתה מקבל מי שאתה. בחר את הזהות שלך.',
@@ -256,13 +223,13 @@ export function MorningPrime({ onComplete, dayCount }: Props) {
       ),
     },
 
-    // ── STEP 5: INCANTATION ──────────────────────────────────────────────────
+    // ── STEP 5: INCANTATION + SPEECH ────────────────────────────────────────
     {
       title:    'ההאמרה שלך — בקול רם',
       subtitle: 'עמוד. ידיים על הלב. אמור את זה עם כל הגוף שלך — לפחות פעמיים.',
       canAdvance: true,
       content: (
-        <div className="flex flex-col items-center gap-7 py-2">
+        <div className="flex flex-col items-center gap-6 py-2">
           <div
             className="w-full rounded-3xl p-7 relative overflow-hidden"
             style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)' }}
@@ -274,6 +241,22 @@ export function MorningPrime({ onComplete, dayCount }: Props) {
               {incantation}
             </p>
           </div>
+
+          {/* Speech button */}
+          {isSpeechSupported() && (
+            <button
+              onClick={isSpeaking ? handleStopSpeak : handleSpeak}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200"
+              style={
+                isSpeaking
+                  ? { background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.35)', color: '#ef4444' }
+                  : { background: 'rgba(245,196,53,0.08)', border: '1px solid rgba(245,196,53,0.3)', color: '#f5c435' }
+              }
+              dir="rtl"
+            >
+              {isSpeaking ? '⏹ עצור' : '🔊 שמע — קרא לי את זה'}
+            </button>
+          )}
 
           <div className="w-full rounded-2xl p-5"
             style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
@@ -300,7 +283,7 @@ export function MorningPrime({ onComplete, dayCount }: Props) {
       ),
     },
 
-    // ── STEP 6: RPM — MASSIVE ACTION ────────────────────────────────────────
+    // ── STEP 6: RPM ─────────────────────────────────────────────────────────
     {
       title:    'RPM — פעולה מסיבית',
       subtitle: 'Result · Purpose · Massive Action. הפורמולה של השינוי האמיתי.',
@@ -358,7 +341,7 @@ export function MorningPrime({ onComplete, dayCount }: Props) {
             />
           </div>
 
-          {/* Energy check */}
+          {/* Energy */}
           <EnergySlider value={energy} onChange={setEnergy} label="רמת האנרגיה שלך עכשיו" size="lg" />
         </div>
       ),

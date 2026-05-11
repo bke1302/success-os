@@ -1,5 +1,8 @@
-import { Flame, Trophy, TrendingUp } from 'lucide-react'
+import { useState } from 'react'
+import { Flame, Trophy, TrendingUp, Settings } from 'lucide-react'
 import { EnergySlider } from '../components/EnergySlider'
+import { ScoreTrendChart } from '../components/ScoreTrendChart'
+import { getReminderTime, setReminderTime } from '../utils/reminder'
 import type { DayEntry } from '../types'
 
 interface Props {
@@ -30,6 +33,8 @@ function formatDate(iso: string) {
 }
 
 export function WinsWall({ entries, streak, totalDays }: Props) {
+  const [showSettings,    setShowSettings]    = useState(false)
+  const [reminderTime,    setReminderTimeState] = useState(getReminderTime)
   const withEvening = entries
     .filter(e => e.evening)
     .sort((a, b) => b.date.localeCompare(a.date))
@@ -50,12 +55,41 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
         className="shrink-0 px-6 pt-8 pb-5"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
       >
-        <h1 className="font-display text-3xl md:text-4xl gold-text mb-1" dir="rtl">
-          קיר הגדילה
-        </h1>
-        <p className="text-sm text-sub mb-5" dir="rtl">
+        <div className="flex items-start justify-between mb-1">
+          <h1 className="font-display text-3xl md:text-4xl gold-text" dir="rtl">קיר הגדילה</h1>
+          <button
+            onClick={() => setShowSettings(s => !s)}
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all"
+            style={
+              showSettings
+                ? { background: 'rgba(245,196,53,0.1)', border: '1px solid rgba(245,196,53,0.3)' }
+                : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }
+            }
+          >
+            <Settings className="w-4 h-4" strokeWidth={1.5}
+              style={{ color: showSettings ? '#f5c435' : 'rgba(255,255,255,0.3)' }} />
+          </button>
+        </div>
+        <p className="text-sm text-sub mb-4" dir="rtl">
           כל יום שסגרת הוא הוכחה שאתה לא מוותר.
         </p>
+
+        {/* Reminder settings panel */}
+        {showSettings && (
+          <div
+            className="rounded-xl px-4 py-3 mb-4 flex items-center justify-between gap-3"
+            style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}
+          >
+            <span className="text-xs font-semibold text-white shrink-0" dir="rtl">תזכורת בוקר</span>
+            <input
+              type="time"
+              value={reminderTime}
+              onChange={e => { setReminderTimeState(e.target.value); setReminderTime(e.target.value) }}
+              className="rounded-lg px-3 py-1.5 text-sm font-bold outline-none"
+              style={{ background: 'rgba(245,196,53,0.08)', border: '1px solid rgba(245,196,53,0.25)', color: '#f5c435' }}
+            />
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-4 gap-2">
@@ -89,6 +123,9 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
             </p>
           </div>
         )}
+
+        {/* Score trend chart */}
+        <ScoreTrendChart entries={entries} />
       </div>
 
       {/* Entry list */}
