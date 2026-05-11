@@ -1,15 +1,20 @@
-import { useState, useEffect } from 'react'
-import { History, Settings, LayoutDashboard } from 'lucide-react'
-import { ChecklistCard }      from './components/ChecklistCard'
-import { AICoach }            from './components/AICoach'
-import { HistoryTab }         from './components/HistoryTab'
-import { SettingsTab }        from './components/SettingsTab'
+import { useState, useEffect, useRef } from 'react'
+import { History, Settings, LayoutDashboard, Zap } from 'lucide-react'
+import { ChecklistCard }           from './components/ChecklistCard'
+import { AICoach }                 from './components/AICoach'
+import { HistoryTab }              from './components/HistoryTab'
+import { SettingsTab }             from './components/SettingsTab'
 import { ScorePanel, ScoreBanner } from './components/ScorePanel'
-import { useLocalStorage }    from './hooks/useLocalStorage'
-import { useAI }              from './hooks/useAI'
-import { useNotifications }   from './hooks/useNotifications'
-import { QUOTES }             from './constants'
-import type { DayLog, TabId } from './types'
+import { Confetti }                from './components/Confetti'
+import { WarMode }                 from './components/WarMode'
+import { AchievementToast }        from './components/AchievementToast'
+import { useLocalStorage }         from './hooks/useLocalStorage'
+import { useAI }                   from './hooks/useAI'
+import { useNotifications }        from './hooks/useNotifications'
+import { useAchievements }         from './hooks/useAchievements'
+import { playCheck, playUncheck, playComplete } from './utils/sounds'
+import { QUOTES }                  from './constants'
+import type { DayLog, TabId }      from './types'
 
 const TOTAL_CHECKS = 5
 
@@ -42,6 +47,9 @@ export default function App() {
 
   const { response, loading, error, analyze, clear } = useAI()
   const { enabled: notifsEnabled, toggleNotifications, reminderTime, setReminderTime } = useNotifications()
+
+  const [warMode,  setWarMode]  = useState(false)
+  const [confetti, setConfetti] = useState(false)
 
   const [quoteIndex,   setQuoteIndex]   = useState(() => new Date().getDay() % QUOTES.length)
   const [quoteVisible, setQuoteVisible] = useState(true)
@@ -100,8 +108,25 @@ export default function App() {
   // +20 bonus if primary objective is marked done (capped at 100)
   const score = Math.min(100, Math.round((done / TOTAL_CHECKS) * 100) + (mainTaskDone ? 20 : 0))
 
-  const handleToggle  = (id: string) => setChecks((p) => ({ ...p, [id]: !p[id] }))
-  const handleAnalyze = () => void analyze(journal, score, done, apiKey)
+  const { toast: achToast, allAchievements, dismissToast } = useAchievements(history, streak, done, mainTaskDone, dayCount)
+  const prevDoneRef = useRef(done)
+
+  // ── Confetti + sound when all tasks complete ──────────────────────────
+  useEffect(() => {
+    if (done === TOTAL_CHECKS && prevDoneRef.current < TOTAL_CHECKS) {
+      playComplete()
+      setConfetti(true)
+      setTimeout(() => setConfetti(false), 4000)
+    }
+    prevDoneRef.current = done
+  }, [done])
+
+  const handleToggle = (id: string) => {
+    const wasChecked = checks[id] ?? false
+    wasChecked ? playUncheck() : playCheck()
+    setChecks((p) => ({ ...p, [id]: !p[id] }))
+  }
+  const handleAnalyze = () => void analyze(journal, score, done, apiKey, streak, mainTaskDone)
 
   const handleResetDay = () => {
     if (journal || done > 0) {
@@ -210,6 +235,20 @@ export default function App() {
         background: 'radial-gradient(ellipse at 20% 60%, #110e2a 0%, #080612 50%, #07070e 100%)',
       }}
     >
+      {/* Global overlays */}
+      <Confetti active={confetti} />
+      <AchievementToast achievement={achToast} onDismiss={dismissToast} />
+      {warMode && (
+        <WarMode
+          checks={checks}
+          onToggle={handleToggle}
+          onClose={() => setWarMode(false)}
+          customLabels={customLabels}
+          score={score}
+          done={done}
+          total={TOTAL_CHECKS}
+        />
+      )}
 
       {/* ══════════════════════════════════════════════
           DESKTOP: top nav bar
@@ -247,16 +286,27 @@ export default function App() {
           ))}
         </nav>
 
-        <div className="text-right">
-          <p className="text-[8px] tracking-[3px] uppercase font-bold text-muted">
-            {new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}
-          </p>
-          <p
-            className="text-[9px] italic text-sub mt-0.5 max-w-[220px] truncate transition-opacity duration-500"
-            style={{ opacity: quoteVisible ? 0.7 : 0 }}
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <p className="text-[8px] tracking-[3px] uppercase font-bold text-muted">
+              {new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </p>
+            <p
+              className="text-[9px] italic text-sub mt-0.5 max-w-[180px] truncate transition-opacity duration-500"
+              style={{ opacity: quoteVisible ? 0.7 : 0 }}
+            >
+              {QUOTES[quoteIndex]}
+            </p>
+          </div>
+          <button
+            onClick={() => setWarMode(true)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[8px] tracking-[3px] uppercase font-bold transition-all"
+            style={{ background: 'rgba(232,160,32,0.08)', border: '1px solid rgba(232,160,32,0.25)', color: '#e8a020' }}
+            title="War Mode — מצב פוקוס מלא"
           >
-            {QUOTES[quoteIndex]}
-          </p>
+            <Zap className="w-3 h-3" strokeWidth={2} />
+            WAR
+          </button>
         </div>
       </header>
 
@@ -309,7 +359,7 @@ export default function App() {
             >
               HISTORY
             </h2>
-            <HistoryTab history={history} />
+            <HistoryTab history={history} allAchievements={allAchievements} customLabels={customLabels} />
           </div>
         )}
 

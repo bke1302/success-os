@@ -1,6 +1,7 @@
 import { BookOpen, Brain, TrendingUp, Dumbbell, Target, Check, Timer, Square, RotateCcw } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { CHECKLIST_ITEMS } from '../constants'
+import { playTimerDone } from '../utils/sounds'
 
 interface Props {
   checks: Record<string, boolean>
@@ -31,22 +32,6 @@ function fmt(secs: number): string {
   return `${m}:${s}`
 }
 
-function playDone() {
-  try {
-    const ctx = new AudioContext()
-    ;[0, 0.15, 0.3].forEach((t, i) => {
-      const osc  = ctx.createOscillator()
-      const gain = ctx.createGain()
-      osc.connect(gain)
-      gain.connect(ctx.destination)
-      osc.frequency.value = 660 + i * 110
-      gain.gain.setValueAtTime(0.25, ctx.currentTime + t)
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.4)
-      osc.start(ctx.currentTime + t)
-      osc.stop(ctx.currentTime + t + 0.4)
-    })
-  } catch {}
-}
 
 export function ChecklistCard({ checks, onToggle, customLabels = [] }: Props) {
   const items = CHECKLIST_ITEMS.map((item, i) => ({
@@ -73,7 +58,7 @@ export function ChecklistCard({ checks, onToggle, customLabels = [] }: Props) {
           clearInterval(intervalRef.current!)
           setTimerActive(false)
           if (timerItemId && !checks[timerItemId]) onToggle(timerItemId)
-          playDone()
+          playTimerDone()
           if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('⏱ הטיימר הסתיים!', { body: 'עבודה מצוינת — פריט הסומן.', icon: '/logo.svg' })
           }

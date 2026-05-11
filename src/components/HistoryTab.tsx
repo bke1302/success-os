@@ -1,7 +1,12 @@
-import { BarChart2, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { BarChart2, TrendingUp, TrendingDown, Minus, AlertTriangle, Flame } from 'lucide-react'
 import type { DayLog } from '../types'
+import { CHECKLIST_ITEMS } from '../constants'
 
-interface Props { history: DayLog[] }
+interface Props {
+  history: DayLog[]
+  allAchievements?: import('../hooks/useAchievements').Achievement[]
+  customLabels?: string[]
+}
 
 function grade(s: number): string {
   if (s >= 80) return 'ELITE'
@@ -186,8 +191,140 @@ function WeeklyReview({ history }: { history: DayLog[] }) {
   )
 }
 
+/* ─── Deep Stats ───────────────────────────────────────────── */
+function DeepStats({ history, customLabels = [] }: { history: DayLog[]; customLabels: string[] }) {
+  if (history.length < 5) return null
+
+  // Consistency: % of days with ≥3 tasks done
+  const consistent = history.filter(d => {
+    const done = Object.values(d.checks).filter(Boolean).length
+    return done >= 3
+  }).length
+  const consistencyRate = Math.round((consistent / history.length) * 100)
+
+  // Best streak ever
+  let bestStreak = 0, curStreak = 0
+  const sorted = [...history].sort((a, b) => parseHeDate(a.date) - parseHeDate(b.date))
+  for (let i = 0; i < sorted.length; i++) {
+    const done = Object.values(sorted[i].checks).filter(Boolean).length
+    if (done >= 3) {
+      curStreak++
+      bestStreak = Math.max(bestStreak, curStreak)
+    } else {
+      curStreak = 0
+    }
+  }
+
+  // Weakest habit (least completed across all days)
+  const itemCounts = CHECKLIST_ITEMS.map((item, idx) => ({
+    label: customLabels[idx]?.trim() || item.label,
+    count: history.filter(d => d.checks[item.id]).length,
+    id: item.id,
+  }))
+  const weakest = itemCounts.sort((a, b) => a.count - b.count)[0]
+  const weakestPct = Math.round((weakest.count / history.length) * 100)
+
+  return (
+    <div
+      className="rounded-2xl p-5 relative overflow-hidden"
+      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
+    >
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: 'linear-gradient(to right, transparent, rgba(232,160,32,0.4), transparent)' }}
+      />
+      <p className="text-[8px] tracking-[5px] uppercase font-bold text-muted mb-4">DEEP ANALYSIS</p>
+
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        {/* Consistency */}
+        <div className="text-center">
+          <div className="font-display text-3xl leading-none" style={{ color: consistencyRate >= 70 ? '#f5c435' : consistencyRate >= 50 ? '#e8a020' : '#8a88aa' }}>
+            {consistencyRate}%
+          </div>
+          <div className="text-[7px] tracking-[2px] uppercase text-muted mt-1">עקביות</div>
+          <div className="text-[9px] text-sub mt-0.5">≥3 משימות ביום</div>
+        </div>
+        {/* Best streak */}
+        <div className="text-center">
+          <div className="font-display text-3xl leading-none flex items-end justify-center gap-1" style={{ color: '#f5c435' }}>
+            {bestStreak}
+            <Flame className="w-4 h-4 mb-0.5" style={{ color: '#f5c435' }} strokeWidth={1.5} />
+          </div>
+          <div className="text-[7px] tracking-[2px] uppercase text-muted mt-1">שיא streak</div>
+          <div className="text-[9px] text-sub mt-0.5">ימים ברצף</div>
+        </div>
+        {/* Mission rate */}
+        <div className="text-center">
+          <div className="font-display text-3xl leading-none" style={{ color: '#e8a020' }}>
+            {Math.round((history.filter(d => d.mainTaskDone).length / history.length) * 100)}%
+          </div>
+          <div className="text-[7px] tracking-[2px] uppercase text-muted mt-1">missions</div>
+          <div className="text-[9px] text-sub mt-0.5">מטרה ראשית</div>
+        </div>
+      </div>
+
+      {/* Weakest habit */}
+      <div
+        className="flex items-center gap-3 p-3 rounded-xl"
+        style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)' }}
+      >
+        <AlertTriangle className="w-4 h-4 shrink-0 text-red-400" strokeWidth={1.5} />
+        <div className="flex-1 min-w-0">
+          <p className="text-[8px] tracking-[2px] uppercase font-bold text-red-400 mb-0.5">ההרגל החלש ביותר</p>
+          <p className="text-sm text-text font-medium truncate" dir="rtl">{weakest.label}</p>
+        </div>
+        <span className="shrink-0 text-sm font-bold text-red-400">{weakestPct}%</span>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Achievements display ─────────────────────────────────── */
+function AchievementsGrid({ achievements }: { achievements: import('../hooks/useAchievements').Achievement[] }) {
+  const earned  = achievements.filter(a => a.earnedDate)
+  const locked  = achievements.filter(a => !a.earnedDate)
+
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-[8px] tracking-[5px] uppercase font-bold text-muted">ACHIEVEMENTS</p>
+      <div className="grid grid-cols-2 gap-2">
+        {earned.map(a => (
+          <div
+            key={a.id}
+            className="flex items-center gap-3 p-3 rounded-xl relative overflow-hidden"
+            style={{ background: 'rgba(232,160,32,0.07)', border: '1px solid rgba(232,160,32,0.2)' }}
+          >
+            <div
+              className="absolute top-0 left-0 right-0 h-px"
+              style={{ background: 'linear-gradient(to right, transparent, rgba(232,160,32,0.6), transparent)' }}
+            />
+            <span className="text-2xl shrink-0">{a.icon}</span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold text-white truncate" dir="rtl">{a.name}</p>
+              <p className="text-[8px] text-muted">{a.earnedDate}</p>
+            </div>
+          </div>
+        ))}
+        {locked.map(a => (
+          <div
+            key={a.id}
+            className="flex items-center gap-3 p-3 rounded-xl opacity-30"
+            style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+          >
+            <span className="text-2xl shrink-0 grayscale">{a.icon}</span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold text-white truncate" dir="rtl">{a.name}</p>
+              <p className="text-[8px] text-muted truncate" dir="rtl">{a.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /* ─── Main ─────────────────────────────────────────────────── */
-export function HistoryTab({ history }: Props) {
+export function HistoryTab({ history, allAchievements = [], customLabels = [] }: Props) {
   if (history.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
@@ -237,7 +374,9 @@ export function HistoryTab({ history }: Props) {
       </div>
 
       <ScoreChart history={history} />
+      <DeepStats history={history} customLabels={customLabels} />
       <WeeklyReview history={history} />
+      {allAchievements.length > 0 && <AchievementsGrid achievements={allAchievements} />}
 
       {/* Daily log */}
       <div className="flex flex-col gap-2">
