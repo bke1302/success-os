@@ -1,23 +1,22 @@
 import { useState } from 'react'
 import { Zap, Trophy } from 'lucide-react'
 import { useAppData, getDayPhase } from './hooks/useAppData'
-import { MorningPrime }   from './screens/MorningPrime'
-import { DayScreen }      from './screens/DayScreen'
-import { EveningReview }  from './screens/EveningReview'
-import { WinsWall }       from './screens/WinsWall'
+import { MorningPrime }  from './screens/MorningPrime'
+import { DayScreen }     from './screens/DayScreen'
+import { EveningReview } from './screens/EveningReview'
+import { WinsWall }      from './screens/WinsWall'
 
 export default function App() {
   const { state, today, saveMorning, saveEvening, setView } = useAppData()
   const [forceEvening, setForceEvening] = useState(false)
 
-  const phase = getDayPhase()
+  const phase    = getDayPhase()
   const dayCount = state.entries.length + 1
 
-  // Determine which prime sub-screen to show
   const primeScreen = (): 'morning' | 'day' | 'evening' | 'done' => {
-    if (!today?.morning)                               return 'morning'
-    if (today?.evening)                                return 'done'
-    if (forceEvening || phase === 'evening')           return 'evening'
+    if (!today?.morning)                     return 'morning'
+    if (today?.evening)                      return 'done'
+    if (forceEvening || phase === 'evening') return 'evening'
     return 'day'
   }
 
@@ -26,7 +25,6 @@ export default function App() {
   return (
     <div style={{ background: '#02020a', minHeight: '100dvh' }}>
 
-      {/* ── PRIME view ────────────────────────────────── */}
       {state.currentView === 'prime' && (
         <>
           {screen === 'morning' && (
@@ -39,6 +37,8 @@ export default function App() {
           {screen === 'day' && (
             <DayScreen
               commitment={today!.morning!.commitment}
+              identity={today!.morning!.identity}
+              purpose={today!.morning!.purpose}
               onFinishDay={() => setForceEvening(true)}
               streak={state.streak}
               dayCount={dayCount}
@@ -48,6 +48,7 @@ export default function App() {
           {screen === 'evening' && (
             <EveningReview
               commitment={today?.morning?.commitment ?? ''}
+              identity={today?.morning?.identity}
               onComplete={(data) => {
                 saveEvening(data)
                 setForceEvening(false)
@@ -58,6 +59,8 @@ export default function App() {
           {screen === 'done' && (
             <DayScreen
               commitment={today!.morning!.commitment}
+              identity={today!.morning!.identity}
+              purpose={today!.morning!.purpose}
               evening={today!.evening}
               onFinishDay={() => {}}
               streak={state.streak}
@@ -67,7 +70,6 @@ export default function App() {
         </>
       )}
 
-      {/* ── WINS view ─────────────────────────────────── */}
       {state.currentView === 'wins' && (
         <WinsWall
           entries={state.entries}
@@ -76,7 +78,7 @@ export default function App() {
         />
       )}
 
-      {/* ── Bottom navigation ─────────────────────────── */}
+      {/* Bottom navigation */}
       <nav
         className="fixed bottom-0 left-0 right-0 flex items-center z-30"
         style={{
@@ -90,7 +92,7 @@ export default function App() {
         {(
           [
             { id: 'prime', label: 'PRIME', Icon: Zap },
-            { id: 'wins',  label: 'WINS',  Icon: Trophy },
+            { id: 'wins',  label: 'GROWTH', Icon: Trophy },
           ] as const
         ).map(({ id, label, Icon }) => {
           const active = state.currentView === id
@@ -122,7 +124,6 @@ export default function App() {
         })}
       </nav>
 
-      {/* Bottom nav spacer */}
       <div style={{ height: '64px' }} />
     </div>
   )

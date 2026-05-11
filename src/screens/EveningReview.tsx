@@ -6,22 +6,24 @@ import { playComplete, playCheck } from '../utils/sounds'
 
 interface Props {
   commitment: string
+  identity?:  string
   onComplete: (data: EveningEntry) => void
 }
 
-export function EveningReview({ commitment, onComplete }: Props) {
-  const [win,             setWin]             = useState('')
-  const [lesson,          setLesson]          = useState('')
-  const [commitmentDone,  setCommitmentDone]  = useState<boolean | null>(null)
-  const [score,           setScore]           = useState(7)
+export function EveningReview({ commitment, identity, onComplete }: Props) {
+  const [commitmentDone, setCommitmentDone] = useState<boolean | null>(null)
+  const [given,          setGiven]          = useState('')   // What did I give?
+  const [lesson,         setLesson]         = useState('')   // What did I learn?
+  const [score,          setScore]          = useState(7)
 
-  const canSubmit = win.trim().length >= 3 && commitmentDone !== null
+  const canSubmit = given.trim().length >= 3 && commitmentDone !== null
 
   const submit = () => {
     if (!canSubmit) return
     playComplete()
     onComplete({
-      win:            win.trim(),
+      given:          given.trim(),
+      win:            given.trim(),   // legacy compat for WinsWall display
       lesson:         lesson.trim(),
       commitmentDone: commitmentDone!,
       score,
@@ -46,28 +48,40 @@ export function EveningReview({ commitment, onComplete }: Props) {
           סיכום היום
         </h1>
         <p className="text-sm text-sub mt-1.5" dir="rtl">
-          3 דקות. תהיה כנה עם עצמך.
+          הרפלקציה היומית של מנצחים — 3 דקות שמשנות הכל.
         </p>
       </div>
 
-      {/* Form */}
-      <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6">
+      <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-7">
 
-        {/* Commitment reminder */}
-        <div
-          className="rounded-2xl px-4 py-3 flex items-start gap-3"
-          style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)' }}
-        >
-          <span className="text-[8px] tracking-[3px] uppercase font-bold mt-0.5 shrink-0" style={{ color: '#ef4444' }}>
-            התחייבת
-          </span>
-          <p className="text-sm font-medium text-white leading-relaxed" dir="rtl">{commitment}</p>
-        </div>
+        {/* Identity reminder */}
+        {identity && (
+          <div
+            className="rounded-2xl px-4 py-3 flex items-center gap-3"
+            style={{ background: 'rgba(245,196,53,0.06)', border: '1px solid rgba(245,196,53,0.2)' }}
+          >
+            <span className="text-xl">👑</span>
+            <div dir="rtl">
+              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-0.5">הזהות שבחרת הבוקר</p>
+              <p className="text-sm font-bold" style={{ color: '#f5c435' }}>אני {identity}</p>
+            </div>
+          </div>
+        )}
 
-        {/* Commitment done — YES / NO */}
+        {/* Commitment review */}
         <div>
           <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted mb-3" dir="rtl">
-            עשית את זה?
+            ההתחייבות שלך
+          </p>
+          <div
+            className="rounded-2xl px-4 py-3 mb-4"
+            style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)' }}
+          >
+            <p className="text-sm font-medium text-white leading-relaxed" dir="rtl">{commitment}</p>
+          </div>
+
+          <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted mb-3" dir="rtl">
+            עמדת בה?
           </p>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -92,39 +106,55 @@ export function EveningReview({ commitment, onComplete }: Props) {
               }
             >
               <X className="w-5 h-5" strokeWidth={2.5} />
-              לא הספקתי
+              לא הצלחתי
             </button>
           </div>
+
+          {commitmentDone === false && (
+            <p
+              className="text-xs font-semibold mt-3 text-center leading-relaxed"
+              dir="rtl"
+              style={{ color: 'rgba(239,68,68,0.7)' }}
+            >
+              הכנות האמיתית מתגלה כשאתה נכשל ועדיין מגיע מחר בבוקר. מחר מחדש.
+            </p>
+          )}
         </div>
 
-        {/* WIN */}
+        {/* Q1 — מה נתתי היום? */}
         <div>
-          <p className="text-[9px] tracking-[4px] uppercase font-bold mb-3" style={{ color: '#f5c435' }} dir="rtl">
-            מה היה הניצחון שלך היום? ⚡
+          <p className="text-[9px] tracking-[4px] uppercase font-bold mb-1" style={{ color: '#f5c435' }} dir="rtl">
+            שאלה 1: מה נתת היום? ⚡
+          </p>
+          <p className="text-xs text-sub mb-3" dir="rtl">
+            לא מה קיבלת — מה נתת. ערך, נוכחות, תמיכה, מאמץ.
           </p>
           <textarea
-            value={win}
-            onChange={e => setWin(e.target.value)}
-            placeholder="אפילו ניצחון קטן — כתוב אותו. הוא חשוב."
+            value={given}
+            onChange={e => setGiven(e.target.value)}
+            placeholder="כתוב מה נתת לעולם, לאנשים סביבך, לעצמך היום…"
             dir="rtl"
             rows={4}
             className="w-full rounded-2xl p-5 text-base font-medium text-white resize-none outline-none transition-all leading-relaxed placeholder:text-muted"
             style={{
-              background: win.trim().length >= 3 ? 'rgba(245,196,53,0.04)' : 'rgba(255,255,255,0.03)',
-              border: win.trim().length >= 3 ? '1px solid rgba(245,196,53,0.25)' : '1px solid rgba(255,255,255,0.07)',
+              background: given.trim().length >= 3 ? 'rgba(245,196,53,0.04)' : 'rgba(255,255,255,0.03)',
+              border: given.trim().length >= 3 ? '1px solid rgba(245,196,53,0.25)' : '1px solid rgba(255,255,255,0.07)',
             }}
           />
         </div>
 
-        {/* Lesson */}
+        {/* Q2 — מה למדתי היום? */}
         <div>
-          <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted mb-3" dir="rtl">
-            מה למדת היום? (אופציונלי)
+          <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted mb-1" dir="rtl">
+            שאלה 2: מה למדת היום?
+          </p>
+          <p className="text-xs text-sub mb-3" dir="rtl">
+            תובנה, שיעור, טעות שלימדה. כל גדילה מגיעה מלקח.
           </p>
           <textarea
             value={lesson}
             onChange={e => setLesson(e.target.value)}
-            placeholder="תובנה, שיעור, או משהו שהפתיע אותך…"
+            placeholder="מה שיעור אחד שתיקח מהיום הזה?"
             dir="rtl"
             rows={3}
             className="w-full rounded-2xl p-4 text-sm font-medium text-white resize-none outline-none transition-all leading-relaxed placeholder:text-muted"
@@ -134,10 +164,13 @@ export function EveningReview({ commitment, onComplete }: Props) {
 
         {/* Self score */}
         <div>
+          <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted mb-3" dir="rtl">
+            שאלה 3: כמה גדלת היום?
+          </p>
           <EnergySlider
             value={score}
             onChange={setScore}
-            label="תן לעצמך ציון על היום"
+            label="ציון גדילה יומי"
             size="lg"
           />
         </div>
@@ -165,7 +198,7 @@ export function EveningReview({ commitment, onComplete }: Props) {
           }
           dir="rtl"
         >
-          שמור וסיים את היום 🏆
+          סגור את היום בכבוד 🏆
         </button>
       </div>
     </div>
