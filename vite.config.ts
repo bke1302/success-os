@@ -16,8 +16,8 @@ export default defineConfig({
         background_color: '#07070e',
         display: 'standalone',
         orientation: 'portrait-primary',
-        scope: '/',
-        start_url: '/',
+        scope: '/success-os/',
+        start_url: '/success-os/',
         lang: 'he',
         icons: [
           {
@@ -46,5 +46,5 @@ export default defineConfig({
       }
     })
   ],
-  base: '/',
+  base: '/success-os/',
 })
