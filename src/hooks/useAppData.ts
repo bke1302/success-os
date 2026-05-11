@@ -85,7 +85,7 @@ export function useAppData() {
     persist({ ...state, entries, streak, totalDays })
   }
 
-  const setView = (v: 'prime' | 'wins') => persist({ ...state, currentView: v })
+  const setView = (v: 'prime' | 'wins' | 'fire') => persist({ ...state, currentView: v })
 
   const clearAll = () => {
     localStorage.removeItem(KEY)

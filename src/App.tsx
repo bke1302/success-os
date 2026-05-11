@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Zap, Trophy } from 'lucide-react'
+import { Zap, Trophy, Flame } from 'lucide-react'
 import { useAppData, getDayPhase } from './hooks/useAppData'
 import { MorningPrime }  from './screens/MorningPrime'
 import { DayScreen }     from './screens/DayScreen'
 import { EveningReview } from './screens/EveningReview'
 import { WinsWall }      from './screens/WinsWall'
+import { FireScreen }    from './screens/FireScreen'
 
 export default function App() {
   const { state, today, saveMorning, saveEvening, setView } = useAppData()
@@ -25,15 +26,12 @@ export default function App() {
   return (
     <div style={{ background: '#02020a', minHeight: '100dvh' }}>
 
+      {/* ── PRIME ─────────────────────────────────────────── */}
       {state.currentView === 'prime' && (
         <>
           {screen === 'morning' && (
-            <MorningPrime
-              onComplete={saveMorning}
-              dayCount={dayCount}
-            />
+            <MorningPrime onComplete={saveMorning} dayCount={dayCount} />
           )}
-
           {screen === 'day' && (
             <DayScreen
               commitment={today!.morning!.commitment}
@@ -44,18 +42,13 @@ export default function App() {
               dayCount={dayCount}
             />
           )}
-
           {screen === 'evening' && (
             <EveningReview
               commitment={today?.morning?.commitment ?? ''}
               identity={today?.morning?.identity}
-              onComplete={(data) => {
-                saveEvening(data)
-                setForceEvening(false)
-              }}
+              onComplete={(data) => { saveEvening(data); setForceEvening(false) }}
             />
           )}
-
           {screen === 'done' && (
             <DayScreen
               commitment={today!.morning!.commitment}
@@ -70,20 +63,20 @@ export default function App() {
         </>
       )}
 
+      {/* ── FIRE ─────────────────────────────────────────── */}
+      {state.currentView === 'fire' && <FireScreen />}
+
+      {/* ── WINS ─────────────────────────────────────────── */}
       {state.currentView === 'wins' && (
-        <WinsWall
-          entries={state.entries}
-          streak={state.streak}
-          totalDays={state.totalDays}
-        />
+        <WinsWall entries={state.entries} streak={state.streak} totalDays={state.totalDays} />
       )}
 
-      {/* Bottom navigation */}
+      {/* ── Bottom navigation ────────────────────────────── */}
       <nav
         className="fixed bottom-0 left-0 right-0 flex items-center z-30"
         style={{
           height: '64px',
-          background: 'rgba(2,2,10,0.95)',
+          background: 'rgba(2,2,10,0.97)',
           backdropFilter: 'blur(24px)',
           borderTop: '1px solid rgba(255,255,255,0.06)',
           paddingBottom: 'env(safe-area-inset-bottom)',
@@ -91,10 +84,11 @@ export default function App() {
       >
         {(
           [
-            { id: 'prime', label: 'PRIME', Icon: Zap },
-            { id: 'wins',  label: 'GROWTH', Icon: Trophy },
+            { id: 'prime', label: 'PRIME',  Icon: Zap,   activeColor: '#f5c435' },
+            { id: 'fire',  label: 'FIRE',   Icon: Flame, activeColor: '#ef4444' },
+            { id: 'wins',  label: 'GROWTH', Icon: Trophy,activeColor: '#f5c435' },
           ] as const
-        ).map(({ id, label, Icon }) => {
+        ).map(({ id, label, Icon, activeColor }) => {
           const active = state.currentView === id
           return (
             <button
@@ -105,18 +99,18 @@ export default function App() {
               <Icon
                 className="w-5 h-5"
                 strokeWidth={active ? 2 : 1.5}
-                style={{ color: active ? '#f5c435' : '#4a4868' }}
+                style={{ color: active ? activeColor : '#4a4868' }}
               />
               <span
                 className="text-[8px] tracking-[2px] font-bold uppercase"
-                style={{ color: active ? '#f5c435' : '#4a4868' }}
+                style={{ color: active ? activeColor : '#4a4868' }}
               >
                 {label}
               </span>
               {active && (
                 <div
                   className="absolute bottom-0 w-8 h-0.5 rounded-t-full"
-                  style={{ background: 'linear-gradient(90deg,#e8a020,#f5c435)' }}
+                  style={{ background: `linear-gradient(90deg,${activeColor}99,${activeColor})` }}
                 />
               )}
             </button>

@@ -28,7 +28,7 @@ export interface AppState {
   entries:     DayEntry[]
   streak:      number
   totalDays:   number
-  currentView: 'prime' | 'wins'
+  currentView: 'prime' | 'wins' | 'fire'
 }
 
 export type DayPhase = 'morning' | 'day' | 'evening'
