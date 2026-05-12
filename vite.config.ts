@@ -1,59 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { VitePWA } from 'vite-plugin-pwa'
+
+// PWA removed — service worker was locking users into old cached versions.
+// The app works perfectly without it. Add back later with proper cache-busting.
 
 export default defineConfig({
-  plugins: [
-    react(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['logo.svg', 'favicon.svg'],
-      manifest: {
-        name: 'Success OS',
-        short_name: 'Success OS',
-        description: 'מערכת ההצלחה האישית שלך — מעקב הרגלים יומי עם AI Coach',
-        theme_color: '#e8a020',
-        background_color: '#07070e',
-        display: 'standalone',
-        orientation: 'portrait-primary',
-        scope: '/success-os/',
-        start_url: '/success-os/',
-        lang: 'he',
-        icons: [
-          {
-            src: 'logo.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any'
-          },
-          {
-            src: 'favicon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'maskable'
-          }
-        ]
-      },
-      workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
-        cleanupOutdatedCaches: true,
-        globPatterns: ['**/*.{js,css,ico,png,svg,woff,woff2}'],
-        navigateFallback: null,
-        runtimeCaching: [
-          {
-            urlPattern: /\/success-os\/(index\.html)?$/,
-            handler: 'NetworkFirst',
-            options: { cacheName: 'html-cache', networkTimeoutSeconds: 3 }
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: { cacheName: 'google-fonts-cache' }
-          }
-        ]
-      }
-    })
-  ],
+  plugins: [react()],
   base: '/success-os/',
 })
