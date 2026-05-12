@@ -15,6 +15,13 @@ export default function App() {
   const phase    = getDayPhase()
   const dayCount = state.entries.length + 1
 
+  const yesterday = (() => {
+    const d = new Date(); d.setDate(d.getDate() - 1)
+    return d.toISOString().slice(0, 10)
+  })()
+  const lastWin = state.entries.find(e => e.date === yesterday)?.evening?.given
+    ?? state.entries.find(e => e.date === yesterday)?.evening?.win
+
   const primeScreen = (): 'morning' | 'day' | 'evening' | 'done' => {
     if (!today?.morning)                     return 'morning'
     if (today?.evening)                      return 'done'
@@ -38,7 +45,7 @@ export default function App() {
       {state.currentView === 'prime' && (
         <>
           {screen === 'morning' && (
-            <MorningPrime onComplete={saveMorning} dayCount={dayCount} />
+            <MorningPrime onComplete={saveMorning} dayCount={dayCount} lastWin={lastWin} />
           )}
           {screen === 'day' && (
             <DayScreen
