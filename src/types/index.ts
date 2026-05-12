@@ -22,13 +22,14 @@ export interface DayEntry {
   date:     string        // YYYY-MM-DD
   morning?: MorningEntry
   evening?: EveningEntry
+  habits?:  string[]      // IDs of completed habits
 }
 
 export interface AppState {
   entries:     DayEntry[]
   streak:      number
   totalDays:   number
-  currentView: 'prime' | 'wins' | 'fire'
+  currentView: 'prime' | 'actions' | 'inspire' | 'wins'
 }
 
 export type DayPhase = 'morning' | 'day' | 'evening'

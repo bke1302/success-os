@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { Zap, Trophy, Flame } from 'lucide-react'
+import { Zap, CheckSquare, Play, Trophy } from 'lucide-react'
 import { useAppData, getDayPhase } from './hooks/useAppData'
-import { MorningPrime }  from './screens/MorningPrime'
-import { DayScreen }     from './screens/DayScreen'
-import { EveningReview } from './screens/EveningReview'
-import { WinsWall }      from './screens/WinsWall'
-import { FireScreen }    from './screens/FireScreen'
+import { MorningPrime }   from './screens/MorningPrime'
+import { DayScreen }      from './screens/DayScreen'
+import { EveningReview }  from './screens/EveningReview'
+import { ActionsScreen }  from './screens/ActionsScreen'
+import { InspireScreen }  from './screens/InspireScreen'
+import { WinsWall }       from './screens/WinsWall'
 
 export default function App() {
-  const { state, today, saveMorning, saveEvening, setView } = useAppData()
+  const { state, today, saveMorning, saveEvening, saveHabits, setView } = useAppData()
   const [forceEvening, setForceEvening] = useState(false)
 
   const phase    = getDayPhase()
@@ -23,10 +24,17 @@ export default function App() {
 
   const screen = primeScreen()
 
+  const NAV = [
+    { id: 'prime',   label: 'PRIME',    Icon: Zap,         color: '#f5c435' },
+    { id: 'actions', label: 'ACTIONS',  Icon: CheckSquare, color: '#22c55e' },
+    { id: 'inspire', label: 'INSPIRE',  Icon: Play,        color: '#ef4444' },
+    { id: 'wins',    label: 'GROWTH',   Icon: Trophy,      color: '#f5c435' },
+  ] as const
+
   return (
     <div style={{ background: '#02020a', minHeight: '100dvh' }}>
 
-      {/* ── PRIME ─────────────────────────────────────────── */}
+      {/* ── PRIME ─────────────────────────────────────── */}
       {state.currentView === 'prime' && (
         <>
           {screen === 'morning' && (
@@ -46,7 +54,7 @@ export default function App() {
             <EveningReview
               commitment={today?.morning?.commitment ?? ''}
               identity={today?.morning?.identity}
-              onComplete={(data) => { saveEvening(data); setForceEvening(false) }}
+              onComplete={data => { saveEvening(data); setForceEvening(false) }}
             />
           )}
           {screen === 'done' && (
@@ -63,15 +71,23 @@ export default function App() {
         </>
       )}
 
-      {/* ── FIRE ─────────────────────────────────────────── */}
-      {state.currentView === 'fire' && <FireScreen />}
+      {/* ── ACTIONS ───────────────────────────────────── */}
+      {state.currentView === 'actions' && (
+        <ActionsScreen
+          completedHabits={today?.habits ?? []}
+          onToggle={saveHabits}
+        />
+      )}
 
-      {/* ── WINS ─────────────────────────────────────────── */}
+      {/* ── INSPIRE ───────────────────────────────────── */}
+      {state.currentView === 'inspire' && <InspireScreen />}
+
+      {/* ── WINS / GROWTH ─────────────────────────────── */}
       {state.currentView === 'wins' && (
         <WinsWall entries={state.entries} streak={state.streak} totalDays={state.totalDays} />
       )}
 
-      {/* ── Bottom navigation ────────────────────────────── */}
+      {/* ── Bottom navigation ─────────────────────────── */}
       <nav
         className="fixed bottom-0 left-0 right-0 flex items-center z-30"
         style={{
@@ -82,13 +98,7 @@ export default function App() {
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
       >
-        {(
-          [
-            { id: 'prime', label: 'PRIME',  Icon: Zap,   activeColor: '#f5c435' },
-            { id: 'fire',  label: 'FIRE',   Icon: Flame, activeColor: '#ef4444' },
-            { id: 'wins',  label: 'GROWTH', Icon: Trophy,activeColor: '#f5c435' },
-          ] as const
-        ).map(({ id, label, Icon, activeColor }) => {
+        {NAV.map(({ id, label, Icon, color }) => {
           const active = state.currentView === id
           return (
             <button
@@ -99,18 +109,18 @@ export default function App() {
               <Icon
                 className="w-5 h-5"
                 strokeWidth={active ? 2 : 1.5}
-                style={{ color: active ? activeColor : '#4a4868' }}
+                style={{ color: active ? color : '#4a4868' }}
               />
               <span
-                className="text-[8px] tracking-[2px] font-bold uppercase"
-                style={{ color: active ? activeColor : '#4a4868' }}
+                className="text-[7px] tracking-[1.5px] font-bold uppercase"
+                style={{ color: active ? color : '#4a4868' }}
               >
                 {label}
               </span>
               {active && (
                 <div
-                  className="absolute bottom-0 w-8 h-0.5 rounded-t-full"
-                  style={{ background: `linear-gradient(90deg,${activeColor}99,${activeColor})` }}
+                  className="absolute bottom-0 w-7 h-0.5 rounded-t-full"
+                  style={{ background: color }}
                 />
               )}
             </button>

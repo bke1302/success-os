@@ -1,46 +1,152 @@
-// ─── Tony Robbins Power Quotes ──────────────────────────────────────────────
+// ─── Daily Motivational Quotes ───────────────────────────────────────────────
 export const QUOTES: string[] = [
-  'לא המצב שלך קובע את חייך — ההחלטות שלך קובעות.',
-  'מה שמפריד בין אנשים שמצליחים לאנשים שלא — זה לא יכולת. זו נחישות.',
-  'הסוד האמיתי: אתה לא מקבל מה שאתה רוצה — אתה מקבל מי שאתה.',
-  'שנה את הפיזיולוגיה שלך — שנה את המצב שלך. שנה את המצב שלך — שנה את החיים שלך.',
-  'כשהמיקוד שלך משתנה, כל המציאות שלך משתנה.',
-  'לא מספיק לדעת — אתה חייב לפעול. לא מספיק לרצות — אתה חייב להיות.',
-  'הגדולה שלך לא נמצאת בנוחות. היא נמצאת ממש מעבר לפחד.',
-  'ההצלחה ב-80% היא פסיכולוגיה. 20% היא מכניקה.',
-  'כשאין לך משאבים — גייס את המצב שלך. המצב הוא המשאב האמיתי.',
-  'הקיץ לא ניתן לאנשים שמחכים לו — הוא ניתן לאנשים שיוצרים אותו.',
-  'אל תנהל את הזמן שלך — נהל את האנרגיה שלך.',
-  'ההבדל בין איפה שאתה לאיפה שאתה רוצה להיות הוא: מה אתה מוכן לעשות.',
-  'הכאב הוא בלתי נמנע — הסבל הוא בחירה.',
-  'כל הפחדים שלך מתממשים כשאתה לא פועל. כל חלומותיך מתממשים כשאתה פועל.',
-  'החיים קורים לך — או שאתה קורה לחיים. תחליט.',
-  'תודה היא תרופה שמנטרלת את הפחד. אי אפשר להיות מפחד ואסיר תודה בו זמנית.',
-  'גדולה אמיתית היא לא מה שיש לך — היא מה שאתה נותן.',
-  'הזהות שלך היא ה-GPS שלך. שנה אותה — וכל הניווט ישתנה.',
-  'אתה חי בעולם הפנימי שלך. שנה אותו — והעולם החיצוני ישתנה.',
-  'כל רגע הוא הזדמנות. השאלה היא: אתה מנצל אותה?',
+  'ההצלחה היא סכום של מאמצים קטנים שחוזרים על עצמם יום אחרי יום.',
+  'אל תחכה לרגע המושלם. קח את הרגע ועשה אותו מושלם.',
+  'כל מומחה היה פעם מתחיל. כל אלוף היה פעם חסר ניסיון.',
+  'השינוי לא קורה בבת אחת. הוא קורה כל פעם שאתה בוחר אחרת.',
+  'אנשים מצליחים עושים כל יום את מה שאנשים לא מצליחים מוכנים לעשות רק לפעמים.',
+  'הגוף שלך מסוגל לכמעט הכל. המוח צריך לשכנע.',
+  'קרא ספר. כל ספר שתקרא הוא שיחה עם אחד החכמים ביותר שאי פעם חיו.',
+  'אתה לא מה שקרה לך — אתה מה שבחרת להיות.',
+  'אימון אחד שדילגת עליו לא הרס אף אחד. אימונים שדילגת עליהם במשך שנים הרסו.',
+  'הדרך הטובה ביותר לחזות את העתיד שלך — לבנות אותו.',
+  'לא חסר לך מוטיבציה. חסרה לך בהירות לגבי מה שחשוב לך.',
+  'ספרים הם אימון למוח. ספורט הוא אימון לגוף. שניהם בונים אתך.',
+  'כל יום שאתה לומד משהו חדש — אתה גדול מאמש.',
+  'המשמעת היא הגשר בין מטרות להישגים.',
+  'הדבר הכי יקר שיש לך הוא הזמן. תשקיע אותו בחכמה.',
+  'ניצחון על עצמך ביום אחד שווה יותר מניצחון על אחרים בחיים שלמים.',
+  'קום מוקדם. עבוד קשה. חלום גדול. תן לתוצאות לדבר.',
+  'הרגלים בונים זהות. זהות בונה עתיד.',
+  'כל ספר שתפתח פותח לך דלת שלא ידעת שקיימת.',
+  'מי שלומד כל יום — מתחרה רק בגרסה הישנה של עצמו.',
+  'קביעות היא מה שמפריד בין חולמים לאנשים שמגשימים חלומות.',
+  'תתמקד בתהליך — והתוצאות יבואו.',
+  'אתה יכול לכעוס על כך שלוורד יש קוצים, או שמחת על כך שלקוץ יש ורד.',
+  'יש רק דרך אחת להצליח: להמשיך לנסות.',
+  'בכל בוקר שאתה קם — יש לך הזדמנות לכתוב פרק חדש.',
 ]
 
-// ─── Identity Incantations (say aloud with POWER) ───────────────────────────
+// ─── Daily Incantations ───────────────────────────────────────────────────────
 export const INCANTATIONS: string[] = [
-  'אני כוח בלתי נגמר! כל יום אני גדל, נותן, ומנצח. אני לא מחכה — אני יוצר.',
-  'גופי חזק. מוחי חד. רוחי בוערת. אני מוכן להשפיע על כל מי שאני פוגש היום.',
-  'אני מאמין בעצמי בלי תנאים. כל אתגר הוא מתנה. כל כישלון הוא צעד קדימה.',
-  'הכסף, הבריאות, האהבה — הכל זורם אלי כי אני נותן ערך אמיתי לעולם.',
-  'אני לא מחכה לרגע המושלם — אני הרגע המושלם. אני פועל עכשיו.',
-  'פחד הוא הסימן שאני עומד על הגבול של הגדילה שלי. אני צועד קדימה בכל מקרה.',
-  'אני מוביל, משפיע, ומעורר השראה. הנוכחות שלי משנה חדרים.',
-  'כל תא בגופי פועם בריאות, כוח, ושפע. אני נבנה מחדש כל בוקר.',
-  'אני בן חורין. בן חורין מהפחדים, מהדעות, מהגבולות שהחברה הציבה לי.',
-  'אני הבורא של המציאות שלי. לא הקורבן שלה. הבורא שלה.',
-  'ממשיכים. תמיד. בלי תירוצים, בלי פשרות, בלי עצירות.',
-  'אני אוהב, נאהב, ומחובר. הקשרים שלי הם הנכס הכי גדול שיש לי.',
-  'אני ה-1% שמחליט לעשות את מה שה-99% לא יעשו. היום. עכשיו.',
-  'הגדולה שלי לא מגיעה מיום אחד — היא מגיעה מלהיות עקבי יום אחרי יום.',
+  'אני גדל כל יום. אני לומד כל יום. אני נותן כל יום.',
+  'גופי חזק, מוחי חד, ליבי פתוח. אני מוכן להכל.',
+  'אני לא מחכה לרגע הנכון — אני יוצר אותו.',
+  'הכסף, הבריאות, הידע — הכל בא לי כי אני עובד עליהם בכל יום.',
+  'פחד הוא רק עוד אתגר. ואתגרים הם ההזדמנות שלי לגדול.',
+  'אני מוביל. אני משפיע. אני משאיר את העולם טוב יותר ממה שמצאתי.',
+  'כל תא בגופי בריא, חזק, ומלא אנרגיה. אני נבנה מחדש כל בוקר.',
+  'אני בן חורין. בן חורין מהפחדים, מהגבולות, מהתירוצים.',
+  'אני הבורא של המציאות שלי — לא הקורבן שלה.',
+  'ממשיך. תמיד. ללא פשרות על המטרות שלי.',
+  'אני אוהב, נאהב, ומחובר. הקשרים שלי הם הכוח שלי.',
+  'היום אני גרסה טובה יותר של עצמי מאמש.',
+  'אני משקיע בעצמי כל יום — בגוף, בידע, ברוח.',
+  'הגדולה שלי לא מגיעה מיום אחד — היא מגיעה מכל יום.',
 ]
 
-// ─── Power Questions (Tony's morning ritual) ────────────────────────────────
+// ─── Daily Habits (Actions) ───────────────────────────────────────────────────
+export interface Habit {
+  id:       string
+  emoji:    string
+  title:    string
+  subtitle: string
+  category: 'body' | 'mind' | 'growth' | 'spirit' | 'wealth'
+  timerSec?: number   // optional built-in timer
+}
+
+export const HABITS: Habit[] = [
+  { id: 'read',      emoji: '📚', title: 'קריאה',          subtitle: '20 דקות לפחות — כל ספר שיש לך',      category: 'mind',   timerSec: 1200 },
+  { id: 'workout',   emoji: '💪', title: 'אימון',           subtitle: 'הגוף שלך הוא הנכס הכי חשוב שלך',      category: 'body' },
+  { id: 'learn',     emoji: '🧠', title: 'למידה',           subtitle: 'קורס, פודקסט, סרטון — ידע חדש',       category: 'growth', timerSec: 1800 },
+  { id: 'meditate',  emoji: '🧘', title: 'מדיטציה',         subtitle: '10 דקות — עצור, נשום, תהיה נוכח',     category: 'spirit', timerSec: 600  },
+  { id: 'walk',      emoji: '🏃', title: 'הליכה / ריצה',    subtitle: 'תנועה = אנרגיה = מוח טוב יותר',        category: 'body' },
+  { id: 'water',     emoji: '💧', title: '8 כוסות מים',     subtitle: 'הידרציה היא הדלק של הגוף',             category: 'body' },
+  { id: 'journal',   emoji: '✍️', title: 'כתיבה / יומן',   subtitle: 'כתוב מה חשבת, מה למדת, מה תשנה',      category: 'mind',  timerSec: 600  },
+  { id: 'early',     emoji: '🌅', title: 'השכמה מוקדמת',   subtitle: 'שעת הבוקר שקטה שייכת לך בלבד',         category: 'spirit' },
+  { id: 'goal',      emoji: '🎯', title: 'עבודה על המטרה',  subtitle: 'לפחות שעה על מה שיקדם אותך',          category: 'wealth', timerSec: 3600 },
+  { id: 'noscroll',  emoji: '📵', title: 'ללא מסכים שעה',   subtitle: 'צא מהרעש. תהיה נוכח בחיים.',           category: 'spirit', timerSec: 3600 },
+  { id: 'healthy',   emoji: '🥗', title: 'תזונה נכונה',     subtitle: 'מה שאתה אוכל = מי שאתה',               category: 'body' },
+  { id: 'kind',      emoji: '🤝', title: 'עשיתי טוב',       subtitle: 'עזרת, הקשבת, נתת — לאחד לפחות',       category: 'spirit' },
+]
+
+// ─── Motivational Video Content ───────────────────────────────────────────────
+export interface VideoCard {
+  id:        string
+  emoji:     string
+  title:     string
+  subtitle:  string
+  speaker:   string
+  duration:  string
+  youtubeId?: string
+  searchUrl?: string
+  category:  string
+}
+
+export const VIDEO_CARDS: VideoCard[] = [
+  {
+    id: 'tr-ted',
+    emoji: '🎤',
+    title: 'למה אנחנו עושים מה שאנחנו עושים',
+    subtitle: 'מה מניע אותנו באמת — וכיצד לשנות את הנהיגה הפנימית.',
+    speaker: 'Tony Robbins',
+    duration: '22 דק׳',
+    youtubeId: 'Cpc-t-Uwv1I',
+    category: 'MINDSET',
+  },
+  {
+    id: 'goggins',
+    emoji: '🔥',
+    title: 'לא מספיק — לעולם לא מספיק',
+    subtitle: 'David Goggins על משמעת פנימית, ריצה בלתי אפשרית, ואמת שכואבת.',
+    speaker: 'David Goggins',
+    duration: '5-10 דק׳',
+    searchUrl: 'https://www.youtube.com/results?search_query=david+goggins+motivation+2024',
+    category: 'DISCIPLINE',
+  },
+  {
+    id: 'atomic',
+    emoji: '📚',
+    title: 'Atomic Habits — הרגלים שמשנים הכל',
+    subtitle: 'James Clear מסביר איך שיפור של 1% ביום הופך לתוצאות בלתי ייאמנות.',
+    speaker: 'James Clear',
+    duration: '10-15 דק׳',
+    searchUrl: 'https://www.youtube.com/results?search_query=james+clear+atomic+habits+talk',
+    category: 'HABITS',
+  },
+  {
+    id: 'jocko',
+    emoji: '⚔️',
+    title: 'Discipline Equals Freedom',
+    subtitle: 'Jocko Willink — לשעבד Commander בחיל הנחתים — על משמעת כדרך חיים.',
+    speaker: 'Jocko Willink',
+    duration: '5-8 דק׳',
+    searchUrl: 'https://www.youtube.com/results?search_query=jocko+willink+discipline+equals+freedom',
+    category: 'DISCIPLINE',
+  },
+  {
+    id: 'kobe',
+    emoji: '🏀',
+    title: 'Mamba Mentality',
+    subtitle: 'Kobe Bryant על ה-Mamba Mentality — לאהוב את התהליך יותר מהתוצאה.',
+    speaker: 'Kobe Bryant',
+    duration: '3-5 דק׳',
+    searchUrl: 'https://www.youtube.com/results?search_query=kobe+bryant+mamba+mentality+speech',
+    category: 'MINDSET',
+  },
+  {
+    id: 'ted-growth',
+    emoji: '🧠',
+    title: 'כוח ה-Mindset — לגדול לאורך כל החיים',
+    subtitle: 'Carol Dweck על Growth Mindset — ההבדל בין אנשים שמגיעים לאן שרצו לבין אלו שלא.',
+    speaker: 'Carol Dweck',
+    duration: '10 דק׳',
+    searchUrl: 'https://www.youtube.com/results?search_query=carol+dweck+growth+mindset+ted',
+    category: 'MINDSET',
+  },
+]
+
+// ─── Gratitude Prompts ────────────────────────────────────────────────────────
 export const GRATITUDE_PROMPTS = [
   'מה בגופך, בחיים שלך, או בסביבתך שמיליוני אנשים חולמים עליו?',
   'מי אהב אותך ללא תנאים? תרגיש את האהבה הזאת עכשיו בחזה.',
@@ -49,210 +155,37 @@ export const GRATITUDE_PROMPTS = [
 
 // ─── Identity Archetypes ─────────────────────────────────────────────────────
 export const IDENTITY_ARCHETYPES = [
-  { emoji: '🦁', label: 'האריה', desc: 'מוביל ללא פחד, מגן על מה שחשוב' },
-  { emoji: '🔥', label: 'הלוחם', desc: 'משמעת ברזל, עקשן ללא פשרות' },
-  { emoji: '⚡', label: 'הבורא', desc: 'מייצר, בונה, יוצר ערך לעולם' },
-  { emoji: '🏔️', label: 'המנהיג', desc: 'מעורר השראה, מרים אחרים' },
-  { emoji: '💎', label: 'האמן', desc: 'מצוינות בכל פרט, אין בינוניות' },
-  { emoji: '🌊', label: 'הכוח', desc: 'בלתי ניתן לעצירה, מגיע לכל מקום' },
+  { emoji: '🦁', label: 'האריה',   desc: 'מוביל ללא פחד, מגן על מה שחשוב' },
+  { emoji: '🔥', label: 'הלוחם',   desc: 'משמעת ברזל, עקשן ללא פשרות' },
+  { emoji: '⚡', label: 'הבורא',   desc: 'מייצר, בונה, יוצר ערך לעולם' },
+  { emoji: '🏔️', label: 'המנהיג',  desc: 'מעורר השראה, מרים אחרים' },
+  { emoji: '💎', label: 'האמן',    desc: 'מצוינות בכל פרט, אין בינוניות' },
+  { emoji: '🌊', label: 'הכוח',    desc: 'בלתי ניתן לעצירה, מגיע לכל מקום' },
 ]
 
-// ─── Daily Power Challenges (Tony Robbins techniques) ───────────────────────
-export interface Challenge {
-  id:       string
-  emoji:    string
-  title:    string
-  category: string
-  duration: number    // seconds, 0 = no timer (journaling)
-  quote:    string
-  steps:    string[]
+// ─── Category colors ──────────────────────────────────────────────────────────
+export const CATEGORY_COLORS: Record<string, string> = {
+  body:    '#22c55e',
+  mind:    '#3b82f6',
+  growth:  '#f5c435',
+  spirit:  '#8b5cf6',
+  wealth:  '#f97316',
+  MINDSET:    '#3b82f6',
+  DISCIPLINE: '#ef4444',
+  HABITS:     '#f5c435',
 }
 
-export const CHALLENGES: Challenge[] = [
-  {
-    id: 'kapalbhati',
-    emoji: '💨',
-    title: 'Kapalbhati — 100 נשימות כוח',
-    category: 'ENERGY',
-    duration: 120,
-    quote: 'Change your breath, change your state.',
-    steps: [
-      'עמוד זקוף — ידיים על הברכיים.',
-      'נשוף בכוח דרך האף — הבטן נכנסת פנימה בחוזקה.',
-      'השאיפה קורית אוטומטית — אל תחשוב עליה.',
-      'קצב מהיר, כמו משאבה — 100 נשיפות.',
-      'אחרי 100 — נשום עמוק, עצור 10 שניות. תרגיש את הכוח.',
-    ],
-  },
-  {
-    id: 'power-pose',
-    emoji: '🦸',
-    title: 'Power Pose — שינוי כימי ב-2 דקות',
-    category: 'STATE',
-    duration: 120,
-    quote: 'Your body language shapes who you are.',
-    steps: [
-      'עמוד. רגליים ברוחב כתפיים.',
-      'ידיים על הירכיים — כמו סופרמן/סופרווומן.',
-      'סנטר קדימה. עיניים ישרות. חיוך.',
-      'הרגש את הכוח עולה מהרגליים לראש.',
-      '2 דקות = testosterone +20%, cortisol -25%. זה מדע.',
-    ],
-  },
-  {
-    id: 'incantation-move',
-    emoji: '🔥',
-    title: 'האמרה בתנועה — זהות בגוף',
-    category: 'IDENTITY',
-    duration: 90,
-    quote: 'Words have power. Words in motion have MORE power.',
-    steps: [
-      'קום ותתחיל לצעוד מהיר / לקפץ.',
-      'אמור את ההאמרה שלך בקול רם — עם כוח.',
-      'תן לזה להיכנס לגוף דרך התנועה.',
-      'חזור עליה שוב ושוב — עם אמונה מלאה.',
-      'גוף + קול + רגש = שינוי זהות אמיתי.',
-    ],
-  },
-  {
-    id: 'dickens',
-    emoji: '💔',
-    title: 'The Dickens Pattern — כאב ועונג',
-    category: 'BREAKTHROUGH',
-    duration: 0,
-    quote: 'It\'s not about your conditions, it\'s about your decisions.',
-    steps: [
-      '1. מה אתה דוחה ולא עושה — מה התירוץ שלך?',
-      '2. מה זה עולה לך כבר עכשיו — ביחסים, בריאות, כסף?',
-      '3. אם לא תשנה — איך החיים שלך יראו עוד 5 / 10 / 20 שנה?',
-      '4. מה ירוויחו היקרים לך מהשינוי שלך?',
-      '5. קבל החלטה עכשיו. לא מחר. עכשיו. רשום אותה.',
-    ],
-  },
-  {
-    id: 'state-reset',
-    emoji: '⚡',
-    title: 'State Reset — 45 שניות',
-    category: 'ENERGY',
-    duration: 45,
-    quote: 'Motion creates emotion — always.',
-    steps: [
-      'קום מהכיסא.',
-      'קפץ 10 פעמים.',
-      'מחא כפיים 5 פעמים בחוזקה.',
-      'צעק YES! בקול רם — 3 פעמים.',
-      '3 נשימות כוח — וחזור לעבודה בגרסה טובה יותר של עצמך.',
-    ],
-  },
-  {
-    id: 'power-questions',
-    emoji: '❓',
-    title: 'שאלות הכוח של טוני — 7 שאלות',
-    category: 'MINDSET',
-    duration: 0,
-    quote: 'The quality of your life is the quality of your questions.',
-    steps: [
-      'מה גורם לי לשמוח בחיים שלי עכשיו — ולמה?',
-      'מה מרגש אותי בחיים שלי עכשיו — ולמה?',
-      'על מה אני הכי גאה בחיים שלי — ולמה?',
-      'על מה אני אסיר תודה בחיים שלי — ולמה?',
-      'מי אוהב אותי ואני אוהב?',
-      'למה אני מחויב להשיג בחיי — ולמה?',
-      'מה אני יכול לתת / ליצור / להוסיף היום?',
-    ],
-  },
-  {
-    id: 'cold-exposure',
-    emoji: '🧊',
-    title: 'חשיפה לקור — 30 שניות',
-    category: 'BODY',
-    duration: 30,
-    quote: 'Do what you fear, and the fear disappears.',
-    steps: [
-      'לך לאמבטיה.',
-      'פתח מים קרים לגמרי.',
-      'כנס מתחת — ואל תברח.',
-      'נשום עמוק ובצורה אחידה — אל תלחם.',
-      '30 שניות = norepinephrine +300%, dopamine +250%. מדע, לא מסטיקה.',
-    ],
-  },
-  {
-    id: 'gratitude-storm',
-    emoji: '🌊',
-    title: 'סערת תודה — 60 שניות',
-    category: 'MINDSET',
-    duration: 60,
-    quote: 'Trade your expectations for appreciation — and your whole world changes.',
-    steps: [
-      'פתח את הפה.',
-      'אמור בקול: "אני אסיר תודה על..."',
-      'המשך כמה שיותר מהר שאתה יכול.',
-      'לפחות 10 דברים בדקה.',
-      'תרגיש כל אחד — אל תרק מילים.',
-    ],
-  },
-]
-
-// ─── Inspiration Content Cards ────────────────────────────────────────────────
-export interface ContentCard {
-  id:       string
-  emoji:    string
-  title:    string
-  subtitle: string
-  type:     'youtube' | 'link'
-  youtubeId?: string
-  url?:       string
-  duration:   string
-  category:   string
-}
-
-export const CONTENT_CARDS: ContentCard[] = [
-  {
-    id: 'ted',
-    emoji: '🎤',
-    title: 'למה אנחנו עושים מה שאנחנו עושים',
-    subtitle: 'הרצאת TED של טוני רובינס — הרצאה שנצפתה 24 מיליון פעמים. על כוח המניעה האמיתי.',
-    type: 'youtube',
-    youtubeId: 'Cpc-t-Uwv1I',
-    duration: '22 דק׳',
-    category: 'MINDSET',
-  },
-  {
-    id: 'youtube-channel',
-    emoji: '📺',
-    title: 'ערוץ היוטיוב הרשמי של טוני רובינס',
-    subtitle: 'מאות סרטונים בחינם — אנרגיה, עסקים, קשרים, בריאות ומיינדסט.',
-    type: 'link',
-    url: 'https://www.youtube.com/@TonyRobbins',
-    duration: 'ללא הגבלה',
-    category: 'INSPIRATION',
-  },
-  {
-    id: 'podcast',
-    emoji: '🎧',
-    title: 'The Tony Robbins Podcast',
-    subtitle: 'הפודקסט הרשמי — עם מנהיגי עולם, ספורטאים, ואנשי עסקים. 30-60 דקות לאפיזודה.',
-    type: 'link',
-    url: 'https://www.tonyrobbins.com/podcasts/',
-    duration: '30-60 דק׳',
-    category: 'PODCAST',
-  },
-  {
-    id: 'upw',
-    emoji: '🔥',
-    title: 'Unleash the Power Within — UPW',
-    subtitle: 'האירוע הגדול ביותר של טוני רובינס. קליפים ותקצירים מהאירועים האחרונים.',
-    type: 'link',
-    url: 'https://www.youtube.com/results?search_query=tony+robbins+unleash+the+power+within',
-    duration: '5-30 דק׳',
-    category: 'EVENT',
-  },
-]
-
-// ─── Rotation helper ─────────────────────────────────────────────────────────
+// ─── Rotation helpers ─────────────────────────────────────────────────────────
 export function getTodayIncantation(): string {
   const dayOfYear = Math.floor(
     (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000
   )
   return INCANTATIONS[dayOfYear % INCANTATIONS.length]
+}
+
+export function getTodayQuote(): string {
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000
+  )
+  return QUOTES[dayOfYear % QUOTES.length]
 }

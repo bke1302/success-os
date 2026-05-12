@@ -45,7 +45,6 @@ function computeStreak(entries: DayEntry[]): number {
   for (const date of sorted) {
     if (date === expected) {
       streak++
-      // go back one day
       const d = new Date(expected)
       d.setDate(d.getDate() - 1)
       expected = d.toISOString().slice(0, 10)
@@ -79,18 +78,24 @@ export function useAppData() {
   }
 
   const saveEvening = (data: EveningEntry) => {
-    const entries = upsertToday(state.entries, { evening: data })
+    const entries  = upsertToday(state.entries, { evening: data })
     const streak   = computeStreak(entries)
     const totalDays = entries.filter(e => e.evening).length
     persist({ ...state, entries, streak, totalDays })
   }
 
-  const setView = (v: 'prime' | 'wins' | 'fire') => persist({ ...state, currentView: v })
+  const saveHabits = (habitIds: string[]) => {
+    const entries = upsertToday(state.entries, { habits: habitIds })
+    persist({ ...state, entries })
+  }
+
+  const setView = (v: 'prime' | 'wins' | 'fire' | 'actions' | 'inspire') =>
+    persist({ ...state, currentView: v as AppState['currentView'] })
 
   const clearAll = () => {
     localStorage.removeItem(KEY)
     persist(initialState())
   }
 
-  return { state, today, saveMorning, saveEvening, setView, clearAll }
+  return { state, today, saveMorning, saveEvening, saveHabits, setView, clearAll }
 }
