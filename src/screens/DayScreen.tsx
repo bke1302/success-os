@@ -68,11 +68,21 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
   }
 
   return (
-    <div className="flex flex-col" style={{ minHeight: '100dvh', background: '#02020a' }}>
+    <div
+      className="flex flex-col"
+      style={{
+        minHeight: '100dvh',
+        background: `
+          radial-gradient(ellipse at 70% 0%, rgba(239,68,68,0.06) 0%, transparent 50%),
+          radial-gradient(ellipse at 10% 90%, rgba(245,196,53,0.04) 0%, transparent 45%),
+          #02020a
+        `,
+      }}
+    >
 
       {/* Top bar */}
       <div
-        className="shrink-0 flex items-center justify-between px-6 py-4"
+        className="shrink-0 flex items-center justify-between px-6 py-4 animate-fade-in"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
       >
         <div>
@@ -111,10 +121,11 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
 
         {/* Commitment card */}
         <div
-          className="rounded-3xl p-6 relative overflow-hidden"
+          className="rounded-3xl p-6 relative overflow-hidden animate-glow-red shimmer-card animate-slide-up delay-1"
           style={{
-            background: 'radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.12) 0%, rgba(2,2,10,0.8) 70%)',
-            border: '1px solid rgba(239,68,68,0.25)',
+            background: 'radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.12) 0%, rgba(6,6,18,0.95) 70%)',
+            border: '1px solid rgba(239,68,68,0.28)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
           }}
         >
           <div className="absolute top-0 left-0 right-0 h-px"
