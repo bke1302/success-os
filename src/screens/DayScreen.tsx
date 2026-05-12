@@ -1,48 +1,41 @@
 import { useState, useEffect } from 'react'
-import { Sunset, ChevronLeft, Zap } from 'lucide-react'
+import { Sunset, Zap, ChevronLeft } from 'lucide-react'
 import { QUOTES } from '../constants'
 import type { EveningEntry } from '../types'
 import { requestAndScheduleReminder, getReminderTime } from '../utils/reminder'
 
 interface Props {
-  commitment: string
-  identity?:  string
-  purpose?:   string
+  commitment:  string
+  identity?:   string
+  purpose?:    string
   onFinishDay: () => void
-  evening?:   EveningEntry
-  streak:     number
-  dayCount:   number
+  evening?:    EveningEntry
+  streak:      number
+  dayCount:    number
 }
 
 function getSunsetMinutes(): number {
   const m = new Date().getMonth()
-  const SUNSET = [17*60, 17*60+30, 18*60, 19*60, 19*60+30, 20*60+15,
-                  20*60+30, 20*60, 19*60+30, 18*60+30, 17*60+30, 17*60]
-  return SUNSET[m]
+  const S = [17*60,17*60+30,18*60,19*60,19*60+30,20*60+15,20*60+30,20*60,19*60+30,18*60+30,17*60+30,17*60]
+  return S[m]
 }
-
 function timeLeft(): string {
-  const now     = new Date()
-  const nowMins = now.getHours() * 60 + now.getMinutes()
-  const diff    = getSunsetMinutes() - nowMins
+  const now = new Date(), nowMins = now.getHours()*60+now.getMinutes()
+  const diff = getSunsetMinutes() - nowMins
   if (diff <= 0) return 'השמש שקעה'
-  const h = Math.floor(diff / 60)
-  const m = diff % 60
-  return h > 0 ? `${h} שעות ${m} דקות` : `${m} דקות`
+  const h = Math.floor(diff/60), m = diff%60
+  return h > 0 ? `${h}ש׳ ${m}ד׳` : `${m} דקות`
 }
-
 function scoreColor(s: number) {
-  if (s >= 9) return '#f5c435'
-  if (s >= 7) return '#e8a020'
-  if (s >= 5) return '#f97316'
-  return '#ef4444'
+  if (s >= 9) return '#f5c435'; if (s >= 7) return '#e8a020'
+  if (s >= 5) return '#f97316'; return '#ef4444'
 }
 
 const STATE_TIPS = [
   'עמוד. כתפיים אחורה. ראש למעלה. 3 נשימות כוח. 10 שניות.',
   'קום ותזוז — 60 שניות של תנועה משנה הכל. הגוף קובע את הנפש.',
   'חייך — גם מלאכותי. המוח לא מבדיל. דופמין משתחרר בכל מקרה.',
-  'צעק בשקט: "YES!" — ולחץ יד לשמים. עשה את זה עכשיו.',
+  'צעק בשקט: "YES!" ולחץ יד לשמים. עשה את זה עכשיו.',
   'שב ישר. נשום עמוק. הגוף שלך הוא ה-remote control של הנפש.',
 ]
 
@@ -50,108 +43,66 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
   const [quoteIdx,     setQuoteIdx]     = useState(() => Math.floor(Math.random() * QUOTES.length))
   const [quoteVisible, setQuoteVisible] = useState(true)
   const [remaining,    setRemaining]    = useState(timeLeft)
-  const [stateTip,      setStateTip]      = useState<string | null>(null)
+  const [stateTip,     setStateTip]     = useState<string | null>(null)
   const [reminderStatus, setReminderStatus] = useState<'idle'|'scheduled'|'denied'|'unsupported'>('idle')
 
   useEffect(() => {
     const qid = setInterval(() => {
       setQuoteVisible(false)
-      setTimeout(() => { setQuoteIdx(i => (i + 1) % QUOTES.length); setQuoteVisible(true) }, 500)
-    }, 4 * 60 * 1000)
+      setTimeout(() => { setQuoteIdx(i => (i+1) % QUOTES.length); setQuoteVisible(true) }, 400)
+    }, 4*60*1000)
     const tid = setInterval(() => setRemaining(timeLeft()), 60_000)
     return () => { clearInterval(qid); clearInterval(tid) }
   }, [])
 
   const raiseState = () => {
-    setStateTip(STATE_TIPS[Math.floor(Math.random() * STATE_TIPS.length)])
+    setStateTip(STATE_TIPS[Math.floor(Math.random()*STATE_TIPS.length)])
     setTimeout(() => setStateTip(null), 8000)
   }
 
   return (
-    <div
-      className="flex flex-col"
-      style={{
-        height: '100dvh',
-        overflow: 'hidden',
-        background: `
-          radial-gradient(ellipse at 70% 0%, rgba(239,68,68,0.06) 0%, transparent 50%),
-          radial-gradient(ellipse at 10% 90%, rgba(245,196,53,0.04) 0%, transparent 45%),
-          #02020a
-        `,
-      }}
-    >
+    <div style={{ height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#0a0a0a' }}>
 
-      {/* Top bar */}
-      <div
-        className="shrink-0 flex items-center justify-between px-6 py-4 animate-fade-in"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-      >
-        <div>
-          <p className="text-[8px] tracking-[4px] uppercase font-bold text-muted">יום {dayCount}</p>
-          <p className="text-sm font-semibold text-white mt-0.5" dir="rtl">
-            {new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}
-          </p>
-        </div>
-        {streak > 0 && (
-          <div
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl"
-            style={{ background: 'rgba(245,196,53,0.08)', border: '1px solid rgba(245,196,53,0.2)' }}
-          >
-            <span className="text-base">🔥</span>
-            <span className="text-sm font-bold" style={{ color: '#f5c435' }}>{streak}</span>
-            <span className="text-[8px] tracking-[2px] uppercase text-muted">STREAK</span>
+      {/* TOP BAR */}
+      <div className="shrink-0 animate-fade-in" style={{ padding: '20px 20px 16px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="label-xs mb-1">{new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: '#fff' }} dir="rtl">יום {dayCount}</p>
           </div>
-        )}
+          {streak > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', background: 'rgba(245,196,53,0.08)', border: '1px solid rgba(245,196,53,0.2)' }}>
+              <span style={{ fontSize: '1rem' }}>🔥</span>
+              <span style={{ fontWeight: 900, fontSize: 18, color: '#f5c435' }}>{streak}</span>
+              <span className="label-xs" style={{ color: 'rgba(245,196,53,0.6)' }}>STREAK</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-5">
+      <div className="flex-1 overflow-y-auto" style={{ padding: '0 0 32px' }}>
 
-        {/* Identity banner */}
+        {/* Identity */}
         {identity && (
-          <div
-            className="rounded-2xl px-5 py-4 flex items-center gap-3"
-            style={{ background: 'rgba(245,196,53,0.05)', border: '1px solid rgba(245,196,53,0.18)' }}
-          >
-            <span className="text-2xl">👑</span>
-            <div dir="rtl">
-              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-0.5">תוכנית השבוע</p>
-              <p className="text-lg font-black" style={{ color: '#f5c435' }}>{identity}</p>
-            </div>
+          <div className="mx-5 mt-5" style={{ borderLeft: '3px solid rgba(245,196,53,0.6)', paddingLeft: 14 }}>
+            <p className="label-xs mb-1" style={{ color: 'rgba(245,196,53,0.5)' }}>תוכנית השבוע</p>
+            <p style={{ fontSize: 16, fontWeight: 900, color: '#f5c435' }} dir="rtl">{identity}</p>
           </div>
         )}
 
-        {/* Commitment card */}
-        <div
-          className="rounded-3xl p-6 relative overflow-hidden animate-glow-red shimmer-card animate-slide-up delay-1"
-          style={{
-            background: 'radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.12) 0%, rgba(6,6,18,0.95) 70%)',
-            border: '1px solid rgba(239,68,68,0.28)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-          }}
-        >
-          <div className="absolute top-0 left-0 right-0 h-px"
-            style={{ background: 'linear-gradient(to right,transparent,rgba(239,68,68,0.8),transparent)' }} />
-          <p className="text-[9px] tracking-[5px] uppercase font-bold mb-2" style={{ color: '#ef4444' }}>
-            הפעולה המסיבית שלך היום
-          </p>
-          <p className="text-xl font-bold text-white leading-relaxed" dir="rtl"
-            style={{ textShadow: '0 0 40px rgba(239,68,68,0.2)' }}>
-            {commitment}
-          </p>
-
-          {/* Purpose */}
+        {/* Commitment */}
+        <div className="mx-5 mt-5" style={{ background: '#111', borderLeft: '4px solid #ef4444', padding: '18px 16px' }}>
+          <p className="label-xs mb-2" style={{ color: '#ef4444' }}>הפעולה המסיבית שלך היום</p>
+          <p style={{ fontSize: 18, fontWeight: 900, color: '#fff', lineHeight: 1.35 }} dir="rtl">{commitment}</p>
           {purpose && (
-            <p className="text-sm text-sub mt-3 leading-relaxed" dir="rtl">
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 10, lineHeight: 1.5 }} dir="rtl">
               💎 {purpose}
             </p>
           )}
-
           {evening && (
-            <div className="mt-4 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full"
-                style={{ background: evening.commitmentDone ? '#22c55e' : '#ef4444' }} />
-              <span className="text-xs font-semibold"
-                style={{ color: evening.commitmentDone ? '#22c55e' : '#ef4444' }} dir="rtl">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: evening.commitmentDone ? '#22c55e' : '#ef4444' }} />
+              <span style={{ fontSize: 12, fontWeight: 700, color: evening.commitmentDone ? '#22c55e' : '#ef4444' }} dir="rtl">
                 {evening.commitmentDone ? 'עשית את זה!' : 'לא הושלם — מחר מחדש'}
               </span>
             </div>
@@ -160,131 +111,82 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
 
         {/* Evening summary */}
         {evening && (
-          <div
-            className="rounded-2xl p-5 relative overflow-hidden"
-            style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
-          >
+          <div className="mx-5 mt-4" style={{ background: '#111', padding: '16px', borderLeft: `3px solid ${scoreColor(evening.score)}` }}>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[9px] tracking-[4px] uppercase font-bold text-muted">מה נתת היום</p>
-              <div className="font-display text-2xl" style={{ color: scoreColor(evening.score) }}>
-                {evening.score}/10
-              </div>
+              <p className="label-xs">מה נתת היום</p>
+              <span style={{ fontSize: '2rem', fontWeight: 900, color: scoreColor(evening.score) }}>{evening.score}/10</span>
             </div>
-            <p className="text-base font-medium text-white leading-relaxed" dir="rtl">{evening.given ?? evening.win}</p>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.5 }} dir="rtl">{evening.given ?? evening.win}</p>
             {evening.lesson && (
-              <p className="text-sm text-sub mt-2 leading-relaxed" dir="rtl">📖 {evening.lesson}</p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 8, lineHeight: 1.5 }} dir="rtl">📖 {evening.lesson}</p>
             )}
           </div>
         )}
 
-        {/* Reminder button — shown after day is done */}
+        {/* Reminder */}
         {evening && reminderStatus === 'idle' && (
-          <button
-            onClick={async () => setReminderStatus(await requestAndScheduleReminder())}
-            className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200"
-            style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', color: 'rgba(167,170,255,0.9)' }}
-            dir="rtl"
-          >
-            🔔 תזכיר לי מחר בבוקר
-          </button>
+          <div className="mx-5 mt-4">
+            <button onClick={async () => setReminderStatus(await requestAndScheduleReminder())}
+              className="w-full btn-ghost flex items-center justify-center gap-2"
+              style={{ padding: '13px', fontSize: 13, borderRadius: 0 }} dir="rtl">
+              🔔 תזכיר לי מחר בבוקר
+            </button>
+          </div>
         )}
         {evening && reminderStatus === 'scheduled' && (
-          <div
-            className="rounded-xl px-4 py-3 text-center"
-            style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.2)' }}
-          >
-            <p className="text-xs font-semibold" style={{ color: 'rgba(167,170,255,0.9)' }} dir="rtl">
+          <div className="mx-5 mt-3">
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center' }} dir="rtl">
               ✓ תזכורת נקבעה ל-{getReminderTime()} — השאר את הטאב פתוח
             </p>
           </div>
         )}
-        {evening && reminderStatus === 'denied' && (
-          <p className="text-xs text-center text-muted px-2" dir="rtl">
-            אפשר הרשאות התראות בדפדפן שלך כדי לקבל תזכורות בוקר.
-          </p>
-        )}
 
-        {/* RAISE YOUR STATE button */}
+        {/* Raise State */}
         {!evening && (
-          <button
-            onClick={raiseState}
-            className="w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-95"
-            style={{ background: 'rgba(245,196,53,0.07)', border: '1px solid rgba(245,196,53,0.2)', color: '#f5c435' }}
-            dir="rtl"
-          >
-            <Zap className="w-4 h-4" strokeWidth={2} />
-            RAISE YOUR STATE — קום לשנייה
-          </button>
+          <div className="mx-5 mt-4">
+            <button onClick={raiseState}
+              className="w-full btn-ghost flex items-center justify-center gap-2"
+              style={{ padding: '14px', fontSize: 13, borderRadius: 0 }} dir="rtl">
+              <Zap className="w-4 h-4" style={{ color: '#f5c435' }} />
+              RAISE YOUR STATE — קום לשנייה
+            </button>
+          </div>
         )}
 
-        {/* State tip */}
         {stateTip && (
-          <div
-            className="rounded-2xl px-5 py-4"
-            style={{
-              background: 'rgba(245,196,53,0.08)',
-              border: '1px solid rgba(245,196,53,0.3)',
-              animation: 'primeIn 0.3s ease forwards',
-            }}
-          >
-            <p className="text-sm font-semibold text-white text-center leading-relaxed" dir="rtl">
-              ⚡ {stateTip}
-            </p>
+          <div className="mx-5 mt-3 animate-slide-up" style={{ background: '#111', borderLeft: '3px solid #f5c435', padding: '14px 16px' }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', lineHeight: 1.5 }} dir="rtl">⚡ {stateTip}</p>
           </div>
         )}
 
         {/* Quote */}
-        <div
-          className="rounded-2xl p-5 flex flex-col items-center text-center gap-3"
-          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
-        >
-          <p className="text-[8px] tracking-[4px] uppercase text-muted">DAILY WISDOM</p>
-          <p
-            className="text-base font-semibold leading-relaxed transition-opacity duration-500"
-            style={{ color: 'rgba(245,196,53,0.85)', opacity: quoteVisible ? 1 : 0 }}
-            dir="rtl"
-          >
-            "{QUOTES[quoteIdx]}"
-          </p>
+        <div className="mx-5 mt-5" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 20 }}>
+          <p className="label-xs mb-3">DAILY WISDOM</p>
+          <p style={{
+            fontSize: 15, fontWeight: 600, color: 'rgba(245,196,53,0.8)', lineHeight: 1.7,
+            opacity: quoteVisible ? 1 : 0, transition: 'opacity 0.4s',
+          }} dir="rtl">"{QUOTES[quoteIdx]}"</p>
         </div>
 
-        {/* Sunset timer */}
+        {/* Sunset */}
         {!evening && (
-          <div
-            className="flex items-center gap-3 rounded-2xl px-5 py-4"
-            style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
-          >
-            <Sunset className="w-5 h-5 shrink-0 text-muted" strokeWidth={1.5} />
+          <div className="mx-5 mt-5" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <Sunset className="w-4 h-4 text-muted" strokeWidth={1.5} />
             <div dir="rtl">
-              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-0.5">עד שקיעה</p>
-              <p className="text-base font-bold text-white">{remaining}</p>
+              <p className="label-xs mb-0.5">עד שקיעה</p>
+              <p style={{ fontSize: 16, fontWeight: 900, color: '#fff' }}>{remaining}</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Footer CTA */}
+      {/* CTA */}
       {!evening && (
-        <div
-          className="shrink-0 px-6 py-5"
-          style={{
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-            background: 'rgba(2,2,10,0.9)',
-            backdropFilter: 'blur(20px)',
-            paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
-          }}
-        >
-          <button
-            onClick={onFinishDay}
-            className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-all"
-            style={{
-              background: 'linear-gradient(135deg,#ef4444,#dc2626)',
-              color: '#fff',
-              boxShadow: '0 0 30px rgba(239,68,68,0.3)',
-            }}
-            dir="rtl"
-          >
-            <ChevronLeft className="w-5 h-5" strokeWidth={2} />
+        <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: '2px solid rgba(255,255,255,0.12)', background: '#0a0a0a' }}>
+          <button onClick={onFinishDay}
+            className="btn-red w-full flex items-center justify-center gap-3"
+            style={{ padding: '18px', fontSize: 15, borderRadius: 0 }} dir="rtl">
+            <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
             סגור את היום — סיכום 3 דקות
           </button>
         </div>
