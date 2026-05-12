@@ -11,28 +11,28 @@ export interface WeekTheme {
 
 export const WEEK_THEMES: WeekTheme[] = [
   {
-    title:    'שבוע גוף 💪',
-    desc:     'הנכס הכי חשוב שלך — גוף חזק, אנרגיה אמיתית, לא מקום לתירוצים',
-    color:    '#22c55e',
-    habitIds: ['workout', 'water', 'healthy'],
-  },
-  {
-    title:    'שבוע מוח 🧠',
-    desc:     'מה שאתה לומד היום — מי שאתה מחר. ידע הוא הנשק האמיתי',
-    color:    '#3b82f6',
-    habitIds: ['read', 'learn', 'journal'],
-  },
-  {
     title:    'שבוע ייצור 🎯',
-    desc:     'עמוק, ממוקד, בלי הסחות דעת — כאן קורה ההתקדמות האמיתית',
+    desc:     'תעשה. תיצור. תמכור. ייצור הוא מה שמפריד בין חולמים למצליחנים',
     color:    '#f5c435',
-    habitIds: ['goal', 'noscroll', 'early'],
+    habitIds: ['deepwork', 'content', 'revenue'],
   },
   {
-    title:    'שבוע רוח ⚡',
-    desc:     'חידוש אנרגיה, נוכחות מלאה, ועשיית טוב — הכוח הפנימי שלך',
-    color:    '#8b5cf6',
-    habitIds: ['meditate', 'walk', 'kind'],
+    title:    'שבוע למידה 📚',
+    desc:     'כל מה שאתה לומד היום הופך ליתרון תחרותי מחר — אל תפסיק לגדול',
+    color:    '#3b82f6',
+    habitIds: ['read', 'learn', 'goals'],
+  },
+  {
+    title:    'שבוע משמעת ⚡',
+    desc:     'המשמעת היא הגשר בין מטרות להישגים — אין קיצורי דרך, אין תירוצים',
+    color:    '#ef4444',
+    habitIds: ['workout', 'early', 'noscroll'],
+  },
+  {
+    title:    'שבוע קשרים 🤝',
+    desc:     'הרשת שלך היא הנכס שלך — אנשים שמגיעים רחוק בונים קשרים כל יום',
+    color:    '#22c55e',
+    habitIds: ['outreach', 'give', 'plan'],
   },
 ]
 

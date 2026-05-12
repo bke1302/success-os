@@ -47,27 +47,34 @@ export const INCANTATIONS: string[] = [
 
 // ─── Daily Habits (Actions) ───────────────────────────────────────────────────
 export interface Habit {
-  id:       string
-  emoji:    string
-  title:    string
-  subtitle: string
-  category: 'body' | 'mind' | 'growth' | 'spirit' | 'wealth'
-  timerSec?: number   // optional built-in timer
+  id:        string
+  emoji:     string
+  title:     string
+  subtitle:  string
+  category:  'production' | 'learning' | 'network' | 'discipline'
+  timerSec?: number
 }
 
 export const HABITS: Habit[] = [
-  { id: 'read',      emoji: '📚', title: 'קריאה',          subtitle: '20 דקות לפחות — כל ספר שיש לך',      category: 'mind',   timerSec: 1200 },
-  { id: 'workout',   emoji: '💪', title: 'אימון',           subtitle: 'הגוף שלך הוא הנכס הכי חשוב שלך',      category: 'body' },
-  { id: 'learn',     emoji: '🧠', title: 'למידה',           subtitle: 'קורס, פודקסט, סרטון — ידע חדש',       category: 'growth', timerSec: 1800 },
-  { id: 'meditate',  emoji: '🧘', title: 'מדיטציה',         subtitle: '10 דקות — עצור, נשום, תהיה נוכח',     category: 'spirit', timerSec: 600  },
-  { id: 'walk',      emoji: '🏃', title: 'הליכה / ריצה',    subtitle: 'תנועה = אנרגיה = מוח טוב יותר',        category: 'body' },
-  { id: 'water',     emoji: '💧', title: '8 כוסות מים',     subtitle: 'הידרציה היא הדלק של הגוף',             category: 'body' },
-  { id: 'journal',   emoji: '✍️', title: 'כתיבה / יומן',   subtitle: 'כתוב מה חשבת, מה למדת, מה תשנה',      category: 'mind',  timerSec: 600  },
-  { id: 'early',     emoji: '🌅', title: 'השכמה מוקדמת',   subtitle: 'שעת הבוקר שקטה שייכת לך בלבד',         category: 'spirit' },
-  { id: 'goal',      emoji: '🎯', title: 'עבודה על המטרה',  subtitle: 'לפחות שעה על מה שיקדם אותך',          category: 'wealth', timerSec: 3600 },
-  { id: 'noscroll',  emoji: '📵', title: 'ללא מסכים שעה',   subtitle: 'צא מהרעש. תהיה נוכח בחיים.',           category: 'spirit', timerSec: 3600 },
-  { id: 'healthy',   emoji: '🥗', title: 'תזונה נכונה',     subtitle: 'מה שאתה אוכל = מי שאתה',               category: 'body' },
-  { id: 'kind',      emoji: '🤝', title: 'עשיתי טוב',       subtitle: 'עזרת, הקשבת, נתת — לאחד לפחות',       category: 'spirit' },
+  // ── ייצור ────────────────────────────────────────────────────────────────
+  { id: 'deepwork',  emoji: '🎯', title: 'עבודה עמוקה',         subtitle: '2+ שעות ללא הפרעות על הדבר שמקדם אותך הכי הרבה',  category: 'production', timerSec: 7200 },
+  { id: 'content',   emoji: '✍️', title: 'יצירת תוכן',          subtitle: 'כתוב, הקלט, צור — משהו שאחרים יראו ויקבלו ערך',    category: 'production' },
+  { id: 'revenue',   emoji: '💰', title: 'פעולה להכנסה',        subtitle: 'מכירה, הצעה מחיר, שיווק — פעולה שמכניסה כסף',      category: 'production' },
+
+  // ── למידה ────────────────────────────────────────────────────────────────
+  { id: 'read',      emoji: '📚', title: 'קריאת ספר',           subtitle: '20+ דקות — ספר שמלמד אותך משהו שימושי לחיים שלך',  category: 'learning',   timerSec: 1200 },
+  { id: 'learn',     emoji: '🧠', title: 'למידה פעילה',         subtitle: 'קורס, פודקסט, מנטור — ידע חדש שמשפר אותך',         category: 'learning',   timerSec: 1800 },
+  { id: 'goals',     emoji: '🔄', title: 'סקירת יעדים',         subtitle: 'בדוק את המטרות שלך — האם הפעולות שלך מכוונות אליהן?', category: 'learning', timerSec: 600  },
+
+  // ── קשרים ────────────────────────────────────────────────────────────────
+  { id: 'outreach',  emoji: '📞', title: 'נטוורקינג / אאוטריץ׳', subtitle: 'צור קשר עם מישהו שיכול לקדם אותך — שלח, התקשר, פגוש', category: 'network' },
+  { id: 'give',      emoji: '🤝', title: 'נתינה / עזרה',        subtitle: 'עזור לאחד ללא תמורה — האנשים שנותנים מקבלים הכי הרבה', category: 'network' },
+
+  // ── משמעת ────────────────────────────────────────────────────────────────
+  { id: 'workout',   emoji: '💪', title: 'אימון גופני',          subtitle: 'גוף חזק = מוח חד = ביצועים גבוהים — אין תירוצים',   category: 'discipline' },
+  { id: 'early',     emoji: '🌅', title: 'השכמה לפני 7',        subtitle: 'שעת הבוקר שייכת לך לבד — לפני שהעולם מתעורר',       category: 'discipline' },
+  { id: 'noscroll',  emoji: '📵', title: 'שעה בלי מסכים',       subtitle: 'ללא סוציאל, ללא חדשות — מיקוד מלא על מה שחשוב',     category: 'discipline', timerSec: 3600 },
+  { id: 'plan',      emoji: '📝', title: 'תכנון / יומן',         subtitle: '10 דקות — תכנן מחר ורשום מה למדת ומה תשנה',          category: 'discipline', timerSec: 600  },
 ]
 
 // ─── Motivational Video Content ───────────────────────────────────────────────
@@ -165,11 +172,11 @@ export const IDENTITY_ARCHETYPES = [
 
 // ─── Category colors ──────────────────────────────────────────────────────────
 export const CATEGORY_COLORS: Record<string, string> = {
-  body:    '#22c55e',
-  mind:    '#3b82f6',
-  growth:  '#f5c435',
-  spirit:  '#8b5cf6',
-  wealth:  '#f97316',
+  production: '#f5c435',
+  learning:   '#3b82f6',
+  network:    '#22c55e',
+  discipline: '#ef4444',
+  // video card categories
   MINDSET:    '#3b82f6',
   DISCIPLINE: '#ef4444',
   HABITS:     '#f5c435',
