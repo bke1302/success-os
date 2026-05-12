@@ -1,35 +1,68 @@
 export interface MorningEntry {
   gratitudes:  [string, string, string]
-  vision:      [string, string, string]  // 3 goals visualized as DONE
-  identity:    string                    // "Today I AM ___"
-  purpose:     string                    // WHY this matters deep down
-  commitment:  string                    // the ONE massive action
+  vision:      [string, string, string]
+  identity:    string
+  purpose:     string
+  commitment:  string
+  oneThing?:   string   // The ONE most important action
   incantation: string
-  energyLevel: number                    // 1-10
+  energyLevel: number
   completedAt: string
 }
 
 export interface EveningEntry {
-  given:          string   // What did I GIVE today?
-  win:            string   // kept for display compat
+  given:          string
+  win:            string
   lesson:         string
   commitmentDone: boolean
-  score:          number   // 1-10
+  score:          number
   completedAt:    string
 }
 
 export interface DayEntry {
-  date:     string        // YYYY-MM-DD
-  morning?: MorningEntry
-  evening?: EveningEntry
-  habits?:  string[]      // IDs of completed habits
+  date:           string        // YYYY-MM-DD
+  morning?:       MorningEntry
+  evening?:       EveningEntry
+  habits?:        string[]
+  energyCheckins?: EnergyCheckin[]  // midday + afternoon check-ins
+}
+
+export interface BurnTheBoats {
+  commitment:  string
+  consequence: string
+  deadline:    string   // YYYY-MM-DD
+  createdAt:   string
+}
+
+export interface FearEntry {
+  id:       string
+  fear:     string
+  reframe:  string
+  date:     string   // YYYY-MM-DD
+}
+
+export interface EnergyCheckin {
+  score: number
+  label: 'morning' | 'midday' | 'afternoon'
+  time:  string   // ISO
+}
+
+export interface WeeklyPlan {
+  weekStart: string            // YYYY-MM-DD (Monday)
+  wins:      [string, string, string]
+  goals:     [string, string, string]
+  createdAt: string
 }
 
 export interface AppState {
-  entries:     DayEntry[]
-  streak:      number
-  totalDays:   number
-  currentView: 'prime' | 'actions' | 'inspire' | 'wins'
+  entries:        DayEntry[]
+  streak:         number
+  totalDays:      number
+  currentView:    'prime' | 'actions' | 'inspire' | 'wins' | 'fear' | 'weekly'
+  burnTheBoats?:  BurnTheBoats
+  fearEntries?:   FearEntry[]
+  weeklyPlans?:   WeeklyPlan[]
+  incantationB64?: string   // base64 audio blob
 }
 
 export type DayPhase = 'morning' | 'day' | 'evening'

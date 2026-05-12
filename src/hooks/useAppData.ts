@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import type { AppState, DayEntry, MorningEntry, EveningEntry } from '../types'
+import type {
+  AppState, DayEntry, MorningEntry, EveningEntry,
+  BurnTheBoats, FearEntry, WeeklyPlan, EnergyCheckin,
+} from '../types'
 
 const KEY = 'prime_v1'
 
-function todayKey(): string {
+export function todayKey(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
@@ -78,8 +81,8 @@ export function useAppData() {
   }
 
   const saveEvening = (data: EveningEntry) => {
-    const entries  = upsertToday(state.entries, { evening: data })
-    const streak   = computeStreak(entries)
+    const entries   = upsertToday(state.entries, { evening: data })
+    const streak    = computeStreak(entries)
     const totalDays = entries.filter(e => e.evening).length
     persist({ ...state, entries, streak, totalDays })
   }
@@ -89,13 +92,53 @@ export function useAppData() {
     persist({ ...state, entries })
   }
 
-  const setView = (v: 'prime' | 'wins' | 'fire' | 'actions' | 'inspire') =>
-    persist({ ...state, currentView: v as AppState['currentView'] })
+  const saveEnergyCheckin = (checkin: EnergyCheckin) => {
+    const existing = today?.energyCheckins ?? []
+    const filtered = existing.filter(c => c.label !== checkin.label)
+    const entries  = upsertToday(state.entries, { energyCheckins: [...filtered, checkin] })
+    persist({ ...state, entries })
+  }
+
+  const saveBurnTheBoats = (btb: BurnTheBoats) =>
+    persist({ ...state, burnTheBoats: btb })
+
+  const clearBurnTheBoats = () =>
+    persist({ ...state, burnTheBoats: undefined })
+
+  const saveFearEntry = (entry: FearEntry) => {
+    const existing = state.fearEntries ?? []
+    persist({ ...state, fearEntries: [entry, ...existing] })
+  }
+
+  const deleteFearEntry = (id: string) => {
+    const fearEntries = (state.fearEntries ?? []).filter(f => f.id !== id)
+    persist({ ...state, fearEntries })
+  }
+
+  const saveWeeklyPlan = (plan: WeeklyPlan) => {
+    const existing = state.weeklyPlans ?? []
+    const filtered = existing.filter(p => p.weekStart !== plan.weekStart)
+    persist({ ...state, weeklyPlans: [plan, ...filtered] })
+  }
+
+  const saveIncantation = (b64: string) =>
+    persist({ ...state, incantationB64: b64 })
+
+  const setView = (v: AppState['currentView']) =>
+    persist({ ...state, currentView: v })
 
   const clearAll = () => {
     localStorage.removeItem(KEY)
     persist(initialState())
   }
 
-  return { state, today, saveMorning, saveEvening, saveHabits, setView, clearAll }
+  return {
+    state, today,
+    saveMorning, saveEvening, saveHabits, saveEnergyCheckin,
+    saveBurnTheBoats, clearBurnTheBoats,
+    saveFearEntry, deleteFearEntry,
+    saveWeeklyPlan,
+    saveIncantation,
+    setView, clearAll,
+  }
 }
