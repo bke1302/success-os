@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Zap, CheckSquare, Play, Trophy } from 'lucide-react'
 import { useAppData, getDayPhase } from './hooks/useAppData'
+import { HABITS } from './constants'
+import { getTodayRequiredHabitIds } from './data/program'
 import { MorningPrime }   from './screens/MorningPrime'
 import { DayScreen }      from './screens/DayScreen'
 import { EveningReview }  from './screens/EveningReview'
@@ -15,12 +17,19 @@ export default function App() {
   const phase    = getDayPhase()
   const dayCount = state.entries.length + 1
 
+  // Yesterday's date string + data
   const yesterday = (() => {
     const d = new Date(); d.setDate(d.getDate() - 1)
     return d.toISOString().slice(0, 10)
   })()
-  const lastWin = state.entries.find(e => e.date === yesterday)?.evening?.given
-    ?? state.entries.find(e => e.date === yesterday)?.evening?.win
+  const yesterdayEntry      = state.entries.find(e => e.date === yesterday)
+  const lastWin             = yesterdayEntry?.evening?.given ?? yesterdayEntry?.evening?.win
+  const yesterdayHabitsPct  = yesterdayEntry?.habits
+    ? yesterdayEntry.habits.length / HABITS.length
+    : 0
+
+  // Today's required habit IDs from the rotating program
+  const requiredHabitIds = getTodayRequiredHabitIds(dayCount)
 
   const primeScreen = (): 'morning' | 'day' | 'evening' | 'done' => {
     if (!today?.morning)                     return 'morning'
@@ -45,7 +54,13 @@ export default function App() {
       {state.currentView === 'prime' && (
         <>
           {screen === 'morning' && (
-            <MorningPrime onComplete={saveMorning} dayCount={dayCount} lastWin={lastWin} />
+            <MorningPrime
+              onComplete={saveMorning}
+              dayCount={dayCount}
+              streak={state.streak}
+              lastWin={lastWin}
+              yesterdayHabitsPct={yesterdayHabitsPct}
+            />
           )}
           {screen === 'day' && (
             <DayScreen
@@ -83,6 +98,7 @@ export default function App() {
         <ActionsScreen
           completedHabits={today?.habits ?? []}
           onToggle={saveHabits}
+          requiredHabitIds={requiredHabitIds}
         />
       )}
 

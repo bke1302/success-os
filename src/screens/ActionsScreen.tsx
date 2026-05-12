@@ -4,13 +4,14 @@ import { HABITS, CATEGORY_COLORS, type Habit } from '../constants'
 import { playCheck, playUncheck, playComplete, playTimerDone } from '../utils/sounds'
 
 interface Props {
-  completedHabits: string[]
-  onToggle: (ids: string[]) => void
+  completedHabits:  string[]
+  onToggle:         (ids: string[]) => void
+  requiredHabitIds: string[]   // today's 3 mandatory habits from the program
 }
 
 // ─── Habit Timer Overlay ─────────────────────────────────────────────────────
 function HabitTimerOverlay({ habit, onClose, onDone }: {
-  habit: Habit
+  habit:   Habit
   onClose: () => void
   onDone:  () => void
 }) {
@@ -49,7 +50,6 @@ function HabitTimerOverlay({ habit, onClose, onDone }: {
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center px-6"
       style={{ background: 'rgba(2,2,10,0.97)', backdropFilter: 'blur(20px)' }}>
 
-      {/* Close */}
       <button onClick={onClose}
         className="absolute top-6 right-6 w-10 h-10 rounded-xl flex items-center justify-center"
         style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -63,7 +63,6 @@ function HabitTimerOverlay({ habit, onClose, onDone }: {
           <p className="text-sm text-sub mt-1" dir="rtl">{habit.subtitle}</p>
         </div>
 
-        {/* Timer ring */}
         <svg width={140} height={140} viewBox="0 0 140 140">
           <circle cx={70} cy={70} r={54} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={7} />
           <circle cx={70} cy={70} r={54} fill="none"
@@ -120,8 +119,87 @@ function HabitTimerOverlay({ habit, onClose, onDone }: {
   )
 }
 
+// ─── Single Habit Row ─────────────────────────────────────────────────────────
+function HabitRow({ habit, done, required, onToggle, onTimer }: {
+  habit:    Habit
+  done:     boolean
+  required: boolean
+  onToggle: () => void
+  onTimer:  () => void
+}) {
+  const color = required
+    ? (CATEGORY_COLORS[habit.category] ?? '#f5c435')
+    : (done ? (CATEGORY_COLORS[habit.category] ?? '#f5c435') : 'rgba(255,255,255,0.25)')
+
+  return (
+    <div
+      className="flex items-center gap-3 rounded-2xl px-4 py-3.5 transition-all duration-200"
+      style={{
+        background: done
+          ? `${CATEGORY_COLORS[habit.category] ?? '#f5c435'}10`
+          : required
+          ? `${CATEGORY_COLORS[habit.category] ?? '#f5c435'}06`
+          : 'rgba(255,255,255,0.02)',
+        border: done
+          ? `1px solid ${CATEGORY_COLORS[habit.category] ?? '#f5c435'}40`
+          : required
+          ? `1px solid ${CATEGORY_COLORS[habit.category] ?? '#f5c435'}30`
+          : '1px solid rgba(255,255,255,0.06)',
+      }}
+    >
+      {/* Required badge */}
+      {required && !done && (
+        <span
+          className="text-[7px] px-1.5 py-0.5 rounded font-black uppercase tracking-widest shrink-0"
+          style={{ background: `${CATEGORY_COLORS[habit.category] ?? '#f5c435'}20`, color: CATEGORY_COLORS[habit.category] ?? '#f5c435' }}
+        >
+          חובה
+        </span>
+      )}
+
+      {/* Check button */}
+      <button
+        onClick={onToggle}
+        className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200"
+        style={{
+          background:  done ? (CATEGORY_COLORS[habit.category] ?? '#f5c435') : 'transparent',
+          border:      `2px solid ${done ? (CATEGORY_COLORS[habit.category] ?? '#f5c435') : 'rgba(255,255,255,0.2)'}`,
+          boxShadow:   done ? `0 0 10px ${CATEGORY_COLORS[habit.category] ?? '#f5c435'}60` : 'none',
+        }}
+      >
+        {done && <span style={{ color: '#000', fontSize: 11, fontWeight: 900 }}>✓</span>}
+      </button>
+
+      {/* Content */}
+      <span className="text-xl shrink-0">{habit.emoji}</span>
+      <div className="flex-1 min-w-0" dir="rtl">
+        <p
+          className={`text-sm font-bold leading-tight ${done ? 'line-through' : ''}`}
+          style={{ color: done ? 'rgba(255,255,255,0.35)' : 'white' }}
+        >
+          {habit.title}
+        </p>
+        {!done && (
+          <p className="text-[10px] text-muted leading-relaxed mt-0.5">{habit.subtitle}</p>
+        )}
+      </div>
+
+      {/* Timer button */}
+      {habit.timerSec && !done && (
+        <button
+          onClick={onTimer}
+          className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+          style={{ background: `${color}15`, border: `1px solid ${color}35` }}
+        >
+          <Timer className="w-3.5 h-3.5" style={{ color }} strokeWidth={2} />
+        </button>
+      )}
+    </div>
+  )
+}
+
 // ─── Main ActionsScreen ───────────────────────────────────────────────────────
-export function ActionsScreen({ completedHabits, onToggle }: Props) {
+export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: Props) {
   const [timerHabit, setTimerHabit] = useState<Habit | null>(null)
 
   const toggle = (id: string) => {
@@ -134,140 +212,145 @@ export function ActionsScreen({ completedHabits, onToggle }: Props) {
     onToggle(next)
   }
 
-  const donePct = Math.round((completedHabits.length / HABITS.length) * 100)
+  const requiredDone  = requiredHabitIds.filter(id => completedHabits.includes(id)).length
+  const totalDone     = completedHabits.length
+  const donePct       = Math.round((totalDone / HABITS.length) * 100)
+  const requiredPct   = Math.round((requiredDone / requiredHabitIds.length) * 100)
 
-  const CATEGORY_LABELS: Record<string, string> = {
-    body: 'גוף', mind: 'מוח', growth: 'צמיחה', spirit: 'רוח', wealth: 'עושר',
-  }
+  const requiredHabits = requiredHabitIds
+    .map(id => HABITS.find(h => h.id === id))
+    .filter((h): h is Habit => h !== undefined)
 
-  // Group habits by category
-  const groups = (['body', 'mind', 'growth', 'spirit', 'wealth'] as const).map(cat => ({
-    cat,
-    habits: HABITS.filter(h => h.category === cat),
-  }))
+  const bonusHabits = HABITS.filter(h => !requiredHabitIds.includes(h.id))
 
   return (
     <div className="flex flex-col" style={{ minHeight: '100dvh', background: '#02020a' }}>
 
-      {/* Timer overlay */}
       {timerHabit && (
         <HabitTimerOverlay
           habit={timerHabit}
           onClose={() => setTimerHabit(null)}
-          onDone={() => {
-            toggle(timerHabit.id)
-            setTimerHabit(null)
-          }}
+          onDone={() => { toggle(timerHabit.id); setTimerHabit(null) }}
         />
       )}
 
       {/* Header */}
-      <div
-        className="shrink-0 px-6 pt-8 pb-5"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-      >
+      <div className="shrink-0 px-6 pt-8 pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <p className="text-[9px] tracking-[5px] uppercase text-muted mb-1">
           {new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
         <h1 className="font-display text-3xl md:text-4xl gold-text mb-4" dir="rtl">
-          פעולות היום
+          המשימות שלי
         </h1>
 
-        {/* Progress bar */}
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-2 rounded-full overflow-hidden"
-            style={{ background: 'rgba(255,255,255,0.06)' }}>
+        {/* Required progress */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[9px] uppercase tracking-widest font-bold" style={{ color: '#ef4444' }}>
+              חובה
+            </span>
+            <span className="text-sm font-black" style={{ color: requiredPct === 100 ? '#22c55e' : '#ef4444' }}>
+              {requiredDone}/{requiredHabitIds.length}
+            </span>
+          </div>
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
-                width: `${donePct}%`,
-                background: donePct === 100
+                width:      `${requiredPct}%`,
+                background: requiredPct === 100
                   ? 'linear-gradient(90deg,#22c55e,#4ade80)'
-                  : 'linear-gradient(90deg,#f5c435,#e8a020)',
-                boxShadow: donePct > 0 ? '0 0 10px rgba(245,196,53,0.4)' : 'none',
+                  : 'linear-gradient(90deg,#ef4444,#dc2626)',
+                boxShadow:  requiredDone > 0 ? '0 0 10px rgba(239,68,68,0.4)' : 'none',
               }}
             />
           </div>
-          <span
-            className="text-sm font-black shrink-0"
-            style={{ color: donePct === 100 ? '#22c55e' : '#f5c435' }}
-          >
-            {completedHabits.length}/{HABITS.length}
+        </div>
+
+        {/* Total progress */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width:      `${donePct}%`,
+                background: 'linear-gradient(90deg,#f5c435,#e8a020)',
+              }}
+            />
+          </div>
+          <span className="text-xs font-bold shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            {totalDone}/{HABITS.length} סה״כ
           </span>
         </div>
 
-        {donePct === 100 && (
+        {requiredPct === 100 && (
           <p className="text-xs font-bold mt-2" style={{ color: '#22c55e' }} dir="rtl">
-            ✓ יום מושלם! עשית הכל.
+            ✓ השלמת את כל משימות החובה! המשך לבונוס.
+          </p>
+        )}
+        {donePct === 100 && (
+          <p className="text-xs font-bold mt-1" style={{ color: '#22c55e' }} dir="rtl">
+            🔥 יום מושלם — עשית הכל!
           </p>
         )}
       </div>
 
-      {/* Habits list */}
+      {/* Habits */}
       <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5">
-        {groups.map(({ cat, habits }) => (
-          <div key={cat}>
-            <p
-              className="text-[8px] tracking-[3px] uppercase font-bold mb-2.5"
-              style={{ color: CATEGORY_COLORS[cat] }}
-              dir="rtl"
-            >
-              {CATEGORY_LABELS[cat]}
+
+        {/* ── REQUIRED ─────────────────────────────────────────────────── */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-[8px] tracking-[3px] uppercase font-bold" style={{ color: '#ef4444' }}>
+              חובה היום
             </p>
-            <div className="flex flex-col gap-2">
-              {habits.map(habit => {
-                const done  = completedHabits.includes(habit.id)
-                const color = CATEGORY_COLORS[habit.category]
-                return (
-                  <div
-                    key={habit.id}
-                    className="flex items-center gap-3 rounded-2xl px-4 py-3.5 transition-all duration-200"
-                    style={{
-                      background: done ? `${color}10` : 'rgba(255,255,255,0.02)',
-                      border: `1px solid ${done ? color + '40' : 'rgba(255,255,255,0.06)'}`,
-                    }}
-                  >
-                    {/* Check button */}
-                    <button
-                      onClick={() => toggle(habit.id)}
-                      className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200"
-                      style={{
-                        background: done ? color : 'transparent',
-                        border: `2px solid ${done ? color : 'rgba(255,255,255,0.2)'}`,
-                        boxShadow: done ? `0 0 10px ${color}60` : 'none',
-                      }}
-                    >
-                      {done && <span style={{ color: '#000', fontSize: 11, fontWeight: 900 }}>✓</span>}
-                    </button>
-
-                    {/* Content */}
-                    <span className="text-xl shrink-0">{habit.emoji}</span>
-                    <div className="flex-1 min-w-0" dir="rtl">
-                      <p className={`text-sm font-bold leading-tight ${done ? 'line-through' : ''}`}
-                        style={{ color: done ? 'rgba(255,255,255,0.35)' : 'white' }}>
-                        {habit.title}
-                      </p>
-                      {!done && (
-                        <p className="text-[10px] text-muted leading-relaxed mt-0.5">{habit.subtitle}</p>
-                      )}
-                    </div>
-
-                    {/* Timer button */}
-                    {habit.timerSec && !done && (
-                      <button
-                        onClick={() => setTimerHabit(habit)}
-                        className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center transition-all"
-                        style={{ background: `${color}15`, border: `1px solid ${color}35` }}
-                      >
-                        <Timer className="w-3.5 h-3.5" style={{ color }} strokeWidth={2} />
-                      </button>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
+            <span
+              className="text-[7px] px-1.5 py-0.5 rounded font-black uppercase tracking-widest"
+              style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}
+            >
+              אסור לדלג
+            </span>
           </div>
-        ))}
+          <div className="flex flex-col gap-2">
+            {requiredHabits.map(habit => (
+              <HabitRow
+                key={habit.id}
+                habit={habit}
+                done={completedHabits.includes(habit.id)}
+                required
+                onToggle={() => toggle(habit.id)}
+                onTimer={() => setTimerHabit(habit)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ── BONUS ────────────────────────────────────────────────────── */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-[8px] tracking-[3px] uppercase font-bold" style={{ color: '#f5c435' }}>
+              בונוס
+            </p>
+            <span
+              className="text-[7px] px-1.5 py-0.5 rounded font-black uppercase tracking-widest"
+              style={{ background: 'rgba(245,196,53,0.12)', color: '#f5c435' }}
+            >
+              כל אחת ששווה זהב
+            </span>
+          </div>
+          <div className="flex flex-col gap-2">
+            {bonusHabits.map(habit => (
+              <HabitRow
+                key={habit.id}
+                habit={habit}
+                done={completedHabits.includes(habit.id)}
+                required={false}
+                onToggle={() => toggle(habit.id)}
+                onTimer={() => setTimerHabit(habit)}
+              />
+            ))}
+          </div>
+        </div>
 
         <p className="text-[9px] text-muted text-center leading-relaxed pb-2" dir="rtl">
           לחץ על ✓ לסימון ידני · לחץ על ⏱ להפעלת טיימר מונחה
