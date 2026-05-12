@@ -182,6 +182,28 @@ export const CATEGORY_COLORS: Record<string, string> = {
   HABITS:     '#f5c435',
 }
 
+// ─── Daily Power Words ────────────────────────────────────────────────────────
+export const POWER_WORDS = [
+  'מיקוד', 'עוצמה', 'נצחון', 'כיבוש', 'בניה',
+  'הקדשה', 'פריצה', 'שליטה', 'התקדמות', 'עומק',
+  'קביעות', 'אומץ', 'משמעת', 'גדולה', 'פעולה',
+  'בהירות', 'זרימה', 'כוח', 'מהירות', 'ביצוע',
+]
+
+export function getTodayPowerWord(): string {
+  const d = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000)
+  return POWER_WORDS[d % POWER_WORDS.length]
+}
+
+// ─── Commander Rank ────────────────────────────────────────────────────────────
+export function getCommanderRank(streak: number): { rank: string; emoji: string; color: string } {
+  if (streak >= 30) return { rank: 'אלוף',   emoji: '⭐', color: '#f5c435' }
+  if (streak >= 14) return { rank: 'מפקד',   emoji: '🎖️', color: '#f5c435' }
+  if (streak >= 7)  return { rank: 'קצין',   emoji: '🏅', color: '#22c55e' }
+  if (streak >= 3)  return { rank: 'לוחם',   emoji: '⚔️', color: '#3b82f6' }
+  return                        { rank: 'טירון',  emoji: '🎯', color: '#ef4444' }
+}
+
 // ─── Rotation helpers ─────────────────────────────────────────────────────────
 export function getTodayIncantation(): string {
   const dayOfYear = Math.floor(

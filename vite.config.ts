@@ -35,8 +35,17 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+        globPatterns: ['**/*.{js,css,ico,png,svg,woff,woff2}'],
+        navigateFallback: null,
         runtimeCaching: [
+          {
+            urlPattern: /\/success-os\/(index\.html)?$/,
+            handler: 'NetworkFirst',
+            options: { cacheName: 'html-cache', networkTimeoutSeconds: 3 }
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',

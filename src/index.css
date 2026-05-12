@@ -7,6 +7,10 @@
 
   body {
     background-color: #02020a;
+    background-image:
+      linear-gradient(rgba(245,196,53,0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,196,53,0.028) 1px, transparent 1px);
+    background-size: 36px 36px;
     color: #f0eeff;
     font-family: 'Space Grotesk', sans-serif;
     -webkit-font-smoothing: antialiased;
