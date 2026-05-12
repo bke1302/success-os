@@ -34,7 +34,7 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
   return (
     <div
       className="flex flex-col"
-      style={{ minHeight: '100dvh', background: 'radial-gradient(ellipse at 50% 0%, #0d0d1a 0%, #02020a 60%)' }}
+      style={{ height: '100dvh', overflow: 'hidden', background: 'radial-gradient(ellipse at 50% 0%, #0d0d1a 0%, #02020a 60%)' }}
     >
       {/* Header */}
       <div

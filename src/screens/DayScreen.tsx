@@ -71,7 +71,8 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
     <div
       className="flex flex-col"
       style={{
-        minHeight: '100dvh',
+        height: '100dvh',
+        overflow: 'hidden',
         background: `
           radial-gradient(ellipse at 70% 0%, rgba(239,68,68,0.06) 0%, transparent 50%),
           radial-gradient(ellipse at 10% 90%, rgba(245,196,53,0.04) 0%, transparent 45%),
