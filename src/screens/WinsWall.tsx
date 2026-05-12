@@ -170,7 +170,7 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
                       {/* Identity badge */}
                       {entry.morning?.identity && (
                         <p className="text-[10px] font-bold mt-1" style={{ color: 'rgba(245,196,53,0.7)' }} dir="rtl">
-                          👑 {entry.morning.identity}
+                          📅 {entry.morning.identity}
                         </p>
                       )}
 

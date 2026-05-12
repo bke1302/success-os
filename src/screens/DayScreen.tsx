@@ -113,8 +113,8 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
           >
             <span className="text-2xl">👑</span>
             <div dir="rtl">
-              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-0.5">הזהות שלך היום</p>
-              <p className="text-lg font-black" style={{ color: '#f5c435' }}>אני {identity}</p>
+              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-0.5">תוכנית השבוע</p>
+              <p className="text-lg font-black" style={{ color: '#f5c435' }}>{identity}</p>
             </div>
           </div>
         )}

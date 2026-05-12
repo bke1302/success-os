@@ -48,7 +48,7 @@ export default function App() {
   ] as const
 
   return (
-    <div style={{ background: '#02020a', minHeight: '100dvh' }}>
+    <div style={{ background: '#080810', minHeight: '100dvh' }}>
 
       {/* ── PRIME ─────────────────────────────────────── */}
       {state.currentView === 'prime' && (
@@ -115,7 +115,7 @@ export default function App() {
         className="fixed bottom-0 left-0 right-0 flex items-center z-30"
         style={{
           height: '64px',
-          background: 'rgba(2,2,10,0.97)',
+          background: 'rgba(8,8,16,0.97)',
           backdropFilter: 'blur(24px)',
           borderTop: '1px solid rgba(255,255,255,0.06)',
           paddingBottom: 'env(safe-area-inset-bottom)',

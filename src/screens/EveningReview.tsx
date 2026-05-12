@@ -62,8 +62,8 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
           >
             <span className="text-xl">👑</span>
             <div dir="rtl">
-              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-0.5">הזהות שבחרת הבוקר</p>
-              <p className="text-sm font-bold" style={{ color: '#f5c435' }}>אני {identity}</p>
+              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-0.5">תוכנית השבוע</p>
+              <p className="text-sm font-bold" style={{ color: '#f5c435' }}>{identity}</p>
             </div>
           </div>
         )}
