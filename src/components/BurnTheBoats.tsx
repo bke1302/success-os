@@ -39,8 +39,12 @@ export function BurnTheBoats({ current, onSave, onClear }: Props) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="w-full rounded-2xl py-3.5 flex items-center justify-center gap-2 font-bold text-sm transition-all active:scale-[0.98]"
-        style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444' }}
+        className="w-full flex items-center justify-center gap-2"
+        style={{
+          padding: '14px 16px', fontWeight: 900, fontSize: 13,
+          background: 'transparent', border: '1px solid rgba(239,68,68,0.3)',
+          color: '#ef4444', cursor: 'pointer', borderRadius: 0,
+        }}
         dir="rtl"
       >
         <Flame className="w-4 h-4" />
@@ -51,62 +55,70 @@ export function BurnTheBoats({ current, onSave, onClear }: Props) {
 
   if (open && !current) {
     return (
-      <div className="rounded-2xl overflow-hidden animate-slide-up" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.25)' }}>
-        <div style={{ height: 2, background: 'linear-gradient(90deg,#ef4444,transparent)' }} />
-        <div className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Flame className="w-4 h-4" style={{ color: '#ef4444' }} />
-              <p className="text-[8px] tracking-[4px] uppercase font-black" style={{ color: '#ef4444' }}>BURN THE BOATS</p>
-            </div>
-            <button onClick={() => setOpen(false)}><X className="w-4 h-4 text-muted" /></button>
+      <div className="animate-slide-up" style={{ borderLeft: '3px solid #ef4444', paddingLeft: 14 }}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Flame className="w-4 h-4" style={{ color: '#ef4444' }} />
+            <p className="label-xs" style={{ color: '#ef4444' }}>BURN THE BOATS</p>
           </div>
-
-          <div className="flex flex-col gap-3">
-            <div>
-              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-1.5" dir="rtl">ההתחייבות הבלתי הפיכה</p>
-              <input
-                value={commitment}
-                onChange={e => { setCommitment(e.target.value); if(e.target.value.length===1) playCheck() }}
-                placeholder="מה אתה מתחייב להשיג?"
-                dir="rtl"
-                className="w-full rounded-xl px-4 py-3 text-sm font-semibold text-white outline-none"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(239,68,68,0.15)' }}
-              />
-            </div>
-            <div>
-              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-1.5" dir="rtl">התוצאה אם לא תעמוד בה</p>
-              <input
-                value={consequence}
-                onChange={e => setConsequence(e.target.value)}
-                placeholder="מה יקרה אם לא תעמוד? (תרומה, עונש, הכרזה)"
-                dir="rtl"
-                className="w-full rounded-xl px-4 py-3 text-sm font-semibold text-white outline-none"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(239,68,68,0.15)' }}
-              />
-            </div>
-            <div>
-              <p className="text-[8px] tracking-[3px] uppercase text-muted mb-1.5" dir="rtl">דדליין</p>
-              <input
-                type="date"
-                value={deadline}
-                onChange={e => setDeadline(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm font-semibold text-white outline-none"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(239,68,68,0.15)', colorScheme: 'dark' }}
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={handleSave}
-            disabled={!canSave}
-            className="mt-4 w-full py-3.5 rounded-xl font-black text-sm transition-all disabled:opacity-30"
-            style={{ background: 'linear-gradient(135deg,#ef4444,#dc2626)', color: '#fff' }}
-            dir="rtl"
-          >
-            🔥 שורפים את הספינות — אין חזרה
+          <button onClick={() => setOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4 }}>
+            <X className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
           </button>
         </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div>
+            <p className="label-xs mb-2" dir="rtl">ההתחייבות הבלתי הפיכה</p>
+            <input
+              value={commitment}
+              onChange={e => { setCommitment(e.target.value); if(e.target.value.length===1) playCheck() }}
+              placeholder="מה אתה מתחייב להשיג?"
+              dir="rtl"
+              style={{
+                width: '100%', padding: '12px 14px', fontSize: 14, fontWeight: 600,
+                background: '#111', border: '1px solid rgba(239,68,68,0.2)',
+                color: '#fff', outline: 'none', borderRadius: 0,
+              }}
+            />
+          </div>
+          <div>
+            <p className="label-xs mb-2" dir="rtl">התוצאה אם לא תעמוד בה</p>
+            <input
+              value={consequence}
+              onChange={e => setConsequence(e.target.value)}
+              placeholder="מה יקרה אם לא תעמוד? (תרומה, עונש, הכרזה)"
+              dir="rtl"
+              style={{
+                width: '100%', padding: '12px 14px', fontSize: 14, fontWeight: 600,
+                background: '#111', border: '1px solid rgba(239,68,68,0.2)',
+                color: '#fff', outline: 'none', borderRadius: 0,
+              }}
+            />
+          </div>
+          <div>
+            <p className="label-xs mb-2" dir="rtl">דדליין</p>
+            <input
+              type="date"
+              value={deadline}
+              onChange={e => setDeadline(e.target.value)}
+              style={{
+                width: '100%', padding: '12px 14px', fontSize: 14, fontWeight: 600,
+                background: '#111', border: '1px solid rgba(239,68,68,0.2)',
+                color: '#fff', outline: 'none', borderRadius: 0, colorScheme: 'dark',
+              }}
+            />
+          </div>
+        </div>
+
+        <button
+          onClick={handleSave}
+          disabled={!canSave}
+          className="btn-red w-full mt-4"
+          style={{ padding: '16px', fontSize: 14, borderRadius: 0 }}
+          dir="rtl"
+        >
+          🔥 שורפים את הספינות — אין חזרה
+        </button>
       </div>
     )
   }
@@ -116,36 +128,28 @@ export function BurnTheBoats({ current, onSave, onClear }: Props) {
     const urgent = days <= 7
 
     return (
-      <div className="rounded-2xl overflow-hidden animate-slide-up" style={{
-        background: urgent ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.02)',
-        border: `1px solid ${urgent ? 'rgba(239,68,68,0.35)' : 'rgba(239,68,68,0.18)'}`,
-        boxShadow: urgent ? '0 0 24px rgba(239,68,68,0.12)' : 'none',
-      }}>
-        <div style={{ height: 2, background: `linear-gradient(90deg,#ef4444,${urgent ? '#f97316' : 'transparent'})` }} />
-        <div className="p-4">
-          <div className="flex items-start justify-between gap-2 mb-3">
-            <div className="flex items-center gap-2">
-              <Lock className="w-3.5 h-3.5 shrink-0" style={{ color: '#ef4444' }} />
-              <p className="text-[7px] tracking-[4px] uppercase font-black" style={{ color: '#ef4444' }}>BURN THE BOATS</p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div
-                className="px-2 py-1 rounded-lg text-[8px] font-black"
-                style={{
-                  background: urgent ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)',
-                  color: urgent ? '#ef4444' : 'rgba(255,255,255,0.4)',
-                }}
-              >
-                {days} ימים
-              </div>
-              <button onClick={onClear} className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                <X className="w-3 h-3 text-muted" />
-              </button>
-            </div>
+      <div className="animate-slide-up" style={{ borderLeft: `3px solid ${urgent ? '#ef4444' : 'rgba(239,68,68,0.4)'}`, paddingLeft: 14 }}>
+        <div className="flex items-start justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <Lock className="w-3.5 h-3.5 shrink-0" style={{ color: '#ef4444' }} />
+            <p className="label-xs" style={{ color: '#ef4444' }}>BURN THE BOATS</p>
           </div>
-          <p className="text-base font-black text-white mb-1" dir="rtl">{current.commitment}</p>
-          <p className="text-xs text-sub" dir="rtl">⚠️ אחרת: {current.consequence}</p>
+          <div className="flex items-center gap-2">
+            <span className="label-xs" style={{ color: urgent ? '#ef4444' : 'rgba(255,255,255,0.4)', fontWeight: 900 }}>
+              {days} ימים
+            </span>
+            <button onClick={onClear} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2 }}>
+              <X className="w-3.5 h-3.5" style={{ color: 'rgba(255,255,255,0.3)' }} />
+            </button>
+          </div>
         </div>
+        <p style={{ fontSize: 15, fontWeight: 900, color: '#fff', lineHeight: 1.4, marginBottom: 6 }} dir="rtl">{current.commitment}</p>
+        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }} dir="rtl">⚠️ אחרת: {current.consequence}</p>
+        {urgent && (
+          <p style={{ fontSize: 11, fontWeight: 900, color: '#ef4444', marginTop: 8 }} dir="rtl">
+            ⏰ {days === 0 ? 'היום — הגיע הזמן!' : `נשארו ${days} ימים בלבד`}
+          </p>
+        )}
       </div>
     )
   }
