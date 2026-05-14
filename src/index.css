@@ -6,8 +6,8 @@
   *, *::before, *::after { box-sizing: border-box; }
 
   body {
-    background: #0a0a0a;
-    color: #ffffff;
+    background: #0a0a0f;
+    color: #e8e8f0;
     font-family: 'Space Grotesk', sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
@@ -30,7 +30,7 @@
 
   ::-webkit-scrollbar        { width: 2px; }
   ::-webkit-scrollbar-track  { background: transparent; }
-  ::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.15); }
+  ::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.12); }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; }
@@ -49,11 +49,6 @@
   to   { opacity: 1; }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-5px); }
-}
-
 @keyframes checkPop {
   0%   { transform: scale(0.6); }
   60%  { transform: scale(1.2); }
@@ -62,15 +57,14 @@
 
 @keyframes pulse-red {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.6; }
+  50%       { opacity: 0.5; }
 }
 
 /* ─── Utilities ─────────────────────────────────────────────────── */
 
 .animate-slide-up   { animation: slideUp 0.35s cubic-bezier(0.22,1,0.36,1) both; }
 .animate-fade-in    { animation: fadeIn 0.3s ease-out both; }
-.animate-float      { animation: float 3s ease-in-out infinite; }
-.animate-pulse-red  { animation: pulse-red 2s ease-in-out infinite; }
+.animate-pulse-red  { animation: pulse-red 1.5s ease-in-out infinite; }
 .animate-check-pop  { animation: checkPop 0.3s cubic-bezier(0.22,1,0.36,1); }
 
 .delay-0 { animation-delay: 0ms; }
@@ -79,86 +73,104 @@
 .delay-3 { animation-delay: 180ms; }
 .delay-4 { animation-delay: 240ms; }
 .delay-5 { animation-delay: 300ms; }
-.delay-6 { animation-delay: 360ms; }
 
-/* ─── Brutalist Design System ────────────────────────────────────── */
+/* ─── Design Tokens ──────────────────────────────────────────────── */
 
 @layer utilities {
 
-  /* Colors */
-  .text-muted  { color: rgba(255,255,255,0.3); }
-  .text-sub    { color: rgba(255,255,255,0.5); }
-  .text-red    { color: #ef4444; }
-  .text-gold   { color: #f5c435; }
-  .text-green  { color: #22c55e; }
-
-  /* Brutalist surfaces */
-  .surface      { background: #111111; }
-  .surface-2    { background: #161616; }
-
-  /* Borders */
-  .border-base   { border: 1px solid rgba(255,255,255,0.1); }
-  .border-strong { border: 1px solid rgba(255,255,255,0.22); }
-  .border-red    { border: 1px solid rgba(239,68,68,0.4); }
-  .border-gold   { border: 1px solid rgba(245,196,53,0.35); }
-
-  /* Left-bar accent (brutalist signature) */
-  .accent-left-red  { border-left: 3px solid #ef4444; }
-  .accent-left-gold { border-left: 3px solid #f5c435; }
-  .accent-left-green { border-left: 3px solid #22c55e; }
-
-  /* Divider */
-  .divider { height: 1px; background: rgba(255,255,255,0.1); }
-  .divider-strong { height: 1px; background: rgba(255,255,255,0.2); }
-
-  /* Label style */
+  /* Typography */
   .label-xs {
-    font-size: 9px;
-    letter-spacing: 4px;
+    font-size: 10px;
+    letter-spacing: 3px;
     text-transform: uppercase;
-    font-weight: 800;
-    color: rgba(255,255,255,0.3);
+    font-weight: 700;
+    color: #6b6b8a;
+  }
+
+  .font-display { font-family: 'Bebas Neue', sans-serif; }
+
+  /* Gold gradient text */
+  .gold-text {
+    background: linear-gradient(135deg, #f5c435, #ef4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Cards */
+  .card {
+    background: #12121a;
+    border: 1px solid #2a2a3d;
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .card-sm {
+    background: #1a1a28;
+    border: 1px solid #2a2a3d;
+    border-radius: 12px;
+    padding: 12px 16px;
   }
 
   /* Buttons */
   .btn-red {
     background: #ef4444;
     color: #fff;
-    font-weight: 900;
-    letter-spacing: 0.04em;
+    font-weight: 700;
     border: none;
+    border-radius: 12px;
     cursor: pointer;
-    transition: opacity 0.15s;
+    transition: opacity 0.15s, transform 0.1s;
+    font-family: 'Space Grotesk', sans-serif;
   }
-  .btn-red:active { opacity: 0.85; }
+  .btn-red:active  { opacity: 0.85; transform: scale(0.98); }
   .btn-red:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .btn-ghost {
+    background: transparent;
+    color: #6b6b8a;
+    font-weight: 600;
+    border: 1px solid #2a2a3d;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .btn-ghost:hover { border-color: #4a4a6a; color: #e8e8f0; }
 
   .btn-white {
     background: #fff;
     color: #000;
-    font-weight: 900;
-    letter-spacing: 0.04em;
+    font-weight: 700;
     border: none;
+    border-radius: 12px;
     cursor: pointer;
     transition: opacity 0.15s;
   }
-  .btn-ghost {
-    background: transparent;
-    color: rgba(255,255,255,0.5);
-    font-weight: 700;
-    border: 1px solid rgba(255,255,255,0.15);
-    cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
-  }
-  .btn-ghost:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
 
-  /* Gold text */
-  .gold-text {
-    background: linear-gradient(135deg,#f5c435,#e8a020);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  /* Input style */
+  .input-field {
+    width: 100%;
+    background: #1a1a28;
+    border: 1px solid #2a2a3d;
+    border-radius: 12px;
+    padding: 13px 16px;
+    color: #e8e8f0;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: border-color 0.15s;
   }
+  .input-field:focus { border-color: #4a4a6a; }
 
-  .font-display { font-family: 'Space Grotesk', sans-serif; font-weight: 900; }
+  /* Divider */
+  .divider { height: 1px; background: #2a2a3d; }
+
+  /* Text colors */
+  .text-muted  { color: #6b6b8a; }
+  .text-sub    { color: rgba(232,232,240,0.5); }
+  .text-red    { color: #ef4444; }
+  .text-gold   { color: #f5c435; }
+  .text-green  { color: #22c55e; }
 }

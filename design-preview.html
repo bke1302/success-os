@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUCCESS OS — Design Directions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; font-family: system-ui, sans-serif; color: #fff; min-height: 100vh; padding: 24px 16px; }
+
+  h1 { text-align: center; font-size: 13px; letter-spacing: 6px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 32px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 900px; margin: 0 auto; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+  .card { border-radius: 20px; overflow: hidden; aspect-ratio: 9/16; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
+  .label { position: absolute; top: 16px; right: 16px; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; font-weight: 800; }
+  .number { position: absolute; top: 16px; left: 16px; font-size: 11px; color: rgba(255,255,255,0.25); font-weight: 800; }
+
+  /* ─── 1. AURORA OS ─── */
+  .aurora {
+    background: #06060f;
+    position: relative;
+  }
+  .aurora::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.5) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(139,92,246,0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 10%, rgba(34,197,94,0.25) 0%, transparent 40%);
+    animation: auroraMove 6s ease-in-out infinite alternate;
+  }
+  @keyframes auroraMove {
+    0%   { opacity: 0.8; transform: scale(1) rotate(0deg); }
+    100% { opacity: 1;   transform: scale(1.05) rotate(1deg); }
+  }
+  .aurora-card {
+    position: relative; z-index: 1;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 12px;
+  }
+  .aurora-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .aurora-title { font-size: 22px; font-weight: 900; line-height: 1.1; }
+  .aurora-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+  .aurora-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-weight: 900;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative; z-index: 1;
+    box-shadow: 0 0 40px rgba(99,102,241,0.5);
+  }
+  /* gradient border */
+  .gb {
+    background: linear-gradient(#06060f, #06060f) padding-box,
+                linear-gradient(135deg, #6366f1, #8b5cf6, #34d399) border-box;
+    border: 1.5px solid transparent;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    position: relative; z-index: 1;
+  }
+  .gb-label { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: rgba(99,102,241,0.8); font-weight: 800; margin-bottom: 4px; }
+  .gb-val { font-size: 28px; font-weight: 900; background: linear-gradient(135deg,#a5b4fc,#34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+
+  /* ─── 2. BRUTALIST ─── */
+  .brutalist { background: #0a0a0a; border: 2px solid #fff; border-radius: 0 !important; }
+  .brutalist .label { color: #fff; }
+  .brut-hero { position: absolute; top: 50px; left: 16px; right: 16px; }
+  .brut-line { width: 100%; height: 2px; background: #fff; margin: 10px 0; }
+  .brut-big { font-size: 72px; font-weight: 900; line-height: 0.85; letter-spacing: -4px; text-transform: uppercase; color: #fff; }
+  .brut-red { color: #ef4444; }
+  .brut-tag { display: inline-block; border: 2px solid #ef4444; padding: 4px 8px; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #ef4444; font-weight: 900; margin-bottom: 8px; }
+  .brut-sub { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 1px; text-transform: uppercase; margin-top: 6px; }
+  .brut-btn {
+    width: 100%;
+    padding: 16px;
+    background: #ef4444;
+    border: none;
+    color: #fff;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 0 !important;
+  }
+  .brut-score { font-size: 100px; font-weight: 900; color: #fff; line-height: 1; position: absolute; right: 16px; top: 130px; opacity: 0.06; letter-spacing: -6px; }
+
+
+  /* ─── 3. SPATIAL GLASS ─── */
+  .spatial { background: radial-gradient(ellipse at 40% 0%, #1a0a2e 0%, #0a0514 60%, #02020a 100%); }
+  .spatial .label { color: rgba(245,196,53,0.7); }
+  .sp-panel {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 10px;
+    position: relative; z-index: 1;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  .sp-panel.gold { border-color: rgba(245,196,53,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 30px rgba(245,196,53,0.08); }
+  .sp-label { font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 6px; }
+  .sp-title { font-size: 18px; font-weight: 900; color: #fff; }
+  .sp-gold { font-size: 18px; font-weight: 900; background: linear-gradient(135deg,#f5c435,#e8a020); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .bento { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; position: relative; z-index: 1; }
+  .bento-cell {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .bento-cell.tall { grid-row: span 2; }
+  .bento-cell.gold-tint { border-color: rgba(245,196,53,0.15); background: rgba(245,196,53,0.04); }
+  .bento-num { font-size: 26px; font-weight: 900; color: #f5c435; line-height: 1; }
+  .bento-lbl { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.25); }
+  .sp-btn {
+    width: 100%; padding: 14px; border-radius: 14px; border: none;
+    background: linear-gradient(135deg,#f5c435,#e8a020); color: #000;
+    font-weight: 900; font-size: 13px; cursor: pointer;
+    box-shadow: 0 0 30px rgba(245,196,53,0.3);
+    position: relative; z-index: 1;
+  }
+  /* floating orb */
+  .orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(40px); pointer-events: none;
+  }
+  .orb1 { width: 200px; height: 200px; top: -60px; right: -40px; background: radial-gradient(circle, rgba(139,92,246,0.4), transparent); }
+  .orb2 { width: 150px; height: 150px; bottom: 80px; left: -30px; background: radial-gradient(circle, rgba(245,196,53,0.25), transparent); }
+
+
+  /* ─── 4. HOLOGRAPHIC TERMINAL ─── */
+  .terminal { background: #000; overflow: hidden; }
+  .terminal .label { color: #00ff9d; font-family: monospace; }
+  /* scanlines */
+  .terminal::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,157,0.015) 2px, rgba(0,255,157,0.015) 4px);
+  }
+  /* grid overlay */
+  .terminal::after {
+    content: '';
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background-image: linear-gradient(rgba(0,255,157,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,157,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .term-content { position: relative; z-index: 2; }
+  .term-header { font-family: monospace; font-size: 10px; color: rgba(0,255,157,0.4); letter-spacing: 2px; margin-bottom: 16px; border-left: 2px solid #00ff9d; padding-left: 8px; }
+  .term-big { font-family: monospace; font-size: 52px; font-weight: 900; color: #00ff9d; line-height: 0.9; text-shadow: 0 0 20px rgba(0,255,157,0.5); margin-bottom: 4px; }
+  .term-sub { font-family: monospace; font-size: 10px; color: rgba(0,255,157,0.35); letter-spacing: 2px; margin-bottom: 16px; }
+  .term-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,255,157,0.1); padding: 6px 0; margin-bottom: 4px; }
+  .term-k { font-family: monospace; font-size: 9px; color: rgba(0,255,157,0.4); text-transform: uppercase; letter-spacing: 2px; }
+  .term-v { font-family: monospace; font-size: 9px; color: #00ff9d; font-weight: 700; }
+  .term-btn {
+    width: 100%; padding: 14px; background: transparent; border: 1px solid #00ff9d;
+    color: #00ff9d; font-family: monospace; font-weight: 700; font-size: 12px;
+    letter-spacing: 3px; text-transform: uppercase; cursor: pointer;
+    box-shadow: 0 0 20px rgba(0,255,157,0.2), inset 0 0 20px rgba(0,255,157,0.05);
+    position: relative; z-index: 2;
+  }
+  .term-glow { position: absolute; bottom: 60px; left: 0; right: 0; height: 100px;
+    background: radial-gradient(ellipse at 50% 100%, rgba(0,255,157,0.15), transparent);
+    z-index: 2; pointer-events: none; }
+
+  .direction-label {
+    text-align: center; font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.2); margin-top: 10px; margin-bottom: 4px; font-weight: 700;
+  }
+
+  .pick-label {
+    text-align: center; font-size: 22px; font-weight: 900;
+    background: linear-gradient(135deg,#f5c435,#8b5cf6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-top: 32px; margin-bottom: 8px;
+  }
+  .pick-sub { text-align: center; font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 40px; }
+</style>
+</head>
+<body>
+
+<h1>SUCCESS OS — כיוון עיצוב</h1>
+
+<div class="grid">
+
+  <!-- 1. AURORA -->
+  <div>
+    <div class="card aurora">
+      <div class="label" style="color:rgba(99,102,241,0.9)">AURORA OS</div>
+      <div class="number">01</div>
+
+      <div class="gb">
+        <div class="gb-label">ציון גדילה</div>
+        <div class="gb-val">9.2</div>
+      </div>
+
+      <div class="aurora-card">
+        <div class="aurora-badge">PRIME ⚡</div>
+        <div class="aurora-title">יוצא לדרך</div>
+        <div class="aurora-sub">יום 47 · שבוע ייצור</div>
+      </div>
+
+      <button class="aurora-btn">יאללה 🚀</button>
+    </div>
+    <div class="direction-label">Aurora / Mesh Gradient</div>
+  </div>
+
+  <!-- 2. BRUTALIST -->
+  <div>
+    <div class="card brutalist">
+      <div class="label" style="color:#ef4444">BRUTALIST</div>
+      <div class="number" style="color:rgba(255,255,255,0.15)">02</div>
+
+      <div class="brut-hero">
+        <div class="brut-tag">יום 47</div>
+        <div class="brut-big">WIN<br><span class="brut-red">OR</span><br>DIE.</div>
+        <div class="brut-sub">מילת הכוח: מנצח</div>
+        <div class="brut-line"></div>
+      </div>
+
+      <div class="brut-score">9</div>
+
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">ההתחייבות</div>
+        <div style="font-size:15px;font-weight:900;color:#fff">סגור 3 לקוחות היום</div>
+      </div>
+      <button class="brut-btn">יוצא לדרך →</button>
+    </div>
+    <div class="direction-label">Brutalist Neo-Noir</div>
+  </div>
+
+  <!-- 3. SPATIAL -->
+  <div>
+    <div class="card spatial">
+      <div class="label">SPATIAL</div>
+      <div class="number">03</div>
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+
+      <div class="bento">
+        <div class="bento-cell gold-tint tall">
+          <div class="bento-lbl">Streak</div>
+          <div class="bento-num" style="font-size:40px">🔥<br>47</div>
+          <div class="bento-lbl" style="margin-top:auto">ימים</div>
+        </div>
+        <div class="bento-cell">
+          <div class="bento-lbl">ציון</div>
+          <div class="bento-num">9.2</div>
+        </div>
+        <div class="bento-cell">
+          <div class="bento-lbl">עמדתי</div>
+          <div class="bento-num" style="color:#22c55e">87%</div>
+        </div>
+      </div>
+
+      <div class="sp-panel gold">
+        <div class="sp-label">מילת הכוח</div>
+        <div class="sp-gold">מנצח</div>
+      </div>
+
+      <button class="sp-btn">יוצא לדרך 🚀</button>
+    </div>
+    <div class="direction-label">Spatial Glass + Bento</div>
+  </div>
+
+  <!-- 4. TERMINAL -->
+  <div>
+    <div class="card terminal">
+      <div class="label">TERMINAL</div>
+      <div class="number" style="color:rgba(0,255,157,0.2)">04</div>
+      <div class="term-glow"></div>
+
+      <div class="term-content">
+        <div class="term-header">[ SESSION_47 ] INITIALIZING...</div>
+        <div class="term-big">WIN<br>MODE</div>
+        <div class="term-sub">POWER_WORD: מנצח</div>
+
+        <div class="term-row">
+          <span class="term-k">STREAK</span>
+          <span class="term-v">47_DAYS 🔥</span>
+        </div>
+        <div class="term-row">
+          <span class="term-k">AVG_SCORE</span>
+          <span class="term-v">9.2 / 10</span>
+        </div>
+        <div class="term-row">
+          <span class="term-k">COMMITMENT</span>
+          <span class="term-v">LOCKED ✓</span>
+        </div>
+        <div style="height:12px"></div>
+        <button class="term-btn">[ EXECUTE_DAY ]</button>
+      </div>
+    </div>
+    <div class="direction-label">Holographic Terminal</div>
+  </div>
+
+</div>
+
+<div class="pick-label">איזה כיוון? 👇</div>
+<div class="pick-sub">שלח לי מספר (1-4) או combo — ואני בונה</div>
+
+</body>
+</html>

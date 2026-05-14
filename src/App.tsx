@@ -223,7 +223,7 @@ export default function App() {
 
       {/* ── Bottom nav ──────────────────────────────────────────────────── */}
       <nav className="fixed bottom-0 left-0 right-0 flex items-center z-30"
-        style={{ height: '64px', background: 'rgba(8,8,16,0.97)', backdropFilter: 'blur(24px)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        style={{ height: '64px', background: 'rgba(10,10,15,0.97)', backdropFilter: 'blur(20px)', borderTop: '1px solid #2a2a3d', paddingBottom: 'env(safe-area-inset-bottom)', padding: '0 8px' }}>
         {NAV.map(({ id, label, Icon, color }) => {
           const active = state.currentView === id
           return (
@@ -231,10 +231,13 @@ export default function App() {
               key={id}
               onClick={() => setView(id)}
               className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 transition-all duration-150 relative"
+              style={{ borderRadius: 10 }}
             >
-              <Icon className="w-4 h-4" strokeWidth={active ? 2 : 1.5} style={{ color: active ? color : '#4a4868' }} />
-              <span className="text-[6px] tracking-[1px] font-bold uppercase" style={{ color: active ? color : '#4a4868' }}>{label}</span>
-              {active && <div className="absolute bottom-0 w-6 h-0.5 rounded-t-full" style={{ background: color }} />}
+              {active && (
+                <div className="absolute inset-1" style={{ background: `${color}12`, borderRadius: 8 }} />
+              )}
+              <Icon className="w-4 h-4 relative" strokeWidth={active ? 2.5 : 1.5} style={{ color: active ? color : '#6b6b8a' }} />
+              <span className="text-[6px] tracking-[1px] font-bold uppercase relative" style={{ color: active ? color : '#6b6b8a' }}>{label}</span>
             </button>
           )
         })}
