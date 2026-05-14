@@ -11,10 +11,12 @@ import { InspireScreen }        from './screens/InspireScreen'
 import { WinsWall }             from './screens/WinsWall'
 import { FearFuelScreen }       from './screens/FearFuelScreen'
 import { WeeklyWarRoom }        from './screens/WeeklyWarRoom'
-import { MenuDrawer }           from './components/MenuDrawer'
+import { RightNav }             from './components/RightNav'
 import { BurnTheBoats }         from './components/BurnTheBoats'
 import { EnergyCheckinOverlay } from './components/EnergyCheckinOverlay'
 import type { EnergyCheckin }   from './types'
+
+const NAV_W = 62
 
 export default function App() {
   const {
@@ -22,12 +24,10 @@ export default function App() {
     saveMorning, saveEvening, saveHabits, saveEnergyCheckin,
     saveBurnTheBoats, clearBurnTheBoats,
     saveFearEntry, deleteFearEntry,
-    saveWeeklyPlan,
-    saveIncantation,
+    saveWeeklyPlan, saveIncantation,
     setView,
   } = useAppData()
 
-  const [menuOpen,      setMenuOpen]      = useState(false)
   const [forceEvening,  setForceEvening]  = useState(false)
   const [checkinPrompt, setCheckinPrompt] = useState<EnergyCheckin['label'] | null>(null)
 
@@ -48,17 +48,15 @@ export default function App() {
   useEffect(() => {
     if (!('Notification' in window)) return
     const schedule = (label: EnergyCheckin['label'], hour: number, minute: number) => {
-      const now  = new Date()
-      const fire = new Date()
+      const now = new Date(), fire = new Date()
       fire.setHours(hour, minute, 0, 0)
       if (fire <= now) return
-      const delay = fire.getTime() - now.getTime()
       const tid = window.setTimeout(() => {
         const todayCheckins = state.entries
           .find(e => e.date === new Date().toISOString().slice(0, 10))
           ?.energyCheckins ?? []
         if (!todayCheckins.find(c => c.label === label)) setCheckinPrompt(label)
-      }, delay)
+      }, fire.getTime() - now.getTime())
       return tid
     }
     const ids = [schedule('midday', 12, 0), schedule('afternoon', 16, 0)].filter(Boolean)
@@ -81,27 +79,23 @@ export default function App() {
   }
   const screen = primeScreen()
 
-  const handleNavigate = (v: typeof state.currentView) => {
-    setMenuOpen(false)
-    setView(v)
-  }
-
-  const isSubView = state.currentView !== 'home' && state.currentView !== 'prime'
+  // Back button: prime/sub-views go back to home
+  const canGoBack = state.currentView !== 'home'
 
   return (
-    <div style={{ background: '#080810', height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ background: '#000', height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
       {/* Partner banner */}
       {partnerData && (
-        <div className="shrink-0 px-4 py-2 flex items-center justify-center gap-3" style={{ background: 'rgba(99,102,241,0.12)', borderBottom: '1px solid rgba(99,102,241,0.25)' }}>
-          <span className="text-sm">👥</span>
-          <p className="text-xs font-bold" style={{ color: 'rgba(167,170,255,0.9)' }} dir="rtl">
-            השותף שלך: {partnerData.streak} 🔥 streak · {partnerData.totalDays} ימים · ממוצע {partnerData.avgScore}
+        <div style={{ flexShrink: 0, padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'rgba(10,132,255,.1)', borderBottom: '1px solid rgba(10,132,255,.2)', marginRight: NAV_W }}>
+          <span>👥</span>
+          <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(167,170,255,.9)' }} dir="rtl">
+            השותף שלך: {partnerData.streak} 🔥 · {partnerData.totalDays} ימים · ממוצע {partnerData.avgScore}
           </p>
         </div>
       )}
 
-      {/* Energy check-in overlay */}
+      {/* Energy overlay */}
       {checkinPrompt && (
         <EnergyCheckinOverlay
           label={checkinPrompt}
@@ -110,30 +104,58 @@ export default function App() {
         />
       )}
 
-      {/* Menu drawer */}
-      {menuOpen && (
-        <MenuDrawer
-          currentView={state.currentView}
-          onNavigate={handleNavigate}
-          onClose={() => setMenuOpen(false)}
-        />
+      {/* Right nav — always visible */}
+      <RightNav current={state.currentView} onChange={v => { setView(v); setForceEvening(false) }} />
+
+      {/* Back bar — shown on prime + sub-views */}
+      {canGoBack && (
+        <div style={{
+          flexShrink: 0,
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '12px 18px',
+          background: 'rgba(8,8,8,.97)',
+          borderBottom: '1px solid rgba(255,255,255,.07)',
+          marginRight: NAV_W,
+        }}>
+          <button
+            onClick={() => { setView('home'); setForceEvening(false) }}
+            style={{
+              background: 'rgba(255,255,255,.04)',
+              border: '1px solid rgba(255,255,255,.12)',
+              borderRadius: 10, width: 36, height: 36,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: 'rgba(255,255,255,.58)',
+              fontSize: 16, fontWeight: 700,
+            }}>
+            ←
+          </button>
+          <span style={{
+            fontSize: 12, fontWeight: 700, letterSpacing: '1.5px',
+            color: 'rgba(255,255,255,.3)', textTransform: 'uppercase',
+            fontFamily: 'Barlow Condensed, sans-serif',
+          }}>
+            {state.currentView === 'prime' && 'PRIME'}
+            {state.currentView === 'actions' && 'ACTIONS'}
+            {state.currentView === 'inspire' && 'INSPIRE'}
+            {state.currentView === 'wins' && 'GROWTH'}
+            {state.currentView === 'fear' && 'FEAR'}
+            {state.currentView === 'weekly' && 'WAR ROOM'}
+          </span>
+        </div>
       )}
 
-      {/* Screens */}
-      <div className="flex-1 overflow-hidden">
+      {/* Content */}
+      <div style={{ flex: 1, overflow: 'hidden', marginRight: NAV_W }}>
 
-        {/* HOME */}
         {state.currentView === 'home' && (
           <HomeScreen
             dayCount={dayCount}
             streak={state.streak}
             today={today}
             onStart={() => setView('prime')}
-            onOpenMenu={() => setMenuOpen(true)}
           />
         )}
 
-        {/* PRIME */}
         {state.currentView === 'prime' && (
           <>
             {screen === 'morning' && (
@@ -178,56 +200,40 @@ export default function App() {
           </>
         )}
 
-        {/* SUB-VIEWS with back header */}
-        {isSubView && (
-          <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div className="shrink-0 flex items-center gap-3"
-              style={{ padding: '16px 20px', borderBottom: '1px solid #2a2a3d', background: '#0a0a0f' }}>
-              <button
-                onClick={() => setView('home')}
-                style={{ background: 'transparent', border: '1px solid #2a2a3d', borderRadius: 10, width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b6b8a', fontSize: 18 }}>
-                ←
-              </button>
-              <button
-                onClick={() => setMenuOpen(true)}
-                style={{ background: 'transparent', border: '1px solid #2a2a3d', borderRadius: 10, padding: '6px 14px', cursor: 'pointer', color: '#6b6b8a', fontSize: 10, fontWeight: 700, letterSpacing: '2px' }}>
-                MENU
-              </button>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              {state.currentView === 'actions' && (
-                <ActionsScreen
-                  completedHabits={today?.habits ?? []}
-                  onToggle={saveHabits}
-                  requiredHabitIds={requiredHabitIds}
-                />
-              )}
-              {state.currentView === 'inspire' && <InspireScreen />}
-              {state.currentView === 'wins' && (
-                <WinsWall entries={state.entries} streak={state.streak} totalDays={state.totalDays} />
-              )}
-              {state.currentView === 'fear' && (
-                <FearFuelScreen
-                  entries={state.fearEntries ?? []}
-                  onSave={saveFearEntry}
-                  onDelete={deleteFearEntry}
-                />
-              )}
-              {state.currentView === 'weekly' && (
-                <WeeklyWarRoom
-                  entries={state.entries}
-                  plans={state.weeklyPlans ?? []}
-                  onSave={saveWeeklyPlan}
-                />
-              )}
-            </div>
-          </div>
+        {state.currentView === 'actions' && (
+          <ActionsScreen
+            completedHabits={today?.habits ?? []}
+            onToggle={saveHabits}
+            requiredHabitIds={requiredHabitIds}
+          />
+        )}
+
+        {state.currentView === 'inspire' && <InspireScreen />}
+
+        {state.currentView === 'wins' && (
+          <WinsWall entries={state.entries} streak={state.streak} totalDays={state.totalDays} />
+        )}
+
+        {state.currentView === 'fear' && (
+          <FearFuelScreen
+            entries={state.fearEntries ?? []}
+            onSave={saveFearEntry}
+            onDelete={deleteFearEntry}
+          />
+        )}
+
+        {state.currentView === 'weekly' && (
+          <WeeklyWarRoom
+            entries={state.entries}
+            plans={state.weeklyPlans ?? []}
+            onSave={saveWeeklyPlan}
+          />
         )}
       </div>
 
-      {/* Burn the Boats floating */}
+      {/* Burn the Boats */}
       {state.currentView === 'prime' && screen === 'day' && (
-        <div style={{ position: 'fixed', bottom: 24, left: 16, right: 16, zIndex: 20 }}>
+        <div style={{ position: 'fixed', bottom: 20, left: 16, right: NAV_W + 16, zIndex: 20 }}>
           <BurnTheBoats
             current={state.burnTheBoats}
             onSave={saveBurnTheBoats}
