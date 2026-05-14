@@ -11,7 +11,7 @@ export function todayKey(): string {
 }
 
 function initialState(): AppState {
-  return { entries: [], streak: 0, totalDays: 0, currentView: 'prime' }
+  return { entries: [], streak: 0, totalDays: 0, currentView: 'home' }
 }
 
 function loadState(): AppState {
