@@ -35,7 +35,7 @@ function HabitTimerOverlay({ habit, onClose, onDone }: { habit: Habit; onClose: 
   const color = CATEGORY_COLORS[habit.category] ?? '#ef4444'
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center px-6" style={{ background: '#0a0a0f' }}>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center px-6" style={{ background: '#000' }}>
       <button onClick={onClose} className="absolute top-6 right-6 btn-ghost" style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <X className="w-4 h-4" />
       </button>
@@ -49,7 +49,7 @@ function HabitTimerOverlay({ habit, onClose, onDone }: { habit: Habit; onClose: 
           <circle cx={70} cy={70} r={54} fill="none" stroke={color} strokeWidth={6} strokeLinecap="round"
             strokeDasharray={circ} strokeDashoffset={circ * (1 - pct)} transform="rotate(-90 70 70)"
             style={{ transition: 'stroke-dashoffset 1s linear' }} />
-          <text x={70} y={65} textAnchor="middle" fill="#e8e8f0" fontSize={done ? 30 : 36} fontWeight={900} fontFamily="'Bebas Neue',sans-serif">
+          <text x={70} y={65} textAnchor="middle" fill="#e8e8f0" fontSize={done ? 30 : 36} fontWeight={900} fontFamily="'Barlow Condensed',sans-serif">
             {done ? '✓' : `${mins}:${String(secs).padStart(2,'0')}`}
           </text>
           {!done && <text x={70} y={85} textAnchor="middle" fill="#6b6b8a" fontSize={11} fontFamily="sans-serif">
@@ -63,7 +63,7 @@ function HabitTimerOverlay({ habit, onClose, onDone }: { habit: Habit; onClose: 
         )}
         {started && !done && (
           <div style={{ width: '100%', padding: '16px', textAlign: 'center', fontWeight: 700, color, background: `${color}15`, border: `1px solid ${color}40`, borderRadius: 12 }} dir="rtl">
-            ⏱ רץ... תישאר עם זה
+            רץ... תישאר עם זה
           </div>
         )}
         {done && (
@@ -96,7 +96,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
   const bonus    = HABITS.filter(h => !requiredHabitIds.includes(h.id))
 
   return (
-    <div style={{ height: '100dvh', overflow: 'hidden', background: '#0a0a0f', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100%', overflow: 'hidden', background: '#000', display: 'flex', flexDirection: 'column' }}>
 
       {timerHabit && (
         <HabitTimerOverlay habit={timerHabit} onClose={() => setTimerHabit(null)}
@@ -104,7 +104,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
       )}
 
       {/* Header */}
-      <div className="shrink-0 animate-fade-in" style={{ padding: '28px 20px 20px', borderBottom: '1px solid #2a2a3d' }}>
+      <div className="shrink-0 animate-fade-in" style={{ padding: '28px 20px 20px', borderBottom: '1px solid rgba(255,255,255,.09)' }}>
         <div className="flex items-end justify-between mb-5">
           <div>
             <p className="label-xs mb-2">{new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
@@ -171,7 +171,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
                 </div>
                 {habit.timerSec && !done && (
                   <button onClick={() => setTimerHabit(habit)}
-                    style={{ width: 32, height: 32, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1a1a28', border: '1px solid #2a2a3d', cursor: 'pointer', borderRadius: 8 }}>
+                    style={{ width: 32, height: 32, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: '1px solid #2a2a3d', cursor: 'pointer', borderRadius: 8 }}>
                     <Timer className="w-3.5 h-3.5" style={{ color: '#6b6b8a' }} />
                   </button>
                 )}

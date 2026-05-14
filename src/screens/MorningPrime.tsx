@@ -39,7 +39,7 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
 
   return (
     <div>
-      <p className="label-xs mb-3" dir="rtl">🎙 הצהרה בקולך</p>
+      <p className="label-xs mb-3" dir="rtl">הצהרה בקולך</p>
       <div className="flex items-center gap-2">
         {!recording ? (
           <button onClick={startRec}
@@ -100,10 +100,10 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
   }
 
   return (
-    <div style={{ height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#0a0a0f' }}>
+    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#000' }}>
 
       {/* ── TOP BAR ─────────────────────────────────────────────── */}
-      <div className="shrink-0 animate-fade-in" style={{ padding: '24px 20px 20px', borderBottom: '1px solid #2a2a3d' }}>
+      <div className="shrink-0 animate-fade-in" style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,.09)' }}>
         <div className="flex items-start justify-between">
 
           {/* Left: day + week dots */}
@@ -155,7 +155,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
         {/* Coach */}
         <div className="animate-slide-up delay-1 card mb-4" style={{ borderLeft: `3px solid ${accentColor}` }}>
           <p className="label-xs mb-2" style={{ color: accentColor }}>
-            {coach.tone === 'fire' ? '🔥' : coach.tone === 'green' ? '⚡' : '💎'} הודעה מהמאמן
+            הודעה מהמאמן
           </p>
           <p style={{ fontSize: 18, fontWeight: 900, color: '#e8e8f0', lineHeight: 1.25, marginBottom: 8 }} dir="rtl">
             {coach.title}
@@ -174,8 +174,8 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
                 style={{
                   animationDelay: `${200 + i * 60}ms`, animationFillMode: 'both',
                   display: 'flex', alignItems: 'center', gap: 14,
-                  padding: '12px 14px', background: '#1a1a28',
-                  border: '1px solid #2a2a3d', borderRadius: 10,
+                  padding: '12px 14px', background: 'rgba(255,255,255,.04)',
+                  border: '1px solid rgba(255,255,255,.09)', borderRadius: 10,
                   borderLeft: `3px solid ${accentColor}`,
                 }}>
                 <span style={{ fontSize: 10, fontWeight: 900, color: accentColor, minWidth: 16, textAlign: 'center' }}>{i + 1}</span>
@@ -191,7 +191,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
 
         {/* THE ONE THING */}
         <div className="animate-slide-up delay-3 card mb-4">
-          <p className="label-xs mb-1" style={{ color: '#f5c435' }}>⭐ THE ONE THING</p>
+          <p className="label-xs mb-1" style={{ color: '#f5c435' }}>THE ONE THING</p>
           <p style={{ fontSize: 12, color: '#6b6b8a', marginBottom: 12, lineHeight: 1.5 }} dir="rtl">
             מה הדבר האחד שאם תעשה אותו — הכל אחר יהיה קל יותר?
           </p>
@@ -227,7 +227,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
       {/* ── CTA ──────────────────────────────────────────────────── */}
       <div className="shrink-0" style={{
         padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
-        borderTop: '1px solid #2a2a3d', background: '#0a0a0f',
+        borderTop: '1px solid rgba(255,255,255,.09)', background: '#000',
       }}>
         <button onClick={handleStart} dir="rtl"
           className="btn-red w-full flex items-center justify-center gap-3"

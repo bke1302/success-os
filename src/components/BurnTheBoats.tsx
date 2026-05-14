@@ -30,37 +30,45 @@ export function BurnTheBoats({ current, onSave, onClear }: Props) {
 
   if (!current && !open) {
     return (
-      <button onClick={() => setOpen(true)} className="w-full flex items-center justify-center gap-2"
-        style={{ padding: '13px 16px', fontWeight: 900, fontSize: 13, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#ef4444', cursor: 'pointer', borderRadius: 12 }} dir="rtl">
-        <Flame className="w-4 h-4" />שרוף את הספינות — התחייב
+      <button onClick={() => setOpen(true)} className="w-full"
+        style={{ padding: '13px 16px', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: 13,
+          letterSpacing: '.5px', textTransform: 'uppercase',
+          background: 'rgba(255,55,95,.07)', border: '1px solid rgba(255,55,95,.2)',
+          color: '#FF375F', cursor: 'pointer', borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }} dir="rtl">
+        <Flame className="w-4 h-4" /> BURN THE BOATS — התחייב
       </button>
     )
   }
 
   if (open && !current) {
     return (
-      <div className="animate-slide-up card" style={{ borderLeft: '3px solid #ef4444', background: '#12121a' }}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Flame className="w-4 h-4" style={{ color: '#ef4444' }} />
-            <p className="label-xs" style={{ color: '#ef4444' }}>BURN THE BOATS</p>
+      <div className="animate-slide-up card" style={{ borderRight: '3px solid #FF375F' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Flame className="w-4 h-4" style={{ color: '#FF375F' }} />
+            <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: '2px', color: '#FF375F', textTransform: 'uppercase' }}>BURN THE BOATS</p>
           </div>
           <button onClick={() => setOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X className="w-4 h-4" style={{ color: '#6b6b8a' }} />
+            <X className="w-4 h-4" style={{ color: 'rgba(255,255,255,.38)' }} />
           </button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <input value={commitment} onChange={e => { setCommitment(e.target.value); if(e.target.value.length===1) playCheck() }}
             placeholder="מה אתה מתחייב להשיג?" dir="rtl"
-            style={{ width: '100%', padding: '12px 14px', fontSize: 14, fontWeight: 600, background: '#1a1a28', border: '1px solid rgba(239,68,68,0.2)', color: '#e8e8f0', outline: 'none', borderRadius: 10 }} />
+            style={{ width: '100%', padding: '12px 14px', fontFamily: "'Heebo', sans-serif", fontSize: 14, fontWeight: 500,
+              background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,55,95,.2)', color: '#f2f2f7', outline: 'none', borderRadius: 10 }} />
           <input value={consequence} onChange={e => setConsequence(e.target.value)}
-            placeholder="מה יקרה אם לא תעמוד? (תרומה, עונש, הכרזה)" dir="rtl"
-            style={{ width: '100%', padding: '12px 14px', fontSize: 14, fontWeight: 600, background: '#1a1a28', border: '1px solid rgba(239,68,68,0.2)', color: '#e8e8f0', outline: 'none', borderRadius: 10 }} />
+            placeholder="מה יקרה אם לא תעמוד?" dir="rtl"
+            style={{ width: '100%', padding: '12px 14px', fontFamily: "'Heebo', sans-serif", fontSize: 14, fontWeight: 500,
+              background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,55,95,.2)', color: '#f2f2f7', outline: 'none', borderRadius: 10 }} />
           <input type="date" value={deadline} onChange={e => setDeadline(e.target.value)}
-            style={{ width: '100%', padding: '12px 14px', fontSize: 14, fontWeight: 600, background: '#1a1a28', border: '1px solid rgba(239,68,68,0.2)', color: '#e8e8f0', outline: 'none', borderRadius: 10, colorScheme: 'dark' }} />
+            style={{ width: '100%', padding: '12px 14px', fontFamily: "'Heebo', sans-serif", fontSize: 14, fontWeight: 500,
+              background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,55,95,.2)', color: '#f2f2f7', outline: 'none', borderRadius: 10, colorScheme: 'dark' }} />
         </div>
-        <button onClick={handleSave} disabled={!canSave} className="btn-red w-full mt-4" style={{ padding: '15px', fontSize: 14 }} dir="rtl">
-          🔥 שורפים את הספינות — אין חזרה
+        <button onClick={handleSave} disabled={!canSave} className="btn-red w-full mt-4"
+          style={{ padding: '15px', fontFamily: "'Frank Ruhl Libre', Georgia, serif", fontSize: 15 }} dir="rtl">
+          שורפים את הספינות — אין חזרה
         </button>
       </div>
     )
@@ -70,22 +78,22 @@ export function BurnTheBoats({ current, onSave, onClear }: Props) {
     const days = daysLeft(current.deadline)
     const urgent = days <= 7
     return (
-      <div className="animate-slide-up card" style={{ borderLeft: `3px solid ${urgent ? '#ef4444' : 'rgba(239,68,68,0.4)'}`, background: urgent ? 'rgba(239,68,68,0.06)' : '#12121a' }}>
-        <div className="flex items-start justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2">
-            <Lock className="w-3.5 h-3.5 shrink-0" style={{ color: '#ef4444' }} />
-            <p className="label-xs" style={{ color: '#ef4444' }}>BURN THE BOATS</p>
+      <div className="animate-slide-up card" style={{ borderRight: `3px solid ${urgent ? '#FF375F' : 'rgba(255,55,95,.3)'}`, background: urgent ? 'rgba(255,55,95,.05)' : 'rgba(255,255,255,.04)' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Lock className="w-3.5 h-3.5 shrink-0" style={{ color: '#FF375F' }} />
+            <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '2px', color: '#FF375F', textTransform: 'uppercase' }}>BURN THE BOATS</p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="label-xs" style={{ color: urgent ? '#ef4444' : '#6b6b8a', fontWeight: 900 }}>{days} ימים</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 900, color: urgent ? '#FF375F' : 'rgba(255,255,255,.38)' }}>{days} ימים</span>
             <button onClick={onClear} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2 }}>
-              <X className="w-3.5 h-3.5" style={{ color: '#6b6b8a' }} />
+              <X className="w-3.5 h-3.5" style={{ color: 'rgba(255,255,255,.38)' }} />
             </button>
           </div>
         </div>
-        <p style={{ fontSize: 15, fontWeight: 900, color: '#e8e8f0', lineHeight: 1.4, marginBottom: 6 }} dir="rtl">{current.commitment}</p>
-        <p style={{ fontSize: 12, color: '#6b6b8a', lineHeight: 1.5 }} dir="rtl">⚠️ אחרת: {current.consequence}</p>
-        {urgent && <p style={{ fontSize: 11, fontWeight: 900, color: '#ef4444', marginTop: 8 }} dir="rtl">⏰ {days === 0 ? 'היום!' : `נשארו ${days} ימים`}</p>}
+        <p style={{ fontFamily: "'Frank Ruhl Libre', Georgia, serif", fontSize: 16, fontWeight: 700, color: '#f2f2f7', lineHeight: 1.4, marginBottom: 6 }} dir="rtl">{current.commitment}</p>
+        <p style={{ fontFamily: "'Heebo', sans-serif", fontSize: 12, color: 'rgba(255,255,255,.38)', lineHeight: 1.5 }} dir="rtl">אחרת: {current.consequence}</p>
+        {urgent && <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12, fontWeight: 900, color: '#FF375F', marginTop: 8, letterSpacing: '.5px' }} dir="rtl">{days === 0 ? 'היום!' : `נשארו ${days} ימים`}</p>}
       </div>
     )
   }

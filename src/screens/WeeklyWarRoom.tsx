@@ -35,53 +35,53 @@ export function WeeklyWarRoom({ entries, plans, onSave }: Props) {
   const weekLabel = new Date().toLocaleDateString('he-IL',{day:'numeric',month:'long'})
 
   return (
-    <div style={{ height:'100dvh', overflow:'hidden', background:'#0a0a0f', display:'flex', flexDirection:'column' }}>
-      <div className="shrink-0" style={{ padding:'24px 20px 20px', borderBottom:'1px solid #2a2a3d' }}>
-        <p className="label-xs mb-2" style={{ color:'rgba(249,115,22,0.7)' }}>WEEKLY WAR ROOM</p>
-        <h1 style={{ fontSize:26, fontWeight:900, color:'#e8e8f0' }} dir="rtl">חדר המלחמה</h1>
-        <p style={{ fontSize:12, color:'#6b6b8a', marginTop:4 }} dir="rtl">שבוע {weekLabel}</p>
+    <div style={{ height:'100%', overflow:'hidden', background:'#000', display:'flex', flexDirection:'column' }}>
+      <div className="shrink-0" style={{ padding:'24px 20px 20px', borderBottom:'1px solid rgba(255,255,255,.09)' }}>
+        <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'rgba(255,159,10,.7)', textTransform:'uppercase', marginBottom:6 }}>WEEKLY WAR ROOM</p>
+        <h1 style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:26, fontWeight:900, color:'#f2f2f7' }} dir="rtl">חדר המלחמה</h1>
+        <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color:'rgba(255,255,255,.38)', marginTop:4 }} dir="rtl">שבוע {weekLabel}</p>
       </div>
 
       <div className="flex-1 overflow-y-auto" style={{ padding:'20px 20px 32px' }}>
-
-        {/* Wins */}
-        <div className="card mb-4" style={{ borderLeft:'3px solid #22c55e' }}>
-          <p className="label-xs mb-4" style={{ color:'#22c55e' }}>3 ניצחונות השבוע שעבר</p>
+        <div className="card mb-4" style={{ borderRight:'3px solid #30D158' }}>
+          <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'#30D158', textTransform:'uppercase', marginBottom:16 }}>3 ניצחונות השבוע שעבר</p>
           {([0,1,2] as const).map(i => (
-            <div key={i} className="flex items-center gap-3 mb-3">
-              <span style={{ fontSize:11, fontWeight:900, color:'#22c55e', minWidth:16 }}>{i+1}</span>
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10 }}>
+              <span style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:11, fontWeight:900, color:'#30D158', minWidth:16 }}>{i+1}</span>
               <input value={wins[i]} onChange={e => { updateWin(i,e.target.value); if(e.target.value.length===1) playCheck() }}
                 placeholder={`ניצחון ${i+1}…`} dir="rtl"
-                style={{ flex:1, padding:'11px 14px', background:'#1a1a28', border:`1px solid ${wins[i].trim()?'rgba(34,197,94,0.3)':'#2a2a3d'}`, color:'#e8e8f0', fontSize:14, fontWeight:600, outline:'none', borderRadius:10 }} />
+                style={{ flex:1, padding:'11px 14px', fontFamily:"'Heebo', sans-serif", background:'rgba(255,255,255,.04)',
+                  border:`1px solid ${wins[i].trim()?'rgba(48,209,88,.3)':'rgba(255,255,255,.09)'}`,
+                  color:'#f2f2f7', fontSize:14, fontWeight:500, outline:'none', borderRadius:10 }} />
             </div>
           ))}
         </div>
 
-        {/* Goals */}
-        <div className="card mb-4" style={{ borderLeft:'3px solid #f5c435' }}>
-          <p className="label-xs mb-2" style={{ color:'#f5c435' }}>3 מטרות לשבוע הבא</p>
-          <p style={{ fontSize:12, color:'#6b6b8a', marginBottom:16, lineHeight:1.5 }} dir="rtl">מה 3 הדברים שאם תעשה אותם — השבוע הזה יהיה ניצחון?</p>
+        <div className="card mb-4" style={{ borderRight:'3px solid #FFD60A' }}>
+          <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'#FFD60A', textTransform:'uppercase', marginBottom:6 }}>3 מטרות לשבוע הבא</p>
+          <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color:'rgba(255,255,255,.38)', marginBottom:16, lineHeight:1.5 }} dir="rtl">מה 3 הדברים שאם תעשה אותם — השבוע הזה יהיה ניצחון?</p>
           {([0,1,2] as const).map(i => (
-            <div key={i} className="flex items-center gap-3 mb-3">
-              <span style={{ fontSize:11, fontWeight:900, color:'#f5c435', minWidth:16 }}>{i+1}</span>
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10 }}>
+              <span style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:11, fontWeight:900, color:'#FFD60A', minWidth:16 }}>{i+1}</span>
               <input value={goals[i]} onChange={e => { updateGoal(i,e.target.value); if(e.target.value.length===1) playCheck() }}
                 placeholder={`מטרה ${i+1}…`} dir="rtl"
-                style={{ flex:1, padding:'11px 14px', background:'#1a1a28', border:`1px solid ${goals[i].trim()?'rgba(245,196,53,0.3)':'#2a2a3d'}`, color:'#e8e8f0', fontSize:14, fontWeight:600, outline:'none', borderRadius:10 }} />
+                style={{ flex:1, padding:'11px 14px', fontFamily:"'Heebo', sans-serif", background:'rgba(255,255,255,.04)',
+                  border:`1px solid ${goals[i].trim()?'rgba(255,214,10,.3)':'rgba(255,255,255,.09)'}`,
+                  color:'#f2f2f7', fontSize:14, fontWeight:500, outline:'none', borderRadius:10 }} />
             </div>
           ))}
         </div>
 
-        {/* Past plans */}
         {plans.filter(p=>p.weekStart!==weekStart).length > 0 && (
           <>
             <div className="divider mb-4" />
-            <p className="label-xs mb-4">שבועות קודמים</p>
+            <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,.38)', textTransform:'uppercase', marginBottom:16 }}>שבועות קודמים</p>
             <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
               {plans.filter(p=>p.weekStart!==weekStart).slice(0,3).map(plan => (
                 <div key={plan.weekStart} className="card">
-                  <p className="label-xs mb-2">{plan.weekStart}</p>
+                  <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,.38)', textTransform:'uppercase', marginBottom:10 }}>{plan.weekStart}</p>
                   {plan.goals.filter(g=>g.trim()).map((g,i) => (
-                    <p key={i} style={{ fontSize:13, color:'#6b6b8a', lineHeight:1.5 }} dir="rtl">→ {g}</p>
+                    <p key={i} style={{ fontFamily:"'Heebo', sans-serif", fontSize:13, color:'rgba(255,255,255,.38)', lineHeight:1.5, marginBottom:4 }} dir="rtl">{g}</p>
                   ))}
                 </div>
               ))}
@@ -90,14 +90,14 @@ export function WeeklyWarRoom({ entries, plans, onSave }: Props) {
         )}
       </div>
 
-      <div className="shrink-0" style={{ padding:'16px 20px', paddingBottom:'max(16px, env(safe-area-inset-bottom))', borderTop:'1px solid #2a2a3d', background:'#0a0a0f' }}>
+      <div className="shrink-0" style={{ padding:'16px 20px', paddingBottom:'max(16px, env(safe-area-inset-bottom))', borderTop:'1px solid rgba(255,255,255,.09)', background:'#000' }}>
         {saved ? (
-          <div style={{ padding:'18px', textAlign:'center', fontWeight:900, fontSize:14, color:'#22c55e', background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.25)', borderRadius:12 }} dir="rtl">
-            ✓ נעול — יאללה לשבוע!
+          <div style={{ padding:'18px', textAlign:'center', fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontWeight:700, fontSize:16, color:'#30D158', background:'rgba(48,209,88,.06)', border:'1px solid rgba(48,209,88,.2)', borderRadius:12 }} dir="rtl">
+            נעול — יאללה לשבוע!
           </div>
         ) : (
-          <button onClick={handleSave} disabled={!canSave} className="btn-red w-full" style={{ padding:'18px', fontSize:15 }} dir="rtl">
-            נעל את השבוע 🔒
+          <button onClick={handleSave} disabled={!canSave} className="btn-red w-full" style={{ padding:'18px', fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:16 }} dir="rtl">
+            נעל את השבוע
           </button>
         )}
       </div>

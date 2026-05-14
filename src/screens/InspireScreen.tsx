@@ -86,7 +86,7 @@ export function InspireScreen() {
   const embedVideos  = VIDEO_CARDS.filter(v => v.youtubeId)
   const searchVideos = VIDEO_CARDS.filter(v => !v.youtubeId)
   return (
-    <div style={{ height: '100dvh', overflow: 'hidden', background: '#0a0a0f', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100%', overflow: 'hidden', background: '#0a0a0f', display: 'flex', flexDirection: 'column' }}>
       {activeVideo && <YouTubeOverlay card={activeVideo} onClose={() => setActiveVideo(null)} />}
       <div className="shrink-0" style={{ padding: '24px 20px 20px', borderBottom: '1px solid #2a2a3d' }}>
         <p className="label-xs mb-2" style={{ color: 'rgba(239,68,68,0.7)' }}>INSPIRE</p>
