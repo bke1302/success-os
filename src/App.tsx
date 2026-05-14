@@ -153,6 +153,7 @@ export default function App() {
             streak={state.streak}
             today={today}
             onStart={() => setView('prime')}
+            onNavigate={v => { setView(v); setForceEvening(false) }}
           />
         )}
 

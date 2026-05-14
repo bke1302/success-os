@@ -1,141 +1,222 @@
 import type { DayEntry } from '../types'
 
+type View = 'home' | 'prime' | 'actions' | 'inspire' | 'wins' | 'fear' | 'weekly'
+
 interface Props {
-  dayCount: number
-  streak:   number
-  today?:   DayEntry
-  onStart:  () => void
+  dayCount:   number
+  streak:     number
+  today?:     DayEntry
+  onStart:    () => void
+  onNavigate: (v: View) => void
 }
 
-function getLine(streak: number, hasMorning: boolean): string {
+const QUOTES: { title: string; sub: string }[] = [
+  { title: 'הכאב הוא זמני.', sub: 'הוויתור הוא לנצח.' },
+  { title: 'אל תנהל את זמנך —', sub: 'נהל את עצמך.' },
+  { title: 'ההחלטה שינתה הכל.', sub: 'לא הגורל. הבחירה.' },
+  { title: 'רגל יומי אחד.', sub: 'זה כל מה שצריך.' },
+  { title: 'אתה לא מחפש מוטיבציה.', sub: 'אתה בונה משמעת.' },
+  { title: 'העולם שייך לאלה', sub: 'שלא מחכים לרגע הנכון.' },
+  { title: 'מה שאתה עושה היום', sub: 'קובע מי שתהיה מחר.' },
+  { title: 'ללא פחד אין גדולה.', sub: 'הפחד הוא הדלק.' },
+  { title: 'אתה חזק יותר', sub: 'ממה שאתה חושב.' },
+  { title: 'כל אלוף בעולם', sub: 'עשה מה שלא רצה לעשות.' },
+  { title: 'אנרגיה היא הכל.', sub: 'שמור עליה. הגן עליה. תדלק אותה.' },
+  { title: 'לא מה שקרה —', sub: 'אלא מה שתעשה עכשיו.' },
+]
+
+function getQuote(streak: number, hasMorning: boolean): { title: string; sub: string } {
   const h = new Date().getHours()
+  const d = new Date().getDay()
+
   if (!hasMorning) {
-    if (h < 9)  return 'הבוקר הוא שלך.'
-    if (h < 12) return 'עדיין יש זמן.'
-    if (h < 17) return 'אחה"צ זה לא מאוחר מדי.'
-    return 'הערב הוא גם התחלה.'
+    if (h < 6)  return { title: 'השקט של הלילה.', sub: 'מחר בבוקר — תתחיל.' }
+    if (h < 9)  return { title: 'הבוקר הוא שלך.', sub: 'כל גדול בעולם קם לפני שהוא רוצה.' }
+    if (h < 12) return { title: 'עדיין יש זמן.', sub: 'לא איחרת. רק תתחיל.' }
+    if (h < 17) return { title: 'אחה"צ זה לא מאוחר.', sub: 'מי שמחכה לבוקר המושלם — לא מתחיל לעולם.' }
+    return { title: 'הערב הוא גם התחלה.', sub: 'לא מה שקרה — אלא מה שתעשה עכשיו.' }
   }
-  if (streak < 7)  return 'הרצף בנוי. אל תשבור אותו.'
-  if (streak < 14) return 'שבוע שלם. אתה כבר לא אותו אדם.'
-  if (streak < 30) return 'הגוף זוכר. זה כבר לא רצון — זה מי שאתה.'
-  return 'מעטים מגיעים לכאן. אתה אחד מהם.'
+
+  if (streak >= 30) return { title: `${streak} יום.`, sub: 'מעטים מגיעים לכאן. אתה אחד מהם.' }
+  if (streak >= 14) return { title: `${streak} ימים ברצף.`, sub: 'זה כבר לא רצון — זה מי שאתה.' }
+  if (streak >= 7)  return { title: 'שבוע שלם.', sub: 'אתה כבר לא אותו אדם שהתחיל.' }
+
+  return QUOTES[(d * 3 + Math.floor(h / 8)) % QUOTES.length]
 }
 
-export function HomeScreen({ dayCount, streak, today, onStart }: Props) {
+const NAV_TILES: { id: View; he: string; color: string; label: string }[] = [
+  { id: 'prime',   he: 'הכנת הבוקר', color: '#f5c435', label: 'PRIME'   },
+  { id: 'actions', he: 'פעולות יומיות', color: '#22c55e', label: 'ACTIONS' },
+  { id: 'inspire', he: 'השראה',       color: '#ef4444', label: 'INSPIRE' },
+  { id: 'wins',    he: 'קיר הגדילה', color: '#f5c435', label: 'GROWTH'  },
+  { id: 'fear',    he: 'פחד לדלק',   color: '#8b5cf6', label: 'FEAR'    },
+  { id: 'weekly',  he: 'חדר המלחמה', color: '#f97316', label: 'WAR'     },
+]
+
+export function HomeScreen({ dayCount, streak, today, onStart, onNavigate }: Props) {
   const hasMorning = !!today?.morning
   const hasEvening = !!today?.evening
-  const commitment = today?.morning?.commitment
-  const line       = getLine(streak, hasMorning)
-  const date       = new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })
+  const { title, sub } = getQuote(streak, hasMorning)
+  const date = new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
-    <div style={{ height: '100%', overflow: 'hidden', background: '#000', display: 'flex', flexDirection: 'column', paddingRight: 62 }}>
+    <div style={{
+      height: '100%', overflow: 'hidden',
+      background: '#000',
+      display: 'flex', flexDirection: 'column',
+    }}>
 
-      {/* Date + day */}
-      <div style={{ padding: '32px 28px 0' }}>
-        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.22)', textTransform: 'uppercase', marginBottom: 8 }}>{date}</p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,.3)' }}>יום {dayCount}</span>
+      {/* Header */}
+      <div style={{ padding: '28px 24px 0', flexShrink: 0 }}>
+        <p style={{
+          fontFamily: 'Barlow Condensed, sans-serif',
+          fontSize: 10, fontWeight: 700, letterSpacing: '2px',
+          color: 'rgba(255,255,255,.22)', textTransform: 'uppercase',
+          marginBottom: 6,
+        }}>{date}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{
+            fontFamily: 'Heebo, sans-serif',
+            fontSize: 13, fontWeight: 500,
+            color: 'rgba(255,255,255,.3)',
+          }}>יום {dayCount}</span>
           {streak > 0 && (
-            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 12, fontWeight: 800, letterSpacing: '1px', color: '#FFD60A', background: 'rgba(255,214,10,.07)', border: '1px solid rgba(255,214,10,.18)', borderRadius: 999, padding: '2px 10px' }}>
-              {streak} STREAK
-            </span>
+            <span style={{
+              fontFamily: 'Barlow Condensed, sans-serif',
+              fontSize: 12, fontWeight: 800, letterSpacing: '1px',
+              color: '#FFD60A',
+              background: 'rgba(255,214,10,.07)',
+              border: '1px solid rgba(255,214,10,.18)',
+              borderRadius: 999, padding: '2px 10px',
+            }}>{streak} STREAK</span>
           )}
         </div>
       </div>
 
-      {/* Hero */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 28px' }}>
-
-        {/* Big serif headline */}
+      {/* Hero quote */}
+      <div style={{ padding: '32px 24px 24px', flexShrink: 0 }}>
         <h1 dir="rtl" style={{
-          fontFamily: 'Frank Ruhl Libre, Georgia, serif',
-          fontSize: 'clamp(3rem, 12vw, 5rem)',
+          fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+          fontSize: 'clamp(2.6rem, 10vw, 4.2rem)',
           fontWeight: 900,
-          lineHeight: 1.0,
+          lineHeight: 1.05,
           letterSpacing: '-.5px',
           color: '#f2f2f7',
-          marginBottom: 20,
-        }}>
-          {hasMorning ? (streak >= 7 ? 'ממשיך לנצח.' : 'יום טוב.') : 'הצלחה מתחילה כאן.'}
-        </h1>
-
+          marginBottom: 12,
+        }}>{title}</h1>
         <p dir="rtl" style={{
-          fontFamily: 'Heebo, system-ui, sans-serif',
-          fontSize: 15,
-          fontWeight: 400,
-          color: 'rgba(255,255,255,.4)',
-          lineHeight: 1.8,
-          marginBottom: 36,
-        }}>{line}</p>
+          fontFamily: 'Heebo, sans-serif',
+          fontSize: 16, fontWeight: 400,
+          color: 'rgba(255,255,255,.42)',
+          lineHeight: 1.7,
+        }}>{sub}</p>
+      </div>
 
-        {/* Divider */}
-        <div style={{ height: 1, background: 'rgba(255,255,255,.06)', marginBottom: 28 }} />
+      {/* Divider */}
+      <div style={{ height: 1, background: 'rgba(255,255,255,.06)', marginBottom: 20, flexShrink: 0 }} />
 
-        {/* Stats row */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-          {[
-            { v: String(dayCount), l: 'ימים' },
-            { v: String(streak),   l: 'רצף' },
-            { v: hasMorning ? 'V' : '-', l: 'בוקר' },
-            { v: hasEvening ? 'V' : '-', l: 'ערב' },
-          ].map(({ v, l }) => (
-            <div key={l} style={{
-              flex: 1, textAlign: 'center',
-              padding: '12px 4px',
-              background: 'rgba(255,255,255,.04)',
-              border: '1px solid rgba(255,255,255,.09)',
-              borderRadius: 12,
-            }}>
-              <div style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 20, fontWeight: 900, color: '#f2f2f7', lineHeight: 1 }}>{v}</div>
-              <div style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 8, fontWeight: 700, letterSpacing: '1.5px', color: 'rgba(255,255,255,.38)', marginTop: 5, textTransform: 'uppercase' }}>{l}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Commitment */}
-        {commitment ? (
-          <div style={{ background: 'rgba(255,55,95,.05)', border: '1px solid rgba(255,55,95,.14)', borderRight: `3px solid #FF375F`, borderRadius: 14, padding: '16px 20px' }}>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', color: '#FF375F', textTransform: 'uppercase', marginBottom: 8 }}>ההתחייבות שלך</p>
-            <p dir="rtl" style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 17, fontWeight: 700, color: '#f2f2f7', lineHeight: 1.45 }}>{commitment}</p>
-            {hasEvening && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10 }}>
-                <div style={{ width: 5, height: 5, borderRadius: '50%', background: today!.evening!.commitmentDone ? '#30D158' : 'rgba(255,255,255,.2)' }} />
-                <span style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 11, color: today!.evening!.commitmentDone ? '#30D158' : 'rgba(255,255,255,.38)' }} dir="rtl">
-                  {today!.evening!.commitmentDone ? 'עמדת בה' : 'לא הושלם'}
-                </span>
+      {/* Section tiles — scrollable */}
+      <div style={{
+        flex: 1, overflowY: 'auto',
+        padding: '0 24px',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: 'repeat(3, auto)',
+        gap: 10,
+        alignContent: 'start',
+      }}>
+        {NAV_TILES.map(({ id, he, color, label }) => {
+          const isDone =
+            (id === 'prime'   && hasMorning) ||
+            (id === 'actions' && (today?.habits?.length ?? 0) > 0)
+          return (
+            <button
+              key={id}
+              onClick={() => onNavigate(id)}
+              dir="rtl"
+              style={{
+                background: 'rgba(255,255,255,.03)',
+                border: `1px solid ${isDone ? color + '30' : 'rgba(255,255,255,.08)'}`,
+                borderRadius: 14,
+                padding: '16px 14px',
+                cursor: 'pointer',
+                textAlign: 'right',
+                transition: 'border-color .15s, background .15s',
+                display: 'flex', flexDirection: 'column', gap: 6,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,.06)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,.03)')}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{
+                  fontFamily: 'Barlow Condensed, sans-serif',
+                  fontSize: 10, fontWeight: 800, letterSpacing: '1.5px',
+                  color: isDone ? color : 'rgba(255,255,255,.22)',
+                  textTransform: 'uppercase',
+                }}>{label}</span>
+                {isDone && (
+                  <div style={{
+                    width: 6, height: 6, borderRadius: '50%',
+                    background: color, flexShrink: 0,
+                  }} />
+                )}
               </div>
-            )}
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            {['הכן את היום', 'קבע התחייבות', 'צא לדרך'].map((t, i) => (
-              <div key={i} style={{ padding: '11px 16px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.09)', borderRadius: 10 }}>
-                <p dir="rtl" style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,.25)' }}>{t}</p>
-              </div>
-            ))}
-          </div>
-        )}
+              <p style={{
+                fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+                fontSize: 15, fontWeight: 700,
+                color: '#f2f2f7', lineHeight: 1.2,
+              }}>{he}</p>
+            </button>
+          )
+        })}
       </div>
 
       {/* CTA */}
-      <div style={{ padding: '0 28px', paddingBottom: 'max(36px, env(safe-area-inset-bottom))' }}>
+      <div style={{
+        padding: '20px 24px',
+        paddingBottom: 'max(28px, env(safe-area-inset-bottom))',
+        flexShrink: 0,
+      }}>
         {!hasEvening ? (
-          <button onClick={onStart} dir="rtl" style={{
-            width: '100%', padding: '19px 24px',
-            fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 18, fontWeight: 700,
-            background: hasMorning ? 'linear-gradient(135deg, #FFD60A, #FF9F0A)' : 'linear-gradient(135deg, #FF375F, #BF5AF2)',
-            color: hasMorning ? '#000' : '#fff',
-            border: 'none', borderRadius: 14, cursor: 'pointer',
-            boxShadow: hasMorning ? '0 4px 28px rgba(255,214,10,.18)' : '0 4px 28px rgba(255,55,95,.22)',
-            letterSpacing: '-.3px',
-          }}>
+          <button
+            onClick={onStart}
+            dir="rtl"
+            style={{
+              width: '100%',
+              padding: '18px 24px',
+              fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+              fontSize: 17, fontWeight: 700,
+              background: hasMorning
+                ? 'linear-gradient(135deg, #FFD60A, #FF9F0A)'
+                : 'linear-gradient(135deg, #FF375F, #BF5AF2)',
+              color: hasMorning ? '#000' : '#fff',
+              border: 'none', borderRadius: 14, cursor: 'pointer',
+              boxShadow: hasMorning
+                ? '0 4px 24px rgba(255,214,10,.16)'
+                : '0 4px 24px rgba(255,55,95,.2)',
+              letterSpacing: '-.2px',
+              transition: 'opacity .15s, transform .1s',
+            }}
+            onMouseDown={e => (e.currentTarget.style.transform = 'scale(.98)')}
+            onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+          >
             {!hasMorning ? 'התחל את הבוקר' : 'סגור את היום'}
           </button>
         ) : (
-          <div style={{ textAlign: 'center', padding: '18px', background: 'rgba(48,209,88,.05)', border: '1px solid rgba(48,209,88,.15)', borderRadius: 14 }}>
-            <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 17, fontWeight: 700, color: '#30D158' }} dir="rtl">היום נסגר בהצלחה</p>
-            <p style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 12, color: 'rgba(255,255,255,.38)', marginTop: 5 }} dir="rtl">ציון: {today!.evening!.score}/10</p>
+          <div style={{
+            textAlign: 'center', padding: '16px',
+            background: 'rgba(48,209,88,.05)',
+            border: '1px solid rgba(48,209,88,.15)',
+            borderRadius: 14,
+          }}>
+            <p style={{
+              fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+              fontSize: 17, fontWeight: 700, color: '#30D158',
+            }} dir="rtl">היום נסגר בהצלחה</p>
+            <p style={{
+              fontFamily: 'Heebo, sans-serif',
+              fontSize: 12, color: 'rgba(255,255,255,.35)', marginTop: 4,
+            }} dir="rtl">ציון: {today!.evening!.score}/10</p>
           </div>
         )}
       </div>
