@@ -5,12 +5,12 @@ type View = AppState['currentView']
 
 const NAV: { id: View; Icon: typeof Home; label: string; color: string }[] = [
   { id: 'home',    Icon: Home,        label: 'בית',   color: '#f2f2f7' },
-  { id: 'prime',   Icon: Zap,         label: 'PRIME', color: '#FFD60A' },
+  { id: 'prime',   Icon: Zap,         label: 'פריים', color: '#FFD60A' },
   { id: 'actions', Icon: CheckSquare, label: 'יומי',  color: '#30D158' },
   { id: 'inspire', Icon: Play,        label: 'השראה', color: '#FF375F' },
   { id: 'wins',    Icon: Trophy,      label: 'גדילה', color: '#FFD60A' },
   { id: 'fear',    Icon: Skull,       label: 'פחד',   color: '#BF5AF2' },
-  { id: 'weekly',  Icon: Swords,      label: 'WAR',   color: '#FF9F0A' },
+  { id: 'weekly',  Icon: Swords,      label: 'מלחמה', color: '#FF9F0A' },
 ]
 
 interface Props {
@@ -23,7 +23,7 @@ export function RightNav({ current, onChange }: Props) {
     <nav style={{
       position: 'fixed', top: 0, right: 0, bottom: 0,
       width: 62,
-      background: 'rgba(8,8,8,0.97)',
+      background: 'rgba(18,18,18,0.97)',
       backdropFilter: 'blur(24px) saturate(180%)',
       WebkitBackdropFilter: 'blur(24px) saturate(180%)',
       borderLeft: '1px solid rgba(255,255,255,.07)',

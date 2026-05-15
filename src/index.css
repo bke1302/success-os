@@ -27,12 +27,12 @@
   --muted:  rgba(255,255,255,.38);
   --muted2: rgba(255,255,255,.58);
 
-  --border:  rgba(255,255,255,.07);
-  --border2: rgba(255,255,255,.12);
+  --border:  rgba(255,255,255,.10);
+  --border2: rgba(255,255,255,.16);
 
-  --glass:   rgba(255,255,255,.04);
-  --glass-b: rgba(255,255,255,.09);
-  --glass-h: rgba(255,255,255,.07);
+  --glass:   rgba(255,255,255,.065);
+  --glass-b: rgba(255,255,255,.12);
+  --glass-h: rgba(255,255,255,.09);
 
   --r:    16px;
   --r-sm: 10px;
@@ -99,7 +99,7 @@ body::before {
   transform: translateX(-50%);
   width: 70vw;
   height: 70vw;
-  background: radial-gradient(circle, rgba(255,214,10,.022) 0%, transparent 68%);
+  background: radial-gradient(circle, rgba(255,214,10,.045) 0%, transparent 68%);
   pointer-events: none;
   z-index: 0;
 }
@@ -182,8 +182,8 @@ body::before {
 
   /* ── Cards ── */
   .card {
-    background: linear-gradient(160deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,.028) 100%);
-    border: 1px solid rgba(255,255,255,.09);
+    background: linear-gradient(160deg, rgba(255,255,255,.09) 0%, rgba(255,255,255,.05) 100%);
+    border: 1px solid rgba(255,255,255,.12);
     border-radius: var(--r);
     padding: 20px;
     box-shadow: 0 2px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);

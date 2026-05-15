@@ -160,12 +160,12 @@ export default function App() {
             color: 'rgba(255,255,255,.3)', textTransform: 'uppercase',
             fontFamily: 'Barlow Condensed, sans-serif',
           }}>
-            {state.currentView === 'prime' && 'PRIME'}
-            {state.currentView === 'actions' && 'ACTIONS'}
-            {state.currentView === 'inspire' && 'INSPIRE'}
-            {state.currentView === 'wins' && 'GROWTH'}
-            {state.currentView === 'fear' && 'FEAR'}
-            {state.currentView === 'weekly' && 'WAR ROOM'}
+            {state.currentView === 'prime' && 'פריים'}
+            {state.currentView === 'actions' && 'פעולות'}
+            {state.currentView === 'inspire' && 'השראה'}
+            {state.currentView === 'wins' && 'גדילה'}
+            {state.currentView === 'fear' && 'פחד'}
+            {state.currentView === 'weekly' && 'חדר מלחמה'}
           </span>
         </div>
       )}
@@ -179,6 +179,7 @@ export default function App() {
             streak={state.streak}
             today={today}
             userName={state.userName ?? ''}
+            entries={state.entries}
             onStart={() => setView('prime')}
             onNavigate={v => { setView(v); setForceEvening(false) }}
           />
