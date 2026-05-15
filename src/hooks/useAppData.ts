@@ -11,7 +11,7 @@ export function todayKey(): string {
 }
 
 function initialState(): AppState {
-  return { entries: [], streak: 0, totalDays: 0, currentView: 'home' }
+  return { entries: [], streak: 0, totalDays: 0, currentView: 'home', userName: '' }
 }
 
 function loadState(): AppState {
@@ -127,6 +127,9 @@ export function useAppData() {
   const setView = (v: AppState['currentView']) =>
     persist({ ...state, currentView: v })
 
+  const setUserName = (name: string) =>
+    persist({ ...state, userName: name })
+
   const clearAll = () => {
     localStorage.removeItem(KEY)
     persist(initialState())
@@ -139,6 +142,6 @@ export function useAppData() {
     saveFearEntry, deleteFearEntry,
     saveWeeklyPlan,
     saveIncantation,
-    setView, clearAll,
+    setView, setUserName, clearAll,
   }
 }

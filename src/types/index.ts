@@ -62,7 +62,8 @@ export interface AppState {
   burnTheBoats?:  BurnTheBoats
   fearEntries?:   FearEntry[]
   weeklyPlans?:   WeeklyPlan[]
-  incantationB64?: string   // base64 audio blob
+  incantationB64?: string
+  userName?:      string
 }
 
 export type DayPhase = 'morning' | 'day' | 'evening'

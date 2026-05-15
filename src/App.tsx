@@ -14,6 +14,7 @@ import { WeeklyWarRoom }        from './screens/WeeklyWarRoom'
 import { RightNav }             from './components/RightNav'
 import { BurnTheBoats }         from './components/BurnTheBoats'
 import { EnergyCheckinOverlay } from './components/EnergyCheckinOverlay'
+import { OnboardingScreen }     from './screens/OnboardingScreen'
 import type { EnergyCheckin }   from './types'
 
 const NAV_W = 62
@@ -25,7 +26,7 @@ export default function App() {
     saveBurnTheBoats, clearBurnTheBoats,
     saveFearEntry, deleteFearEntry,
     saveWeeklyPlan, saveIncantation,
-    setView,
+    setView, setUserName,
   } = useAppData()
 
   const [forceEvening,  setForceEvening]  = useState(false)
@@ -81,6 +82,11 @@ export default function App() {
 
   // Back button: prime/sub-views go back to home
   const canGoBack = state.currentView !== 'home'
+
+  // Show onboarding for new users
+  if (!state.userName) {
+    return <OnboardingScreen onComplete={name => setUserName(name)} />
+  }
 
   return (
     <div style={{ background: '#000', height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -152,6 +158,7 @@ export default function App() {
             dayCount={dayCount}
             streak={state.streak}
             today={today}
+            userName={state.userName ?? ''}
             onStart={() => setView('prime')}
             onNavigate={v => { setView(v); setForceEvening(false) }}
           />

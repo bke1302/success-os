@@ -4,6 +4,7 @@ interface Props {
   dayCount:   number
   streak:     number
   today?:     DayEntry
+  userName:   string
   onStart:    () => void
   onNavigate: (v: 'home' | 'prime' | 'actions' | 'inspire' | 'wins' | 'fear' | 'weekly') => void
 }
@@ -73,7 +74,7 @@ function getSet(streak: number, hasMorning: boolean) {
   return SETS[d % SETS.length]
 }
 
-export function HomeScreen({ streak, today }: Props) {
+export function HomeScreen({ streak, today, userName }: Props) {
   const hasMorning = !!today?.morning
   const sentences = getSet(streak, hasMorning)
   const date = new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })
@@ -87,26 +88,37 @@ export function HomeScreen({ streak, today }: Props) {
       padding: '0 28px',
     }}>
 
-      {/* Date */}
+      {/* Greeting */}
       <p style={{
         fontFamily: 'Barlow Condensed, sans-serif',
         fontSize: 10, fontWeight: 700, letterSpacing: '2.5px',
         color: 'rgba(255,255,255,.18)', textTransform: 'uppercase',
-        marginBottom: streak > 0 ? 10 : 32,
+        marginBottom: 10,
       }}>{date}</p>
 
-      {/* Streak */}
-      {streak > 0 && (
-        <span style={{
-          display: 'inline-block', alignSelf: 'flex-start',
-          fontFamily: 'Barlow Condensed, sans-serif',
-          fontSize: 11, fontWeight: 800, letterSpacing: '1px',
-          color: '#FFD60A',
-          border: '1px solid rgba(255,214,10,.28)',
-          borderRadius: 999, padding: '2px 12px',
-          marginBottom: 32,
-        }}>{streak} STREAK</span>
-      )}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 32 }}>
+        <p dir="rtl" style={{
+          fontFamily: 'Heebo, sans-serif',
+          fontSize: 14, fontWeight: 500,
+          color: 'rgba(255,255,255,.32)',
+        }}>
+          {(() => {
+            const h = new Date().getHours()
+            if (h < 12) return `בוקר טוב, ${userName}`
+            if (h < 17) return `צהריים טובים, ${userName}`
+            return `ערב טוב, ${userName}`
+          })()}
+        </p>
+        {streak > 0 && (
+          <span style={{
+            fontFamily: 'Barlow Condensed, sans-serif',
+            fontSize: 11, fontWeight: 800, letterSpacing: '1px',
+            color: '#FFD60A',
+            border: '1px solid rgba(255,214,10,.28)',
+            borderRadius: 999, padding: '2px 12px',
+          }}>{streak} STREAK</span>
+        )}
+      </div>
 
       {/* Sentences */}
       <div dir="rtl" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
