@@ -108,10 +108,10 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
         <div className="flex items-end justify-between mb-5">
           <div>
             <p className="label-xs mb-2">{new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-            <h1 style={{ fontSize: 26, fontWeight: 900, color: '#e8e8f0' }} dir="rtl">פעולות היום</h1>
+            <h1 style={{ fontSize: 26, fontWeight: 900, color: '#fff', fontFamily: '"Frank Ruhl Libre", Georgia, serif' }} dir="rtl">פעולות היום</h1>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div className="font-display" style={{ fontSize: '3.5rem', lineHeight: 1, color: allDone ? '#22c55e' : '#ef4444' }}>
+            <div className="font-display" style={{ fontSize: '3.5rem', lineHeight: 1, color: allDone ? '#FFD60A' : '#fff' }}>
               {reqDone}
             </div>
             <div style={{ fontSize: 12, color: '#6b6b8a', fontWeight: 700 }}>/ {requiredHabitIds.length}</div>
@@ -123,7 +123,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
         <div style={{ height: 6, background: '#2a2a3d', borderRadius: 3, marginBottom: 8, overflow: 'hidden' }}>
           <div style={{
             height: '100%', width: `${reqPct}%`, borderRadius: 3,
-            background: allDone ? '#22c55e' : 'linear-gradient(90deg, #f5c435, #ef4444)',
+            background: allDone ? '#FFD60A' : 'linear-gradient(90deg, #FFD60A, rgba(255,255,255,.4))',
             transition: 'width 0.5s ease',
           }} />
         </div>
@@ -162,7 +162,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer', transition: 'all 0.15s',
                   }}>
-                  {done && <span style={{ color: '#000', fontSize: 10, fontWeight: 900 }}>✓</span>}
+                  {done && <span className="check-bounce" style={{ color: '#000', fontSize: 10, fontWeight: 900 }}>✓</span>}
                 </button>
                 <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{habit.emoji}</span>
                 <div dir="rtl" style={{ flex: 1 }}>
@@ -207,7 +207,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer',
                   }}>
-                  {done && <span style={{ color: '#000', fontSize: 9, fontWeight: 900 }}>✓</span>}
+                  {done && <span className="check-bounce" style={{ color: '#000', fontSize: 9, fontWeight: 900 }}>✓</span>}
                 </button>
                 <span style={{ fontSize: '1rem', flexShrink: 0 }}>{habit.emoji}</span>
                 <p dir="rtl" style={{

@@ -265,3 +265,33 @@
   .badge-green  { background: rgba(48,209,88,.12);  color: var(--green);  border: 1px solid rgba(48,209,88,.28); }
   .badge-purple { background: rgba(191,90,242,.12); color: var(--purple); border: 1px solid rgba(191,90,242,.28); }
 }
+
+/* ─── Screen transition ─────────────────────────────────────────── */
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.screen-in { animation: screenIn .28s cubic-bezier(.16,1,.3,1) both; }
+
+/* ─── Home sentence stagger ─────────────────────────────────────── */
+@keyframes sentenceIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.sentence-in { animation: sentenceIn .4s cubic-bezier(.16,1,.3,1) both; }
+.s-delay-0 { animation-delay: 0ms; }
+.s-delay-1 { animation-delay: 80ms; }
+.s-delay-2 { animation-delay: 160ms; }
+.s-delay-3 { animation-delay: 240ms; }
+.s-delay-4 { animation-delay: 320ms; }
+
+/* ─── Check pop ─────────────────────────────────────────────────── */
+@keyframes checkBounce {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+.check-bounce { animation: checkBounce .25s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* ─── Touch feedback ────────────────────────────────────────────── */
+button:active { opacity: .8; transform: scale(.97); }

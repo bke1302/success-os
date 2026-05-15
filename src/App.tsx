@@ -112,7 +112,7 @@ export default function App() {
         <div style={{
           flexShrink: 0,
           display: 'flex', alignItems: 'center', gap: 10,
-          padding: '12px 18px',
+          padding: '10px 16px',
           background: 'rgba(8,8,8,.97)',
           borderBottom: '1px solid rgba(255,255,255,.07)',
           marginRight: NAV_W,
@@ -145,7 +145,7 @@ export default function App() {
       )}
 
       {/* Content */}
-      <div style={{ flex: 1, overflow: 'hidden', marginRight: NAV_W }}>
+      <div key={state.currentView} className="screen-in" style={{ flex: 1, overflow: 'hidden', marginRight: NAV_W }}>
 
         {state.currentView === 'home' && (
           <HomeScreen

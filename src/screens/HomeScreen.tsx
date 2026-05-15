@@ -111,7 +111,7 @@ export function HomeScreen({ streak, today }: Props) {
       {/* Sentences */}
       <div dir="rtl" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {sentences.map((s, i) => (
-          <p key={i} style={{
+          <p key={i} className={`sentence-in s-delay-${i}`} style={{
             fontFamily: '"Frank Ruhl Libre", Georgia, serif',
             fontSize: s.size === 'lg'
               ? 'clamp(2.2rem, 9vw, 3.8rem)'

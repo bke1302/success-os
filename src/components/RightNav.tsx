@@ -87,17 +87,17 @@ export function RightNav({ current, onChange }: Props) {
               <Icon
                 strokeWidth={active ? 2.5 : 1.5}
                 style={{
-                  width: 18, height: 18,
+                  width: active ? 20 : 18, height: active ? 20 : 18,
                   color: active ? color : 'rgba(255,255,255,.38)',
                   opacity: active ? 1 : .85,
                   transition: 'color .18s',
                 }}
               />
               <span style={{
-                fontSize: 7.5,
-                fontWeight: 800,
-                letterSpacing: '.5px',
-                color: active ? color : 'rgba(255,255,255,.3)',
+                fontSize: 8.5,
+                fontWeight: 700,
+                letterSpacing: '.3px',
+                color: active ? color : 'rgba(255,255,255,.25)',
                 textTransform: 'uppercase',
                 fontFamily: 'Barlow Condensed, sans-serif',
                 transition: 'color .18s',
