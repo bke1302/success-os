@@ -16,6 +16,7 @@ import { BurnTheBoats }         from './components/BurnTheBoats'
 import { EnergyCheckinOverlay } from './components/EnergyCheckinOverlay'
 import { OnboardingScreen }     from './screens/OnboardingScreen'
 import { SplashScreen }         from './screens/SplashScreen'
+import { CompletionScreen }     from './screens/CompletionScreen'
 import type { EnergyCheckin }   from './types'
 
 const NAV_W = 62
@@ -30,9 +31,11 @@ export default function App() {
     setView, setUserName,
   } = useAppData()
 
-  const [showSplash,    setShowSplash]    = useState(true)
-  const [forceEvening,  setForceEvening]  = useState(false)
-  const [checkinPrompt, setCheckinPrompt] = useState<EnergyCheckin['label'] | null>(null)
+  const [showSplash,      setShowSplash]      = useState(true)
+  const [forceEvening,    setForceEvening]    = useState(false)
+  const [checkinPrompt,   setCheckinPrompt]   = useState<EnergyCheckin['label'] | null>(null)
+  const [showCompletion,  setShowCompletion]  = useState(false)
+  const [completionScore, setCompletionScore] = useState(0)
   const splashRef = useRef(false)
   if (!splashRef.current) {
     splashRef.current = true
@@ -102,12 +105,20 @@ export default function App() {
 
       {/* Partner banner */}
       {partnerData && (
-        <div style={{ flexShrink: 0, padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'rgba(10,132,255,.1)', borderBottom: '1px solid rgba(10,132,255,.2)', marginRight: NAV_W }}>
+        <div style={{ flexShrink: 0, padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'rgba(255,214,10,.07)', borderBottom: '1px solid rgba(255,214,10,.2)', marginRight: NAV_W }}>
           
-          <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(167,170,255,.9)' }} dir="rtl">
+          <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,214,10,.85)' }} dir="rtl">
             השותף שלך: {partnerData.streak} STREAK · {partnerData.totalDays} ימים · ממוצע {partnerData.avgScore}
           </p>
         </div>
+      )}
+
+      {/* Completion overlay */}
+      {showCompletion && (
+        <CompletionScreen
+          score={completionScore}
+          onDone={() => { setShowCompletion(false); setView('home') }}
+        />
       )}
 
       {/* Energy overlay */}
@@ -200,7 +211,12 @@ export default function App() {
               <EveningReview
                 commitment={today?.morning?.commitment ?? ''}
                 identity={today?.morning?.identity}
-                onComplete={data => { saveEvening(data); setForceEvening(false); setView('home') }}
+                onComplete={data => {
+                  saveEvening(data)
+                  setForceEvening(false)
+                  setCompletionScore(data.score)
+                  setShowCompletion(true)
+                }}
               />
             )}
             {screen === 'done' && (

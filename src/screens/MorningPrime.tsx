@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Mic, Square, Play, Pause, ChevronRight } from 'lucide-react'
+import { Mic, Square, Play, Pause, ChevronRight, ChevronLeft } from 'lucide-react'
 import { HABITS, getTodayPowerWord, getCommanderRank } from '../constants'
 import { getCurrentWeekTheme, getTodayRequiredHabitIds, getProgramWeekNumber } from '../data/program'
 import { getCoachMessage } from '../utils/coach'
@@ -15,6 +15,20 @@ interface Props {
   yesterdayHabitsPct: number
   incantationB64?:    string
   onSaveIncantation:  (b64: string) => void
+}
+
+function StepDots({ step, total }: { step: number; total: number }) {
+  return (
+    <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'center' }}>
+      {Array.from({ length: total }, (_, i) => (
+        <div key={i} style={{
+          width: i + 1 === step ? 20 : 6, height: 6, borderRadius: 3,
+          background: i + 1 <= step ? '#FFD60A' : 'rgba(255,255,255,.12)',
+          transition: 'all .3s cubic-bezier(.16,1,.3,1)',
+        }} />
+      ))}
+    </div>
+  )
 }
 
 function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: string) => void }) {
@@ -39,7 +53,7 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
 
   return (
     <div>
-      <p className="label-xs mb-3" dir="rtl">הצהרה בקולך</p>
+      <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.38)', textTransform: 'uppercase', marginBottom: 12 }}>הצהרה בקולך</p>
       <div className="flex items-center gap-2">
         {!recording ? (
           <button onClick={startRec}
@@ -70,6 +84,7 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
 }
 
 export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayHabitsPct, incantationB64, onSaveIncantation }: Props) {
+  const [step,       setStep]       = useState<1|2|3|4>(1)
   const [commitment, setCommitment] = useState('')
   const [oneThing,   setOneThing]   = useState('')
 
@@ -84,8 +99,13 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
   const coach     = getCoachMessage({ streak, dayCount, yesterdayHabitsPct, currentHour: new Date().getHours() })
   const powerWord = getTodayPowerWord()
   const rank      = getCommanderRank(streak)
-
   const accentColor = '#FFD60A'
+
+  const next = () => {
+    playCheck()
+    setStep(s => Math.min(s + 1, 4) as 1|2|3|4)
+  }
+  const back = () => setStep(s => Math.max(s - 1, 1) as 1|2|3|4)
 
   const handleStart = () => {
     playComplete()
@@ -103,123 +123,147 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
     <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#000' }}>
 
       {/* ── TOP BAR ─────────────────────────────────────────────── */}
-      <div className="shrink-0 animate-fade-in" style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,.09)' }}>
-        <div className="flex items-start justify-between">
-
-          {/* Left: day + week dots */}
-          <div>
-            <p className="label-xs mb-2">{new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-            <div className="flex items-baseline gap-3 mb-3">
-              <span className="font-display" style={{ fontSize: '3.5rem', lineHeight: 1, color: accentColor }}>{dayCount}</span>
-              <div>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#f2f2f7' }}>יום</p>
-                <p className="label-xs" style={{ marginTop: 2 }}>שבוע {weekNum}/4</p>
-              </div>
-            </div>
-            <div className="flex gap-1.5">
-              {Array.from({ length: 7 }, (_, i) => (
-                <div key={i} style={{
-                  width: i < dayInWeek ? 18 : 6, height: 4, borderRadius: 2,
-                  background: i < dayInWeek ? accentColor : 'rgba(255,255,255,.09)',
-                  transition: 'width 0.3s',
-                }} />
-              ))}
-            </div>
+      <div className="shrink-0" style={{ padding: '20px 20px 16px', borderBottom: '1px solid rgba(255,255,255,.09)' }}>
+        <div className="flex items-center justify-between mb-4">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {step > 1 && (
+              <button onClick={back} style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 10, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'rgba(255,255,255,.45)' }}>
+                <ChevronLeft style={{ width: 16, height: 16 }} strokeWidth={2} />
+              </button>
+            )}
+            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.35)', textTransform: 'uppercase' }}>
+              {step === 1 && 'הכנה'}
+              {step === 2 && 'המשימות'}
+              {step === 3 && 'ONE THING'}
+              {step === 4 && 'יוצאים'}
+            </span>
           </div>
-
-          {/* Right: power word + rank */}
-          <div style={{ textAlign: 'right' }}>
-            <p className="label-xs mb-1">מילת הכוח</p>
-            <h1 dir="rtl" className="font-display" style={{
-              fontSize: 'clamp(2.2rem, 8vw, 4rem)', lineHeight: 1, color: accentColor,
-            }}>{powerWord}</h1>
-            <div className="flex items-center gap-1.5 mt-2" style={{ justifyContent: 'flex-end' }}>
-              <span style={{ fontSize: 10, fontWeight: 800, color: '#FFD60A', letterSpacing: 1, border: '1px solid rgba(255,214,10,.3)', borderRadius: 999, padding: '2px 8px' }}>{rank.rank}</span>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#FFD60A', letterSpacing: 1, border: '1px solid rgba(255,214,10,.3)', borderRadius: 999, padding: '2px 8px', fontFamily: 'Barlow Condensed, sans-serif' }}>{rank.rank}</span>
+            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,.25)' }}>יום {dayCount}</span>
           </div>
         </div>
+        <StepDots step={step} total={4} />
       </div>
 
-      {/* ── SCROLL AREA ────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 120px' }}>
+      {/* ── STEP CONTENT ─────────────────────────────────────────── */}
+      <div key={step} className="flex-1 overflow-y-auto animate-slide-up" style={{ padding: '24px 20px 32px' }}>
 
-        {/* Yesterday win */}
-        {lastWin && (
-          <div className="animate-slide-up card mb-4" style={{ borderRight: '3px solid #FFD60A' }}>
-            <p className="label-xs mb-2" style={{ color: '#FFD60A' }}>אתמול ניצחת</p>
-            <p style={{ fontSize: 14, color: 'rgba(232,232,240,0.7)', lineHeight: 1.6 }} dir="rtl">{lastWin}</p>
-          </div>
+        {/* STEP 1: הכנה */}
+        {step === 1 && (
+          <>
+            {/* Power word */}
+            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.5)', textTransform: 'uppercase', marginBottom: 8 }}>מילת הכוח של היום</p>
+              <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(3rem, 14vw, 5rem)', fontWeight: 900, lineHeight: 1, color: accentColor, letterSpacing: '-2px' }} dir="rtl">{powerWord}</h1>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,.22)', letterSpacing: '1.5px', marginTop: 8 }}>
+                שבוע {weekNum}/4 · יום {dayInWeek}/7
+              </p>
+              <div className="flex gap-1.5" style={{ justifyContent: 'center', marginTop: 10 }}>
+                {Array.from({ length: 7 }, (_, i) => (
+                  <div key={i} style={{
+                    width: i < dayInWeek ? 18 : 6, height: 4, borderRadius: 2,
+                    background: i < dayInWeek ? accentColor : 'rgba(255,255,255,.09)',
+                    transition: 'width 0.3s',
+                  }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Coach message */}
+            <div className="card mb-4" style={{ borderRight: `3px solid ${accentColor}` }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 8 }}>הודעה מהמאמן</p>
+              <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 19, fontWeight: 900, color: '#fff', lineHeight: 1.25, marginBottom: 8 }} dir="rtl">{coach.title}</p>
+              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.4)', lineHeight: 1.65 }} dir="rtl">{coach.body}</p>
+            </div>
+
+            {/* Yesterday's win */}
+            {lastWin && (
+              <div className="card" style={{ borderRight: '3px solid rgba(255,214,10,.4)' }}>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#FFD60A', textTransform: 'uppercase', marginBottom: 8 }}>אתמול ניצחת</p>
+                <p style={{ fontSize: 14, color: 'rgba(232,232,240,0.7)', lineHeight: 1.6 }} dir="rtl">{lastWin}</p>
+              </div>
+            )}
+          </>
         )}
 
-        {/* Coach */}
-        <div className="animate-slide-up delay-1 card mb-4" style={{ borderRight: `3px solid ${accentColor}` }}>
-          <p className="label-xs mb-2" style={{ color: accentColor }}>
-            הודעה מהמאמן
-          </p>
-          <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 19, fontWeight: 900, color: '#fff', lineHeight: 1.25, marginBottom: 8 }} dir="rtl">
-            {coach.title}
-          </p>
-          <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.4)', lineHeight: 1.65 }} dir="rtl">
-            {coach.body}
-          </p>
-        </div>
-
-        {/* Missions */}
-        <div className="animate-slide-up delay-2 card mb-4">
-          <p className="label-xs mb-4" style={{ color: accentColor }}>{theme.title} — משימות חובה</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {requiredHabits.map((habit, i) => (
-              <div key={habit.id} className="animate-slide-up"
-                style={{
-                  animationDelay: `${200 + i * 60}ms`, animationFillMode: 'both',
-                  display: 'flex', alignItems: 'center', gap: 14,
-                  padding: '12px 14px', background: 'rgba(255,255,255,.04)',
-                  border: '1px solid rgba(255,255,255,.09)', borderRadius: 10,
-                  borderRight: `3px solid ${accentColor}`,
-                }}>
-                <span style={{ fontSize: 10, fontWeight: 900, color: accentColor, minWidth: 16, textAlign: 'center', fontFamily: 'Barlow Condensed, sans-serif', letterSpacing: '1px' }}>{i + 1}</span>
-                <div dir="rtl" style={{ flex: 1 }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: '#f2f2f7' }}>{habit.title}</p>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,.35)', marginTop: 2 }}>{habit.subtitle}</p>
+        {/* STEP 2: המשימות */}
+        {step === 2 && (
+          <>
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 6 }}>{theme.title}</p>
+              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 4 }} dir="rtl">המשימות שלך היום</h2>
+              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 12, color: 'rgba(255,255,255,.35)', lineHeight: 1.5 }} dir="rtl">{theme.desc}</p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {requiredHabits.map((habit, i) => (
+                <div key={habit.id}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 14,
+                    padding: '16px 16px', background: 'rgba(255,255,255,.04)',
+                    border: '1px solid rgba(255,255,255,.09)', borderRadius: 12,
+                    borderRight: `3px solid ${accentColor}`,
+                    animation: `sentenceIn .35s cubic-bezier(.16,1,.3,1) ${i * 60}ms both`,
+                  }}>
+                  <span style={{ fontSize: 11, fontWeight: 900, color: accentColor, minWidth: 20, textAlign: 'center', fontFamily: 'Barlow Condensed, sans-serif', letterSpacing: '1px' }}>{i + 1}</span>
+                  <div dir="rtl" style={{ flex: 1 }}>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: '#f2f2f7' }}>{habit.title}</p>
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,.35)', marginTop: 3, lineHeight: 1.4 }}>{habit.subtitle}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </>
+        )}
 
-        {/* THE ONE THING */}
-        <div className="animate-slide-up delay-3 card mb-4">
-          <p className="label-xs mb-1" style={{ color: '#FFD60A' }}>THE ONE THING</p>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,.35)', marginBottom: 12, lineHeight: 1.5 }} dir="rtl">
-            מה הדבר האחד שאם תעשה אותו — הכל אחר יהיה קל יותר?
-          </p>
-          <input
-            value={oneThing}
-            onChange={e => { setOneThing(e.target.value); if (e.target.value.length === 1) playCheck() }}
-            placeholder="הדבר האחד…"
-            dir="rtl"
-            className="input-field"
-            style={{ borderColor: oneThing.trim() ? 'rgba(245,196,53,0.4)' : 'rgba(255,255,255,.09)' }}
-          />
-        </div>
+        {/* STEP 3: ONE THING */}
+        {step === 3 && (
+          <>
+            <div style={{ marginBottom: 28 }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 8 }}>THE ONE THING</p>
+              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: 12 }} dir="rtl">מה הדבר האחד?</h2>
+              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 14, color: 'rgba(255,255,255,.45)', lineHeight: 1.65 }} dir="rtl">
+                מה הדבר האחד שאם תעשה אותו היום — הכל אחר יהיה קל יותר?
+              </p>
+            </div>
+            <textarea
+              value={oneThing}
+              onChange={e => { setOneThing(e.target.value); if (e.target.value.length === 1) playCheck() }}
+              placeholder="הדבר האחד שלי היום…"
+              dir="rtl"
+              rows={5}
+              autoFocus
+              style={{
+                width: '100%', padding: '16px', fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+                background: oneThing.trim() ? 'rgba(255,214,10,.04)' : 'rgba(255,255,255,.04)',
+                border: `1.5px solid ${oneThing.trim() ? 'rgba(255,214,10,.4)' : 'rgba(255,255,255,.1)'}`,
+                color: '#f2f2f7', fontSize: 18, fontWeight: 700, lineHeight: 1.6, resize: 'none', outline: 'none', borderRadius: 14,
+                transition: 'border-color .2s',
+              }}
+            />
+          </>
+        )}
 
-        {/* Extra commitment */}
-        <div className="animate-slide-up delay-4 card mb-4">
-          <p className="label-xs mb-2" dir="rtl">פעולה נוספת שלך</p>
-          <input
-            value={commitment}
-            onChange={e => { setCommitment(e.target.value); if (e.target.value.length === 1) playCheck() }}
-            placeholder="התחייבות נוספת…"
-            dir="rtl"
-            className="input-field"
-          />
-        </div>
-
-        {/* Incantation recorder */}
-        <div className="animate-slide-up delay-5 card">
-          <IncantationRecorder saved={incantationB64} onSave={onSaveIncantation} />
-        </div>
-
+        {/* STEP 4: יוצאים */}
+        {step === 4 && (
+          <>
+            <div style={{ marginBottom: 24 }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 8 }}>פעולה נוספת</p>
+              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 12 }} dir="rtl">ההתחייבות שלך</h2>
+              <input
+                value={commitment}
+                onChange={e => { setCommitment(e.target.value); if (e.target.value.length === 1) playCheck() }}
+                placeholder="התחייבות נוספת…"
+                dir="rtl"
+                className="input-field"
+                style={{ fontSize: 16, padding: '16px', borderColor: commitment.trim() ? 'rgba(255,214,10,.35)' : 'rgba(255,255,255,.09)' }}
+              />
+            </div>
+            <div className="card">
+              <IncantationRecorder saved={incantationB64} onSave={onSaveIncantation} />
+            </div>
+          </>
+        )}
       </div>
 
       {/* ── CTA ──────────────────────────────────────────────────── */}
@@ -227,18 +271,33 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
         padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
         borderTop: '1px solid rgba(255,255,255,.09)', background: '#000',
       }}>
-        <button onClick={handleStart} dir="rtl"
-          style={{
-            width: '100%', padding: '18px', fontSize: 17,
-            fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900,
-            background: '#FFD60A', color: '#000',
-            border: 'none', borderRadius: 14, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-            letterSpacing: '-.2px',
-          }}>
-          יוצא לדרך
-          <ChevronRight style={{ width: 20, height: 20 }} strokeWidth={2.5} />
-        </button>
+        {step < 4 ? (
+          <button onClick={next} dir="rtl"
+            style={{
+              width: '100%', padding: '18px', fontSize: 17,
+              fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900,
+              background: '#FFD60A', color: '#000',
+              border: 'none', borderRadius: 14, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+              letterSpacing: '-.2px',
+            }}>
+            המשך
+            <ChevronRight style={{ width: 20, height: 20 }} strokeWidth={2.5} />
+          </button>
+        ) : (
+          <button onClick={handleStart} dir="rtl"
+            style={{
+              width: '100%', padding: '18px', fontSize: 17,
+              fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900,
+              background: '#FFD60A', color: '#000',
+              border: 'none', borderRadius: 14, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+              letterSpacing: '-.2px',
+            }}>
+            יוצא לדרך
+            <ChevronRight style={{ width: 20, height: 20 }} strokeWidth={2.5} />
+          </button>
+        )}
       </div>
     </div>
   )
