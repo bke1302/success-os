@@ -1,0 +1,14 @@
+{
+  "name": "SUCCESS OS",
+  "short_name": "SUCCESS OS",
+  "description": "מערכת ההפעלה של הגדולה שלך",
+  "start_url": "/success-os/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    { "src": "/success-os/logo.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
