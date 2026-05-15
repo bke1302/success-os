@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAppData, getDayPhase } from './hooks/useAppData'
 import { HABITS } from './constants'
 import { getTodayRequiredHabitIds } from './data/program'
@@ -15,6 +15,7 @@ import { RightNav }             from './components/RightNav'
 import { BurnTheBoats }         from './components/BurnTheBoats'
 import { EnergyCheckinOverlay } from './components/EnergyCheckinOverlay'
 import { OnboardingScreen }     from './screens/OnboardingScreen'
+import { SplashScreen }         from './screens/SplashScreen'
 import type { EnergyCheckin }   from './types'
 
 const NAV_W = 62
@@ -29,8 +30,14 @@ export default function App() {
     setView, setUserName,
   } = useAppData()
 
+  const [showSplash,    setShowSplash]    = useState(true)
   const [forceEvening,  setForceEvening]  = useState(false)
   const [checkinPrompt, setCheckinPrompt] = useState<EnergyCheckin['label'] | null>(null)
+  const splashRef = useRef(false)
+  if (!splashRef.current) {
+    splashRef.current = true
+    setTimeout(() => setShowSplash(false), 1500)
+  }
 
   const phase    = getDayPhase()
   const dayCount = state.entries.length + 1
@@ -82,6 +89,8 @@ export default function App() {
 
   // Back button: prime/sub-views go back to home
   const canGoBack = state.currentView !== 'home'
+
+  if (showSplash) return <SplashScreen />
 
   // Show onboarding for new users
   if (!state.userName) {

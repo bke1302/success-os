@@ -85,7 +85,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
   const powerWord = getTodayPowerWord()
   const rank      = getCommanderRank(streak)
 
-  const accentColor = coach.tone === 'fire' ? '#ef4444' : coach.tone === 'green' ? '#22c55e' : '#f5c435'
+  const accentColor = '#FFD60A'
 
   const handleStart = () => {
     playComplete()
@@ -134,8 +134,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
               fontSize: 'clamp(2.2rem, 8vw, 4rem)', lineHeight: 1, color: accentColor,
             }}>{powerWord}</h1>
             <div className="flex items-center gap-1.5 mt-2" style={{ justifyContent: 'flex-end' }}>
-              <span style={{ fontSize: '0.9rem' }}>{rank.emoji}</span>
-              <span style={{ fontSize: 10, fontWeight: 800, color: rank.color, letterSpacing: 1 }}>{rank.rank}</span>
+              <span style={{ fontSize: 10, fontWeight: 800, color: '#FFD60A', letterSpacing: 1, border: '1px solid rgba(255,214,10,.3)', borderRadius: 999, padding: '2px 8px' }}>{rank.rank}</span>
             </div>
           </div>
         </div>
@@ -146,21 +145,21 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
 
         {/* Yesterday win */}
         {lastWin && (
-          <div className="animate-slide-up card mb-4" style={{ borderLeft: '3px solid #22c55e' }}>
-            <p className="label-xs mb-2" style={{ color: '#22c55e' }}>אתמול ניצחת</p>
+          <div className="animate-slide-up card mb-4" style={{ borderRight: '3px solid #FFD60A' }}>
+            <p className="label-xs mb-2" style={{ color: '#FFD60A' }}>אתמול ניצחת</p>
             <p style={{ fontSize: 14, color: 'rgba(232,232,240,0.7)', lineHeight: 1.6 }} dir="rtl">{lastWin}</p>
           </div>
         )}
 
         {/* Coach */}
-        <div className="animate-slide-up delay-1 card mb-4" style={{ borderLeft: `3px solid ${accentColor}` }}>
+        <div className="animate-slide-up delay-1 card mb-4" style={{ borderRight: `3px solid ${accentColor}` }}>
           <p className="label-xs mb-2" style={{ color: accentColor }}>
             הודעה מהמאמן
           </p>
-          <p style={{ fontSize: 18, fontWeight: 900, color: '#e8e8f0', lineHeight: 1.25, marginBottom: 8 }} dir="rtl">
+          <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 19, fontWeight: 900, color: '#fff', lineHeight: 1.25, marginBottom: 8 }} dir="rtl">
             {coach.title}
           </p>
-          <p style={{ fontSize: 13, color: '#6b6b8a', lineHeight: 1.6 }} dir="rtl">
+          <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.4)', lineHeight: 1.65 }} dir="rtl">
             {coach.body}
           </p>
         </div>
@@ -176,10 +175,9 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
                   display: 'flex', alignItems: 'center', gap: 14,
                   padding: '12px 14px', background: 'rgba(255,255,255,.04)',
                   border: '1px solid rgba(255,255,255,.09)', borderRadius: 10,
-                  borderLeft: `3px solid ${accentColor}`,
+                  borderRight: `3px solid ${accentColor}`,
                 }}>
-                <span style={{ fontSize: 10, fontWeight: 900, color: accentColor, minWidth: 16, textAlign: 'center' }}>{i + 1}</span>
-                <span style={{ fontSize: '1.3rem' }}>{habit.emoji}</span>
+                <span style={{ fontSize: 10, fontWeight: 900, color: accentColor, minWidth: 16, textAlign: 'center', fontFamily: 'Barlow Condensed, sans-serif', letterSpacing: '1px' }}>{i + 1}</span>
                 <div dir="rtl" style={{ flex: 1 }}>
                   <p style={{ fontSize: 14, fontWeight: 700, color: '#e8e8f0' }}>{habit.title}</p>
                   <p style={{ fontSize: 11, color: '#6b6b8a', marginTop: 2 }}>{habit.subtitle}</p>
@@ -230,10 +228,16 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
         borderTop: '1px solid rgba(255,255,255,.09)', background: '#000',
       }}>
         <button onClick={handleStart} dir="rtl"
-          className="btn-red w-full flex items-center justify-center gap-3"
-          style={{ padding: '18px', fontSize: 16 }}>
-          יוצא לדרך — יאללה
-          <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
+          style={{
+            width: '100%', padding: '18px', fontSize: 17,
+            fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900,
+            background: '#FFD60A', color: '#000',
+            border: 'none', borderRadius: 14, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            letterSpacing: '-.2px',
+          }}>
+          יוצא לדרך
+          <ChevronRight style={{ width: 20, height: 20 }} strokeWidth={2.5} />
         </button>
       </div>
     </div>
