@@ -58,7 +58,7 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
         {saved && !recording && (
           <button onClick={playRec}
             className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold"
-            style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e', borderRadius: 12 }}
+            style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#FFD60A', borderRadius: 12 }}
             dir="rtl">
             {playing ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             {playing ? 'עצור' : 'נגן'}
@@ -112,7 +112,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
             <div className="flex items-baseline gap-3 mb-3">
               <span className="font-display" style={{ fontSize: '3.5rem', lineHeight: 1, color: accentColor }}>{dayCount}</span>
               <div>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#e8e8f0' }}>יום</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#f2f2f7' }}>יום</p>
                 <p className="label-xs" style={{ marginTop: 2 }}>שבוע {weekNum}/4</p>
               </div>
             </div>
@@ -120,7 +120,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
               {Array.from({ length: 7 }, (_, i) => (
                 <div key={i} style={{
                   width: i < dayInWeek ? 18 : 6, height: 4, borderRadius: 2,
-                  background: i < dayInWeek ? accentColor : '#2a2a3d',
+                  background: i < dayInWeek ? accentColor : 'rgba(255,255,255,.09)',
                   transition: 'width 0.3s',
                 }} />
               ))}
@@ -179,8 +179,8 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
                 }}>
                 <span style={{ fontSize: 10, fontWeight: 900, color: accentColor, minWidth: 16, textAlign: 'center', fontFamily: 'Barlow Condensed, sans-serif', letterSpacing: '1px' }}>{i + 1}</span>
                 <div dir="rtl" style={{ flex: 1 }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: '#e8e8f0' }}>{habit.title}</p>
-                  <p style={{ fontSize: 11, color: '#6b6b8a', marginTop: 2 }}>{habit.subtitle}</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: '#f2f2f7' }}>{habit.title}</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,.35)', marginTop: 2 }}>{habit.subtitle}</p>
                 </div>
               </div>
             ))}
@@ -189,8 +189,8 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
 
         {/* THE ONE THING */}
         <div className="animate-slide-up delay-3 card mb-4">
-          <p className="label-xs mb-1" style={{ color: '#f5c435' }}>THE ONE THING</p>
-          <p style={{ fontSize: 12, color: '#6b6b8a', marginBottom: 12, lineHeight: 1.5 }} dir="rtl">
+          <p className="label-xs mb-1" style={{ color: '#FFD60A' }}>THE ONE THING</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,.35)', marginBottom: 12, lineHeight: 1.5 }} dir="rtl">
             מה הדבר האחד שאם תעשה אותו — הכל אחר יהיה קל יותר?
           </p>
           <input
@@ -199,7 +199,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
             placeholder="הדבר האחד…"
             dir="rtl"
             className="input-field"
-            style={{ borderColor: oneThing.trim() ? 'rgba(245,196,53,0.4)' : '#2a2a3d' }}
+            style={{ borderColor: oneThing.trim() ? 'rgba(245,196,53,0.4)' : 'rgba(255,255,255,.09)' }}
           />
         </div>
 

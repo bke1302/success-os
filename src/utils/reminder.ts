@@ -26,7 +26,7 @@ export async function requestAndScheduleReminder(): Promise<'scheduled' | 'denie
 
   const delay = target.getTime() - now.getTime()
   setTimeout(() => {
-    new Notification('SUCCESS-OS ⚡', {
+    new Notification('SUCCESS OS', {
       body: 'הבוקר שלך מתחיל עכשיו. בוא נקבע את המצב שלך.',
       icon: '/success-os/logo.svg',
       lang: 'he',

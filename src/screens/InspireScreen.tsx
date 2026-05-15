@@ -5,12 +5,12 @@ import { QUOTES, VIDEO_CARDS, CATEGORY_COLORS, type VideoCard } from '../constan
 function YouTubeOverlay({ card, onClose }: { card: VideoCard; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ background: '#000' }}>
-      <div className="shrink-0 flex items-center gap-3" style={{ padding: '16px 20px', background: '#0a0a0f', borderBottom: '1px solid #2a2a3d' }}>
+      <div className="shrink-0 flex items-center gap-3" style={{ padding: '16px 20px', background: '#000', borderBottom: '1px solid rgba(255,255,255,.1)' }}>
         <button onClick={onClose} className="btn-ghost" style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <X className="w-4 h-4" strokeWidth={2} />
         </button>
         <div dir="rtl" className="flex-1 min-w-0">
-          <p style={{ fontSize: 14, fontWeight: 900, color: '#e8e8f0' }} className="truncate">{card.title}</p>
+          <p style={{ fontSize: 14, fontWeight: 900, color: '#f2f2f7' }} className="truncate">{card.title}</p>
           <p className="label-xs">{card.speaker} · {card.duration}</p>
         </div>
       </div>
@@ -61,9 +61,9 @@ function VideoItem({ card, onPlay }: { card: VideoCard; onPlay: () => void }) {
             <span className="label-xs">{card.duration}</span>
             {hasEmbed && <span className="label-xs" style={{ color: '#22c55e' }}>IN-APP</span>}
           </div>
-          <p style={{ fontSize: 14, fontWeight: 900, color: '#e8e8f0', lineHeight: 1.35, marginBottom: 2 }}>{card.title}</p>
+          <p style={{ fontSize: 14, fontWeight: 900, color: '#f2f2f7', lineHeight: 1.35, marginBottom: 2 }}>{card.title}</p>
           <p style={{ fontSize: 11, fontWeight: 700, color: color + 'bb' }}>{card.speaker}</p>
-          <p style={{ fontSize: 12, color: '#6b6b8a', lineHeight: 1.5, marginTop: 4 }}>{card.subtitle}</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,.35)', lineHeight: 1.5, marginTop: 4 }}>{card.subtitle}</p>
         </div>
       </div>
       {hasEmbed ? (
@@ -86,12 +86,12 @@ export function InspireScreen() {
   const embedVideos  = VIDEO_CARDS.filter(v => v.youtubeId)
   const searchVideos = VIDEO_CARDS.filter(v => !v.youtubeId)
   return (
-    <div style={{ height: '100%', overflow: 'hidden', background: '#0a0a0f', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100%', overflow: 'hidden', background: '#000', display: 'flex', flexDirection: 'column' }}>
       {activeVideo && <YouTubeOverlay card={activeVideo} onClose={() => setActiveVideo(null)} />}
-      <div className="shrink-0" style={{ padding: '24px 20px 20px', borderBottom: '1px solid #2a2a3d' }}>
+      <div className="shrink-0" style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,.1)' }}>
         <p className="label-xs mb-2" style={{ color: 'rgba(239,68,68,0.7)' }}>INSPIRE</p>
-        <h1 style={{ fontSize: 26, fontWeight: 900, color: '#e8e8f0' }} dir="rtl">השראה יומית</h1>
-        <p style={{ fontSize: 12, color: '#6b6b8a', marginTop: 4 }} dir="rtl">מילים שמזיזות. סרטונים שמשנים.</p>
+        <h1 style={{ fontSize: 26, fontWeight: 900, color: '#f2f2f7' }} dir="rtl">השראה יומית</h1>
+        <p style={{ fontSize: 12, color: 'rgba(255,255,255,.35)', marginTop: 4 }} dir="rtl">מילים שמזיזות. סרטונים שמשנים.</p>
       </div>
       <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 32px' }}>
         <div className="mb-5"><QuoteSection /></div>
@@ -106,7 +106,7 @@ export function InspireScreen() {
         )}
         {searchVideos.length > 0 && (
           <>
-            <p className="label-xs mb-4">🔗 חיפוש ביוטיוב</p>
+            <p className="label-xs mb-4">חיפוש ביוטיוב</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {searchVideos.map(card => <VideoItem key={card.id} card={card} onPlay={() => {}} />)}
             </div>

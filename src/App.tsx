@@ -103,9 +103,9 @@ export default function App() {
       {/* Partner banner */}
       {partnerData && (
         <div style={{ flexShrink: 0, padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'rgba(10,132,255,.1)', borderBottom: '1px solid rgba(10,132,255,.2)', marginRight: NAV_W }}>
-          <span>👥</span>
+          
           <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(167,170,255,.9)' }} dir="rtl">
-            השותף שלך: {partnerData.streak} 🔥 · {partnerData.totalDays} ימים · ממוצע {partnerData.avgScore}
+            השותף שלך: {partnerData.streak} STREAK · {partnerData.totalDays} ימים · ממוצע {partnerData.avgScore}
           </p>
         </div>
       )}

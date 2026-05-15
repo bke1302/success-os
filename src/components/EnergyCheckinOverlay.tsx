@@ -20,7 +20,7 @@ export function EnergyCheckinOverlay({ label, onSave, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: 'rgba(0,0,0,.85)', padding: '0 16px 32px' }}>
-      <div className="w-full animate-slide-up" style={{ maxWidth: 420, background: '#0c0c0c', border: '1px solid rgba(255,255,255,.09)', borderRadius: 20, borderTop: `3px solid ${color}`, overflow: 'hidden' }}>
+      <div className="w-full animate-slide-up" style={{ maxWidth: 420, background: '#000', border: '1px solid rgba(255,255,255,.09)', borderRadius: 20, borderTop: `3px solid ${color}`, overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', borderBottom: '1px solid rgba(255,255,255,.09)' }}>
           <div dir="rtl">
             <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: '2px', color, textTransform: 'uppercase', marginBottom: 4 }}>צ׳ק-אין {LABEL_TEXT[label]}</p>

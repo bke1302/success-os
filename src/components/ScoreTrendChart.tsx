@@ -8,9 +8,9 @@ interface Props {
 const DAY_LETTERS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש']
 
 function barColor(score: number): string {
-  if (score >= 7) return '#f5c435'
-  if (score >= 5) return '#f97316'
-  return '#ef4444'
+  if (score >= 7) return '#FFD60A'
+  if (score >= 5) return '#FF9F0A'
+  return '#FF375F'
 }
 
 export function ScoreTrendChart({ entries }: Props) {

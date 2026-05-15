@@ -6,10 +6,10 @@ interface Props { entries: DayEntry[] }
 const HEBREW_DAYS = ['א','ב','ג','ד','ה','ו','ש']
 
 function scoreColor(score: number): string {
-  if (score >= 9) return '#f5c435'
+  if (score >= 9) return '#FFD60A'
   if (score >= 7) return '#e8a020'
-  if (score >= 5) return '#f97316'
-  if (score >= 1) return '#ef4444'
+  if (score >= 5) return '#FF9F0A'
+  if (score >= 1) return '#FF375F'
   return 'rgba(255,255,255,0.06)'
 }
 
@@ -121,7 +121,7 @@ export function HeatmapChart({ entries }: Props) {
       <canvas ref={canvasRef} style={{ display: 'block' }} />
       {/* Legend */}
       <div className="flex items-center gap-3 mt-2 justify-end">
-        {[['פחות','rgba(255,255,255,0.06)'], ['5-6','#ef4444'], ['7-8','#f97316'], ['9-10','#f5c435']].map(([l,c]) => (
+        {[['פחות','rgba(255,255,255,0.06)'], ['5-6','#FF375F'], ['7-8','#FF9F0A'], ['9-10','#FFD60A']].map(([l,c]) => (
           <div key={l} className="flex items-center gap-1">
             <div style={{ width: 8, height: 8, borderRadius: 2, background: c }} />
             <span className="text-[8px] text-muted">{l}</span>

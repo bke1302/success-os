@@ -44,13 +44,13 @@ export async function generateWinCard(data: CardData): Promise<string> {
   ctx.font = 'bold 28px sans-serif'
   ctx.fillStyle = 'rgba(255,255,255,0.3)'
   ctx.textAlign = 'left'
-  ctx.fillText('SUCCESS OS ⚡', 100, 128)
+  ctx.fillText('SUCCESS OS', 100, 128)
 
   if (data.streak > 0) {
     ctx.font = 'bold 28px sans-serif'
     ctx.fillStyle = '#f5c435'
     ctx.textAlign = 'right'
-    ctx.fillText(`🔥 ${data.streak} STREAK`, W - 100, 128)
+    ctx.fillText(`${data.streak} STREAK`, W - 100, 128)
   }
 
   // ── Date ─────────────────────────────────────────────────────────
@@ -128,7 +128,7 @@ export async function shareWinCard(data: CardData): Promise<void> {
     const blob = await res.blob()
     const file = new File([blob], 'win.png', { type: 'image/png' })
     if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file], title: 'הניצחון שלי היום 🏆' })
+      await navigator.share({ files: [file], title: 'הניצחון שלי היום' })
       return
     }
   }

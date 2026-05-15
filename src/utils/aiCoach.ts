@@ -62,7 +62,7 @@ export function generateCoachReport(entries: DayEntry[], streak: number): CoachR
   // ── Commitment rate ───────────────────────────────────────────
   const commitRate = Math.round(last30.filter(e => e.evening!.commitmentDone).length / last30.length * 100)
   if (commitRate >= 80) {
-    insights.push(`אתה עומד בהתחייבויות שלך ${commitRate}% מהזמן — זאת רמת קצין 🎖`)
+    insights.push(`אתה עומד בהתחייבויות שלך ${commitRate}% מהזמן — זאת רמת קצין`)
   } else if (commitRate >= 60) {
     insights.push(`${commitRate}% עמידה בהתחייבויות — טוב, אבל הגדולה מתחילה מ-80%. מה מפריע?`)
   } else {
