@@ -273,27 +273,15 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
       }}>
         {step < 4 ? (
           <button onClick={next} dir="rtl"
-            style={{
-              width: '100%', padding: '18px', fontSize: 17,
-              fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900,
-              background: '#FFD60A', color: '#000',
-              border: 'none', borderRadius: 14, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-              letterSpacing: '-.2px',
-            }}>
+            className="btn-gold w-full"
+            style={{ padding: '18px', fontSize: 17, fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900, letterSpacing: '-.2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             המשך
             <ChevronRight style={{ width: 20, height: 20 }} strokeWidth={2.5} />
           </button>
         ) : (
           <button onClick={handleStart} dir="rtl"
-            style={{
-              width: '100%', padding: '18px', fontSize: 17,
-              fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900,
-              background: '#FFD60A', color: '#000',
-              border: 'none', borderRadius: 14, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-              letterSpacing: '-.2px',
-            }}>
+            className="btn-gold w-full"
+            style={{ padding: '18px', fontSize: 17, fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900, letterSpacing: '-.2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             יוצא לדרך
             <ChevronRight style={{ width: 20, height: 20 }} strokeWidth={2.5} />
           </button>

@@ -127,17 +127,8 @@ export function OnboardingScreen({ onComplete }: Props) {
       <button
         onClick={advance}
         disabled={!canAdvance}
-        style={{
-          padding: '18px 40px',
-          fontFamily: '"Frank Ruhl Libre", Georgia, serif',
-          fontSize: 18, fontWeight: 900,
-          background: canAdvance ? '#FFD60A' : 'rgba(255,255,255,.08)',
-          color: canAdvance ? '#000' : 'rgba(255,255,255,.25)',
-          border: 'none', borderRadius: 14,
-          cursor: canAdvance ? 'pointer' : 'not-allowed',
-          transition: 'all .2s',
-          letterSpacing: '-.2px',
-        }}
+        className="btn-gold"
+        style={{ padding: '18px 40px', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 18, letterSpacing: '-.2px' }}
       >{current.cta}</button>
 
       {/* Bottom brand */}

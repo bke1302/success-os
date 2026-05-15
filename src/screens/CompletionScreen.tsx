@@ -50,8 +50,17 @@ export function CompletionScreen({ score, onDone }: Props) {
         cursor: 'pointer',
       }}
     >
-      {/* Score */}
+      {/* Ambient glow behind score */}
       <div style={{
+        position: 'absolute', top: '35%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '75vw', height: '75vw',
+        background: `radial-gradient(circle, ${score >= 7 ? 'rgba(255,214,10,.09)' : 'rgba(255,255,255,.04)'} 0%, transparent 70%)`,
+        pointerEvents: 'none',
+      }} />
+
+      {/* Score */}
+      <div className={score >= 7 ? 'glow-number' : ''} style={{
         fontFamily: '"Frank Ruhl Libre", Georgia, serif',
         fontSize: 'clamp(7rem, 30vw, 12rem)',
         fontWeight: 900, lineHeight: 1,

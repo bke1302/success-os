@@ -86,7 +86,17 @@ export function HomeScreen({ streak, today, userName }: Props) {
       display: 'flex', flexDirection: 'column',
       justifyContent: 'center',
       padding: '0 28px',
+      position: 'relative',
+      overflow: 'hidden',
     }}>
+      {/* Ambient glow */}
+      <div style={{
+        position: 'absolute', top: '10%', left: '50%',
+        transform: 'translateX(-50%)',
+        width: '90vw', height: '90vw',
+        background: 'radial-gradient(circle, rgba(255,214,10,.04) 0%, transparent 62%)',
+        pointerEvents: 'none',
+      }} />
 
       {/* Greeting */}
       <p style={{
@@ -121,7 +131,7 @@ export function HomeScreen({ streak, today, userName }: Props) {
       </div>
 
       {/* Sentences */}
-      <div dir="rtl" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div dir="rtl" style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
         {sentences.map((s, i) => (
           <p key={i} className={`sentence-in s-delay-${i}`} style={{
             fontFamily: '"Frank Ruhl Libre", Georgia, serif',

@@ -41,7 +41,7 @@ export function RightNav({ current, onChange }: Props) {
           fontWeight: 900,
           fontFamily: 'Barlow Condensed, sans-serif',
           letterSpacing: '-1px',
-          background: 'linear-gradient(135deg, #FF375F, #BF5AF2)',
+          background: 'linear-gradient(135deg, #FFD60A, #FF9F0A)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -90,7 +90,8 @@ export function RightNav({ current, onChange }: Props) {
                   width: active ? 20 : 18, height: active ? 20 : 18,
                   color: active ? color : 'rgba(255,255,255,.38)',
                   opacity: active ? 1 : .85,
-                  transition: 'color .18s',
+                  filter: active ? `drop-shadow(0 0 6px ${color}80)` : 'none',
+                  transition: 'color .18s, filter .18s',
                 }}
               />
               <span style={{

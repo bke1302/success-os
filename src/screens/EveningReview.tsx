@@ -120,14 +120,9 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
 
       <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,.09)', background: '#000' }}>
         <button onClick={submit} disabled={!canSubmit}
-          style={{
-            width: '100%', padding: '18px',
-            fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 16, fontWeight: 900,
-            background: canSubmit ? '#FFD60A' : 'rgba(255,255,255,.06)',
-            color: canSubmit ? '#000' : 'rgba(255,255,255,.25)',
-            border: 'none', borderRadius: 14, cursor: canSubmit ? 'pointer' : 'default',
-            transition: 'background .2s, color .2s',
-          }} dir="rtl">
+          className="btn-gold w-full"
+          style={{ padding: '18px', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 16, fontWeight: 900 }}
+          dir="rtl">
           סגור את היום בכבוד
         </button>
       </div>
