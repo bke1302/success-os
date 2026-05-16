@@ -32,7 +32,7 @@ function CoachCard({ entries, streak }: { entries: DayEntry[]; streak: number })
       <button className="w-full" onClick={() => setOpen(v => !v)}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div dir="rtl">
-            <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:c, textTransform:'uppercase', marginBottom:4 }}>AI COACH</p>
+            <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:c, textTransform:'uppercase', marginBottom:4 }}>מאמן AI</p>
             <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:17, fontWeight:700, color:'#f2f2f7' }}>{r.headline}</p>
           </div>
           {open ? <ChevronUp className="w-4 h-4 shrink-0" style={{ color:'rgba(255,255,255,.38)', marginRight:12 }} /> : <ChevronDown className="w-4 h-4 shrink-0" style={{ color:'rgba(255,255,255,.38)', marginRight:12 }} />}
@@ -63,7 +63,7 @@ function AccountabilityCard({ streak, totalDays, avgScore }: { streak: number; t
   }
   return (
     <div className="card">
-      <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,.38)', textTransform:'uppercase', marginBottom:10 }}>ACCOUNTABILITY PARTNER</p>
+      <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,.38)', textTransform:'uppercase', marginBottom:10 }}>שותף לאחריות</p>
       <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color:'rgba(255,255,255,.38)', lineHeight:1.5, marginBottom:12 }} dir="rtl">שתף קישור עם חבר — הוא יראה את ה-streak שלך.</p>
       <button onClick={copy} className="btn-ghost w-full" style={{ padding:'12px', fontFamily:"'Heebo', sans-serif", fontSize:13, display:'flex', alignItems:'center', justifyContent:'center', gap:8 }} dir="rtl">
         {copied ? 'הועתק' : 'העתק לינק'}
@@ -165,7 +165,7 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
                   {ev.lesson && <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color:'rgba(255,255,255,.38)', lineHeight:1.5, marginBottom:6 }} dir="rtl">{ev.lesson}</p>}
                   <div style={{ display:'flex', alignItems:'center', gap:10, marginTop:8 }}>
                     <div style={{ width:5, height:5, borderRadius:'50%', background: ev.commitmentDone ? '#30D158' : '#FF375F', flexShrink:0 }} />
-                    <span style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:10, fontWeight:700, letterSpacing:'1px', color: ev.commitmentDone ? '#30D158' : '#FF375F' }} dir="rtl">{ev.commitmentDone ? 'עמדתי' : 'לא הצלחתי'}</span>
+                    <span style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:10, fontWeight:700, letterSpacing:'1px', color: ev.commitmentDone ? '#30D158' : '#FF375F' }} dir="rtl">{ev.commitmentDone ? 'עמדתי' : 'לא הספקתי'}</span>
                     {entry.morning?.oneThing && <span style={{ fontFamily:"'Heebo', sans-serif", fontSize:11, color:'rgba(255,255,255,.38)' }} dir="rtl">· {entry.morning.oneThing}</span>}
                   </div>
                   {entry.morning && <div style={{ marginTop:10 }}><EnergySlider value={entry.morning.energyLevel} onChange={() => {}} size="sm" readonly /></div>}

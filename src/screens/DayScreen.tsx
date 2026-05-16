@@ -134,7 +134,7 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
             className="btn-ghost w-full mb-4"
             style={{ padding: '14px', fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }} dir="rtl">
             <Zap className="w-4 h-4" style={{ color: '#FFD60A' }} />
-            RAISE YOUR STATE — קום לשנייה
+            שנה מצב — קום לשנייה
           </button>
         )}
 
@@ -145,7 +145,7 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
         )}
 
         <div className="card">
-          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.38)', textTransform: 'uppercase', marginBottom: 12 }}>DAILY WISDOM</p>
+          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.38)', textTransform: 'uppercase', marginBottom: 12 }}>חוכמת היום</p>
           <p style={{
             fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 16, fontWeight: 400, color: 'rgba(255,214,10,.8)', lineHeight: 1.75,
             opacity: quoteVisible ? 1 : 0, transition: 'opacity 0.4s',
@@ -166,8 +166,8 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
       {!evening && (
         <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,.09)', background: '#000' }}>
           <button onClick={onFinishDay}
-            className="btn-red w-full"
-            style={{ padding: '18px', fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }} dir="rtl">
+            className="btn-gold w-full"
+            style={{ padding: '18px', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 16, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }} dir="rtl">
             <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
             סגור את היום — סיכום 3 דקות
           </button>

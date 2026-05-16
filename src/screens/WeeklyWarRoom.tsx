@@ -37,7 +37,7 @@ export function WeeklyWarRoom({ entries, plans, onSave }: Props) {
   return (
     <div style={{ height:'100%', overflow:'hidden', background:'#000', display:'flex', flexDirection:'column' }}>
       <div className="shrink-0" style={{ padding:'24px 20px 20px', borderBottom:'1px solid rgba(255,255,255,.09)' }}>
-        <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'rgba(255,159,10,.7)', textTransform:'uppercase', marginBottom:6 }}>WEEKLY WAR ROOM</p>
+        <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'rgba(255,159,10,.7)', textTransform:'uppercase', marginBottom:6 }}>חדר מלחמה שבועי</p>
         <h1 style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:26, fontWeight:900, color:'#f2f2f7' }} dir="rtl">חדר המלחמה</h1>
         <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color:'rgba(255,255,255,.38)', marginTop:4 }} dir="rtl">שבוע {weekLabel}</p>
       </div>
@@ -96,7 +96,7 @@ export function WeeklyWarRoom({ entries, plans, onSave }: Props) {
             נעול — יאללה לשבוע!
           </div>
         ) : (
-          <button onClick={handleSave} disabled={!canSave} className="btn-red w-full" style={{ padding:'18px', fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:16 }} dir="rtl">
+          <button onClick={handleSave} disabled={!canSave} className="btn-gold w-full" style={{ padding:'18px', fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:16, fontWeight:900 }} dir="rtl">
             נעל את השבוע
           </button>
         )}

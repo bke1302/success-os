@@ -41,7 +41,9 @@ function HabitTimerOverlay({ habit, onClose, onDone }: { habit: Habit; onClose: 
       </button>
       <div className="flex flex-col items-center gap-8 w-full max-w-xs animate-slide-up">
         <div className="text-center">
-          <span style={{ fontSize: '3.5rem' }}>{habit.emoji}</span>
+          <div style={{ width: 56, height: 56, borderRadius: '50%', background: `${color}22`, border: `2px solid ${color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+            <div style={{ width: 16, height: 16, borderRadius: '50%', background: color, boxShadow: `0 0 12px ${color}99` }} />
+          </div>
           <h2 style={{ fontSize: 22, fontWeight: 900, color: '#f2f2f7', marginTop: 12 }} dir="rtl">{habit.title}</h2>
         </div>
         <svg width={140} height={140} viewBox="0 0 140 140">
@@ -164,7 +166,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
                   }}>
                   {done && <span className="check-bounce" style={{ color: '#000', fontSize: 10, fontWeight: 900 }}>✓</span>}
                 </button>
-                <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{habit.emoji}</span>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, boxShadow: `0 0 6px ${color}88` }} />
                 <div dir="rtl" style={{ flex: 1 }}>
                   <p style={{ fontSize: 14, fontWeight: 700, color: done ? 'rgba(255,255,255,.35)' : '#f2f2f7', textDecoration: done ? 'line-through' : 'none' }}>{habit.title}</p>
                   {!done && <p style={{ fontSize: 11, color: 'rgba(255,255,255,.35)', marginTop: 2 }}>{habit.subtitle}</p>}
@@ -209,7 +211,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
                   }}>
                   {done && <span className="check-bounce" style={{ color: '#000', fontSize: 9, fontWeight: 900 }}>✓</span>}
                 </button>
-                <span style={{ fontSize: '1rem', flexShrink: 0 }}>{habit.emoji}</span>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0, opacity: 0.7 }} />
                 <p dir="rtl" style={{
                   fontSize: 13, flex: 1, fontWeight: done ? 400 : 600,
                   color: done ? 'rgba(255,255,255,.35)' : 'rgba(232,232,240,0.75)',
