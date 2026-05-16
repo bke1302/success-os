@@ -6,6 +6,7 @@ import { getCoachMessage } from '../utils/coach'
 import { playComplete, playCheck } from '../utils/sounds'
 import { isRecordingSupported, startRecording, playBase64Audio } from '../utils/recorder'
 import type { MorningEntry, UserGoal } from '../types'
+import { useTheme } from '../contexts/ThemeContext'
 
 const GOAL_COLORS: Record<UserGoal['category'], string> = {
   'עסקי':   '#FFD60A',
@@ -28,12 +29,13 @@ interface Props {
 }
 
 function StepDots({ step, total }: { step: number; total: number }) {
+  const T = useTheme()
   return (
     <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'center' }}>
       {Array.from({ length: total }, (_, i) => (
         <div key={i} style={{
           width: i + 1 === step ? 20 : 6, height: 6, borderRadius: 3,
-          background: i + 1 <= step ? '#FFD60A' : 'rgba(255,255,255,.12)',
+          background: i + 1 <= step ? '#FFD60A' : T.border2,
           transition: 'all .3s cubic-bezier(.16,1,.3,1)',
         }} />
       ))}
@@ -42,6 +44,7 @@ function StepDots({ step, total }: { step: number; total: number }) {
 }
 
 function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: string) => void }) {
+  const T = useTheme()
   const [recording, setRecording] = useState(false)
   const [playing,   setPlaying]   = useState(false)
   const stopRef  = useRef<(() => void) | null>(null)
@@ -63,7 +66,7 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
 
   return (
     <div>
-      <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.38)', textTransform: 'uppercase', marginBottom: 12 }}>הצהרה בקולך</p>
+      <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 12 }}>הצהרה בקולך</p>
       <div className="flex items-center gap-2">
         {!recording ? (
           <button onClick={startRec}
@@ -94,6 +97,7 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
 }
 
 export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayHabitsPct, incantationB64, onSaveIncantation, userGoals = [], onGoToProfile }: Props) {
+  const T = useTheme()
   const [step,       setStep]       = useState<1|2|3|4>(1)
   const [commitment, setCommitment] = useState('')
   const [oneThing,   setOneThing]   = useState('')
@@ -130,18 +134,18 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
   }
 
   return (
-    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#000' }}>
+    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
 
       {/* ── TOP BAR ─────────────────────────────────────────────── */}
-      <div className="shrink-0" style={{ padding: '20px 20px 16px', borderBottom: '1px solid rgba(255,255,255,.09)' }}>
+      <div className="shrink-0" style={{ padding: '20px 20px 16px', borderBottom: `1px solid ${T.border}` }}>
         <div className="flex items-center justify-between mb-4">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {step > 1 && (
-              <button onClick={back} style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 10, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'rgba(255,255,255,.45)' }}>
+              <button onClick={back} style={{ background: T.tagBg, border: `1px solid ${T.border}`, borderRadius: 10, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: T.textMuted }}>
                 <ChevronLeft style={{ width: 16, height: 16 }} strokeWidth={2} />
               </button>
             )}
-            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.35)', textTransform: 'uppercase' }}>
+            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase' }}>
               {step === 1 && 'הכנה'}
               {step === 2 && 'המשימות'}
               {step === 3 && 'ONE THING'}
@@ -150,7 +154,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 10, fontWeight: 800, color: '#FFD60A', letterSpacing: 1, border: '1px solid rgba(255,214,10,.3)', borderRadius: 999, padding: '2px 8px', fontFamily: 'Barlow Condensed, sans-serif' }}>{rank.rank}</span>
-            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,.25)' }}>יום {dayCount}</span>
+            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 11, fontWeight: 700, color: T.textDim }}>יום {dayCount}</span>
           </div>
         </div>
         <StepDots step={step} total={4} />
@@ -162,36 +166,33 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
         {/* STEP 1: הכנה */}
         {step === 1 && (
           <>
-            {/* Power word */}
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.5)', textTransform: 'uppercase', marginBottom: 8 }}>מילת הכוח של היום</p>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.6)', textTransform: 'uppercase', marginBottom: 8 }}>מילת הכוח של היום</p>
               <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(3rem, 14vw, 5rem)', fontWeight: 900, lineHeight: 1, color: accentColor, letterSpacing: '-2px' }} dir="rtl">{powerWord}</h1>
-              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,.22)', letterSpacing: '1.5px', marginTop: 8 }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, color: T.textDim, letterSpacing: '1.5px', marginTop: 8 }}>
                 שבוע {weekNum}/4 · יום {dayInWeek}/7
               </p>
               <div className="flex gap-1.5" style={{ justifyContent: 'center', marginTop: 10 }}>
                 {Array.from({ length: 7 }, (_, i) => (
                   <div key={i} style={{
                     width: i < dayInWeek ? 18 : 6, height: 4, borderRadius: 2,
-                    background: i < dayInWeek ? accentColor : 'rgba(255,255,255,.09)',
+                    background: i < dayInWeek ? accentColor : T.border2,
                     transition: 'width 0.3s',
                   }} />
                 ))}
               </div>
             </div>
 
-            {/* Coach message */}
             <div className="card mb-4" style={{ borderRight: `3px solid ${accentColor}` }}>
               <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 8 }}>הודעה מהמאמן</p>
-              <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 19, fontWeight: 900, color: '#fff', lineHeight: 1.25, marginBottom: 8 }} dir="rtl">{coach.title}</p>
-              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.4)', lineHeight: 1.65 }} dir="rtl">{coach.body}</p>
+              <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 19, fontWeight: 900, color: T.text, lineHeight: 1.25, marginBottom: 8 }} dir="rtl">{coach.title}</p>
+              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.textMuted, lineHeight: 1.65 }} dir="rtl">{coach.body}</p>
             </div>
 
-            {/* Yesterday's win */}
             {lastWin && (
               <div className="card" style={{ borderRight: '3px solid rgba(255,214,10,.4)' }}>
                 <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#FFD60A', textTransform: 'uppercase', marginBottom: 8 }}>אתמול ניצחת</p>
-                <p style={{ fontSize: 14, color: 'rgba(232,232,240,0.7)', lineHeight: 1.6 }} dir="rtl">{lastWin}</p>
+                <p style={{ fontSize: 14, color: T.textSub, lineHeight: 1.6 }} dir="rtl">{lastWin}</p>
               </div>
             )}
           </>
@@ -202,23 +203,23 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
           <>
             <div style={{ marginBottom: 20 }}>
               <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 6 }}>{theme.title}</p>
-              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 4 }} dir="rtl">המשימות שלך היום</h2>
-              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 12, color: 'rgba(255,255,255,.35)', lineHeight: 1.5 }} dir="rtl">{theme.desc}</p>
+              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: T.text, lineHeight: 1.1, marginBottom: 4 }} dir="rtl">המשימות שלך היום</h2>
+              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 12, color: T.textMuted, lineHeight: 1.5 }} dir="rtl">{theme.desc}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {requiredHabits.map((habit, i) => (
                 <div key={habit.id}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 14,
-                    padding: '16px 16px', background: 'rgba(255,255,255,.04)',
-                    border: '1px solid rgba(255,255,255,.09)', borderRadius: 12,
+                    padding: '16px 16px', background: T.tagBg,
+                    border: `1px solid ${T.border}`, borderRadius: 12,
                     borderRight: `3px solid ${accentColor}`,
                     animation: `sentenceIn .35s cubic-bezier(.16,1,.3,1) ${i * 60}ms both`,
                   }}>
                   <span style={{ fontSize: 11, fontWeight: 900, color: accentColor, minWidth: 20, textAlign: 'center', fontFamily: 'Barlow Condensed, sans-serif', letterSpacing: '1px' }}>{i + 1}</span>
                   <div dir="rtl" style={{ flex: 1 }}>
-                    <p style={{ fontSize: 15, fontWeight: 700, color: '#f2f2f7' }}>{habit.title}</p>
-                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,.35)', marginTop: 3, lineHeight: 1.4 }}>{habit.subtitle}</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: T.text }}>{habit.title}</p>
+                    <p style={{ fontSize: 12, color: T.textMuted, marginTop: 3, lineHeight: 1.4 }}>{habit.subtitle}</p>
                   </div>
                 </div>
               ))}
@@ -231,21 +232,20 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
           <>
             <div style={{ marginBottom: 20 }}>
               <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 8 }}>THE ONE THING</p>
-              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: 10 }} dir="rtl">מה הדבר האחד?</h2>
-              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.4)', lineHeight: 1.65 }} dir="rtl">
+              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: T.text, lineHeight: 1.15, marginBottom: 10 }} dir="rtl">מה הדבר האחד?</h2>
+              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.textMuted, lineHeight: 1.65 }} dir="rtl">
                 מה הדבר האחד שאם תעשה אותו היום — הכל אחר יהיה קל יותר?
               </p>
             </div>
 
-            {/* User goals reference */}
             {userGoals.length > 0 ? (
               <div style={{ marginBottom: 16 }}>
-                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.28)', textTransform: 'uppercase', marginBottom: 8 }}>לקראת מה אתה עובד?</p>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textDim, textTransform: 'uppercase', marginBottom: 8 }}>לקראת מה אתה עובד?</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {userGoals.slice(0, 3).map(g => (
                     <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: `${GOAL_COLORS[g.category]}0d`, border: `1px solid ${GOAL_COLORS[g.category]}28`, borderRadius: 10 }}>
                       <div style={{ width: 6, height: 6, borderRadius: '50%', background: GOAL_COLORS[g.category], flexShrink: 0 }} />
-                      <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.65)' }} dir="rtl">{g.title}</p>
+                      <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.textSub }} dir="rtl">{g.title}</p>
                     </div>
                   ))}
                 </div>
@@ -268,9 +268,9 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
               autoFocus
               style={{
                 width: '100%', padding: '16px', fontFamily: '"Frank Ruhl Libre", Georgia, serif',
-                background: oneThing.trim() ? 'rgba(255,214,10,.04)' : 'rgba(255,255,255,.04)',
-                border: `1.5px solid ${oneThing.trim() ? 'rgba(255,214,10,.4)' : 'rgba(255,255,255,.1)'}`,
-                color: '#f2f2f7', fontSize: 18, fontWeight: 700, lineHeight: 1.6, resize: 'none', outline: 'none', borderRadius: 14,
+                background: oneThing.trim() ? 'rgba(255,214,10,.05)' : T.tagBg,
+                border: `1.5px solid ${oneThing.trim() ? 'rgba(255,214,10,.4)' : T.border}`,
+                color: T.text, fontSize: 18, fontWeight: 700, lineHeight: 1.6, resize: 'none', outline: 'none', borderRadius: 14,
                 transition: 'border-color .2s',
               }}
             />
@@ -282,14 +282,14 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
           <>
             <div style={{ marginBottom: 24 }}>
               <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 8 }}>פעולה נוספת</p>
-              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 12 }} dir="rtl">ההתחייבות שלך</h2>
+              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: T.text, lineHeight: 1.1, marginBottom: 12 }} dir="rtl">ההתחייבות שלך</h2>
               <input
                 value={commitment}
                 onChange={e => { setCommitment(e.target.value); if (e.target.value.length === 1) playCheck() }}
                 placeholder="התחייבות נוספת…"
                 dir="rtl"
                 className="input-field"
-                style={{ fontSize: 16, padding: '16px', borderColor: commitment.trim() ? 'rgba(255,214,10,.35)' : 'rgba(255,255,255,.09)' }}
+                style={{ fontSize: 16, padding: '16px', borderColor: commitment.trim() ? 'rgba(255,214,10,.35)' : T.border }}
               />
             </div>
             <div className="card">
@@ -302,7 +302,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
       {/* ── CTA ──────────────────────────────────────────────────── */}
       <div className="shrink-0" style={{
         padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
-        borderTop: '1px solid rgba(255,255,255,.09)', background: '#000',
+        borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s',
       }}>
         {step < 4 ? (
           <button onClick={next} dir="rtl"

@@ -19,6 +19,8 @@ import { ProfileScreen }        from './screens/ProfileScreen'
 import { SplashScreen }         from './screens/SplashScreen'
 import { CompletionScreen }     from './screens/CompletionScreen'
 import type { EnergyCheckin }   from './types'
+import { ThemeContext }          from './contexts/ThemeContext'
+import { darkTokens, lightTokens } from './theme'
 
 const NAV_W = 62
 
@@ -108,8 +110,11 @@ export default function App() {
     return <OnboardingScreen onComplete={name => setUserName(name)} />
   }
 
+  const tokens = theme === 'dark' ? darkTokens : lightTokens
+
   return (
-    <div data-theme={theme} style={{ background: 'var(--app-bg)', height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'background .3s' }}>
+    <ThemeContext.Provider value={tokens}>
+    <div data-theme={theme} style={{ background: tokens.bg, height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'background .3s' }}>
 
       {/* Partner banner */}
       {partnerData && (
@@ -147,26 +152,26 @@ export default function App() {
           flexShrink: 0,
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 16px',
-          background: 'var(--surface-elevated)',
-          borderBottom: '1px solid var(--nav-border)',
+          background: tokens.bgRaised,
+          borderBottom: `1px solid ${tokens.border}`,
           marginRight: NAV_W,
           transition: 'background .3s',
         }}>
           <button
             onClick={() => { setView('home'); setForceEvening(false) }}
             style={{
-              background: 'var(--glass)',
-              border: '1px solid var(--border)',
+              background: tokens.tagBg,
+              border: `1px solid ${tokens.border}`,
               borderRadius: 10, width: 36, height: 36,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: 'var(--muted2)',
+              cursor: 'pointer', color: tokens.textSub,
               fontSize: 16, fontWeight: 700,
             }}>
             ←
           </button>
           <span style={{
             fontSize: 12, fontWeight: 700, letterSpacing: '1.5px',
-            color: 'var(--muted)', textTransform: 'uppercase',
+            color: tokens.textMuted, textTransform: 'uppercase',
             fontFamily: 'Barlow Condensed, sans-serif',
           }}>
             {state.currentView === 'prime' && 'פריים'}
@@ -296,5 +301,6 @@ export default function App() {
         </div>
       )}
     </div>
+    </ThemeContext.Provider>
   )
 }

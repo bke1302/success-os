@@ -7,6 +7,7 @@ import { getReminderTime, setReminderTime } from '../utils/reminder'
 import { generateCoachReport } from '../utils/aiCoach'
 import { shareWinCard } from '../utils/shareCard'
 import type { DayEntry } from '../types'
+import { useTheme } from '../contexts/ThemeContext'
 
 interface Props { entries: DayEntry[]; streak: number; totalDays: number }
 
@@ -24,6 +25,7 @@ function formatDate(iso: string) {
 }
 
 function CoachCard({ entries, streak }: { entries: DayEntry[]; streak: number }) {
+  const T = useTheme()
   const [open, setOpen] = useState(false)
   const r = generateCoachReport(entries, streak)
   const c = r.tone === 'fire' ? '#FF375F' : r.tone === 'green' ? '#30D158' : '#FFD60A'
@@ -33,19 +35,21 @@ function CoachCard({ entries, streak }: { entries: DayEntry[]; streak: number })
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div dir="rtl">
             <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:c, textTransform:'uppercase', marginBottom:4 }}>מאמן AI</p>
-            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:17, fontWeight:700, color:'#f2f2f7' }}>{r.headline}</p>
+            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:17, fontWeight:700, color: T.text }}>{r.headline}</p>
           </div>
-          {open ? <ChevronUp className="w-4 h-4 shrink-0" style={{ color:'rgba(255,255,255,.38)', marginRight:12 }} /> : <ChevronDown className="w-4 h-4 shrink-0" style={{ color:'rgba(255,255,255,.38)', marginRight:12 }} />}
+          {open
+            ? <ChevronUp className="w-4 h-4 shrink-0" style={{ color: T.textMuted, marginRight:12 }} />
+            : <ChevronDown className="w-4 h-4 shrink-0" style={{ color: T.textMuted, marginRight:12 }} />}
         </div>
       </button>
       {open && (
         <div style={{ marginTop:16 }} className="animate-slide-up">
           {r.insights.map((ins, i) => (
-            <p key={i} style={{ fontFamily:"'Heebo', sans-serif", fontSize:13, color:'rgba(242,242,247,.55)', lineHeight:1.6, marginBottom:8 }} dir="rtl">{ins}</p>
+            <p key={i} style={{ fontFamily:"'Heebo', sans-serif", fontSize:13, color: T.textSub, lineHeight:1.6, marginBottom:8 }} dir="rtl">{ins}</p>
           ))}
-          <div style={{ background:'rgba(255,255,255,.04)', borderRight:`2px solid ${c}`, padding:'12px 14px', borderRadius:10, marginTop:12 }}>
+          <div style={{ background: T.tagBg, borderRight:`2px solid ${c}`, padding:'12px 14px', borderRadius:10, marginTop:12 }}>
             <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:c, textTransform:'uppercase', marginBottom:6 }}>אתגר השבוע</p>
-            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:14, fontWeight:700, color:'#f2f2f7', lineHeight:1.5 }} dir="rtl">{r.challenge}</p>
+            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:14, fontWeight:700, color: T.text, lineHeight:1.5 }} dir="rtl">{r.challenge}</p>
           </div>
         </div>
       )}
@@ -54,6 +58,7 @@ function CoachCard({ entries, streak }: { entries: DayEntry[]; streak: number })
 }
 
 function AccountabilityCard({ streak, totalDays, avgScore }: { streak: number; totalDays: number; avgScore: number }) {
+  const T = useTheme()
   const [copied, setCopied] = useState(false)
   const shareData = btoa(JSON.stringify({ streak, totalDays, avgScore: avgScore.toFixed(1), date: new Date().toISOString().slice(0,10) }))
   const url = `${window.location.origin}${window.location.pathname}?partner=${shareData}`
@@ -63,8 +68,8 @@ function AccountabilityCard({ streak, totalDays, avgScore }: { streak: number; t
   }
   return (
     <div className="card">
-      <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,.38)', textTransform:'uppercase', marginBottom:10 }}>שותף לאחריות</p>
-      <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color:'rgba(255,255,255,.38)', lineHeight:1.5, marginBottom:12 }} dir="rtl">שתף קישור עם חבר — הוא יראה את ה-streak שלך.</p>
+      <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color: T.textMuted, textTransform:'uppercase', marginBottom:10 }}>שותף לאחריות</p>
+      <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color: T.textMuted, lineHeight:1.5, marginBottom:12 }} dir="rtl">שתף קישור עם חבר — הוא יראה את ה-streak שלך.</p>
       <button onClick={copy} className="btn-ghost w-full" style={{ padding:'12px', fontFamily:"'Heebo', sans-serif", fontSize:13, display:'flex', alignItems:'center', justifyContent:'center', gap:8 }} dir="rtl">
         {copied ? 'הועתק' : 'העתק לינק'}
       </button>
@@ -73,6 +78,7 @@ function AccountabilityCard({ streak, totalDays, avgScore }: { streak: number; t
 }
 
 export function WinsWall({ entries, streak, totalDays }: Props) {
+  const T = useTheme()
   const [showSettings, setShowSettings] = useState(false)
   const [reminderTime, setRT]           = useState(getReminderTime)
   const [sharingEntry, setSharingEntry] = useState<string | null>(null)
@@ -89,34 +95,34 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
   }
 
   return (
-    <div style={{ height:'100%', overflow:'hidden', background:'#000', display:'flex', flexDirection:'column' }}>
-      <div className="shrink-0" style={{ padding:'24px 20px 20px', borderBottom:'1px solid rgba(255,255,255,.09)' }}>
+    <div style={{ height:'100%', overflow:'hidden', background: T.bg, display:'flex', flexDirection:'column', transition: 'background .3s' }}>
+      <div className="shrink-0" style={{ padding:'24px 20px 20px', borderBottom: `1px solid ${T.border}` }}>
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:20 }}>
           <div>
-            <h1 style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:26, fontWeight:900, color:'#f2f2f7' }} dir="rtl">קיר הגדילה</h1>
-            <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color:'rgba(255,255,255,.38)', marginTop:3 }} dir="rtl">כל יום שסגרת הוא הוכחה.</p>
+            <h1 style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:26, fontWeight:900, color: T.text }} dir="rtl">קיר הגדילה</h1>
+            <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color: T.textMuted, marginTop:3 }} dir="rtl">כל יום שסגרת הוא הוכחה.</p>
           </div>
           <button onClick={() => setShowSettings(s=>!s)} className="btn-ghost" style={{ width:38, height:38, display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <Settings className="w-4 h-4" strokeWidth={1.5} style={{ color: showSettings ? '#FFD60A' : 'rgba(255,255,255,.38)' }} />
+            <Settings className="w-4 h-4" strokeWidth={1.5} style={{ color: showSettings ? '#FFD60A' : T.textMuted }} />
           </button>
         </div>
         {showSettings && (
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16, background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.09)', borderRadius:12, padding:'12px 14px' }}>
-            <span style={{ fontFamily:"'Heebo', sans-serif", fontSize:13, fontWeight:600, color:'#f2f2f7' }} dir="rtl">תזכורת בוקר</span>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16, background: T.tagBg, border:`1px solid ${T.border}`, borderRadius:12, padding:'12px 14px' }}>
+            <span style={{ fontFamily:"'Heebo', sans-serif", fontSize:13, fontWeight:600, color: T.text }} dir="rtl">תזכורת בוקר</span>
             <input type="time" value={reminderTime} onChange={e => { setRT(e.target.value); setReminderTime(e.target.value) }}
-              style={{ background:'transparent', border:'1px solid rgba(255,214,10,.3)', color:'#FFD60A', padding:'6px 10px', fontFamily:"'Barlow Condensed', sans-serif", fontSize:13, fontWeight:700, outline:'none', borderRadius:8, colorScheme:'dark' }} />
+              style={{ background:'transparent', border:'1px solid rgba(255,214,10,.3)', color:'#FFD60A', padding:'6px 10px', fontFamily:"'Barlow Condensed', sans-serif", fontSize:13, fontWeight:700, outline:'none', borderRadius:8, colorScheme: T.isDark ? 'dark' : 'light' }} />
           </div>
         )}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8 }}>
           {[
             { v: streak,           l:'STREAK', c:'#FFD60A' },
-            { v: totalDays,        l:'ימים',   c:'#f2f2f7' },
-            { v: String(avgScore), l:'ממוצע',  c:'#f2f2f7' },
+            { v: totalDays,        l:'ימים',   c: T.text },
+            { v: String(avgScore), l:'ממוצע',  c: T.text },
             { v: `${commitRate}%`, l:'עמדתי', c:'#30D158' },
           ].map(({ v, l, c }) => (
-            <div key={l} style={{ textAlign:'center', padding:'12px 8px', background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.09)', borderTop:`2px solid ${c === '#FFD60A' ? '#FFD60A' : 'rgba(255,255,255,.09)'}`, borderRadius:12 }}>
+            <div key={l} style={{ textAlign:'center', padding:'12px 8px', background: T.tagBg, border:`1px solid ${T.border}`, borderTop:`2px solid ${c === '#FFD60A' ? '#FFD60A' : T.border}`, borderRadius:12 }}>
               <div style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:'1.8rem', color:c, lineHeight:1 }}>{v}</div>
-              <div style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:8, fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase', color:'rgba(255,255,255,.38)', marginTop:5 }}>{l}</div>
+              <div style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:8, fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase', color: T.textMuted, marginTop:5 }}>{l}</div>
             </div>
           ))}
         </div>
@@ -135,8 +141,8 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
 
         {withEvening.length === 0 ? (
           <div style={{ textAlign:'center', padding:'60px 20px' }}>
-            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:22, fontWeight:700, color:'#f2f2f7', marginBottom:10 }} dir="rtl">עדיין אין ימים סגורים</p>
-            <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:13, color:'rgba(255,255,255,.38)', lineHeight:1.6 }} dir="rtl">סיים יום ראשון עם סיכום ערב.</p>
+            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:22, fontWeight:700, color: T.text, marginBottom:10 }} dir="rtl">עדיין אין ימים סגורים</p>
+            <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:13, color: T.textMuted, lineHeight:1.6 }} dir="rtl">סיים יום ראשון עם סיכום ערב.</p>
           </div>
         ) : (
           <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
@@ -147,7 +153,7 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
                 <div key={entry.date} className="card" style={{ borderRight:`3px solid ${c}` }}>
                   <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:12 }}>
                     <div>
-                      <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,.38)', textTransform:'uppercase', marginBottom:4 }}>{formatDate(entry.date)}</p>
+                      <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color: T.textMuted, textTransform:'uppercase', marginBottom:4 }}>{formatDate(entry.date)}</p>
                       {entry.morning?.identity && <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, color:'rgba(255,214,10,.6)', letterSpacing:'1px' }} dir="rtl">{entry.morning.identity}</p>}
                     </div>
                     <div style={{ display:'flex', alignItems:'center', gap:10 }}>
@@ -161,12 +167,12 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
                       </button>
                     </div>
                   </div>
-                  <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:14, fontWeight:500, color:'#f2f2f7', lineHeight:1.5, marginBottom:6 }} dir="rtl">{ev.given ?? ev.win}</p>
-                  {ev.lesson && <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color:'rgba(255,255,255,.38)', lineHeight:1.5, marginBottom:6 }} dir="rtl">{ev.lesson}</p>}
+                  <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:14, fontWeight:500, color: T.text, lineHeight:1.5, marginBottom:6 }} dir="rtl">{ev.given ?? ev.win}</p>
+                  {ev.lesson && <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color: T.textMuted, lineHeight:1.5, marginBottom:6 }} dir="rtl">{ev.lesson}</p>}
                   <div style={{ display:'flex', alignItems:'center', gap:10, marginTop:8 }}>
                     <div style={{ width:5, height:5, borderRadius:'50%', background: ev.commitmentDone ? '#30D158' : '#FF375F', flexShrink:0 }} />
                     <span style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:10, fontWeight:700, letterSpacing:'1px', color: ev.commitmentDone ? '#30D158' : '#FF375F' }} dir="rtl">{ev.commitmentDone ? 'עמדתי' : 'לא הספקתי'}</span>
-                    {entry.morning?.oneThing && <span style={{ fontFamily:"'Heebo', sans-serif", fontSize:11, color:'rgba(255,255,255,.38)' }} dir="rtl">· {entry.morning.oneThing}</span>}
+                    {entry.morning?.oneThing && <span style={{ fontFamily:"'Heebo', sans-serif", fontSize:11, color: T.textMuted }} dir="rtl">· {entry.morning.oneThing}</span>}
                   </div>
                   {entry.morning && <div style={{ marginTop:10 }}><EnergySlider value={entry.morning.energyLevel} onChange={() => {}} size="sm" readonly /></div>}
                 </div>

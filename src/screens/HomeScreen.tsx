@@ -1,4 +1,5 @@
 import type { DayEntry } from '../types'
+import { useTheme } from '../contexts/ThemeContext'
 
 interface Props {
   dayCount:   number
@@ -83,6 +84,7 @@ function ProgressSection({ entries, streak, onNavigate }: {
   streak: number
   onNavigate: Props['onNavigate']
 }) {
+  const T = useTheme()
   const withEvening = entries.filter(e => e.evening).slice(-14)
   const last7 = entries.filter(e => e.evening).slice(-7)
   const avg7 = last7.length
@@ -99,20 +101,22 @@ function ProgressSection({ entries, streak, onNavigate }: {
         cursor: 'pointer',
         borderRadius: 16,
         padding: '16px 18px',
-        background: 'linear-gradient(160deg, rgba(255,255,255,.09) 0%, rgba(255,255,255,.05) 100%)',
-        border: '1px solid rgba(255,255,255,.12)',
-        boxShadow: '0 2px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06)',
+        background: T.isDark
+          ? 'linear-gradient(160deg, rgba(255,255,255,.09) 0%, rgba(255,255,255,.05) 100%)'
+          : '#FFFFFF',
+        border: `1px solid ${T.border2}`,
+        boxShadow: T.cardShadow,
         transition: 'border-color .2s',
       }}
-      onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,214,10,.3)')}
-      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,.12)')}
+      onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,214,10,.4)')}
+      onMouseLeave={e => (e.currentTarget.style.borderColor = T.border2)}
     >
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.6)', textTransform: 'uppercase' }}>
+        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.7)', textTransform: 'uppercase' }}>
           ההתקדמות שלך
         </p>
-        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: 'rgba(255,255,255,.22)', textTransform: 'uppercase' }}>
+        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: T.textFaint, textTransform: 'uppercase' }}>
           לפרטים ←
         </p>
       </div>
@@ -121,21 +125,21 @@ function ProgressSection({ entries, streak, onNavigate }: {
       <div style={{ display: 'flex', gap: 20, marginBottom: 14, justifyContent: 'space-between' }}>
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 26, fontWeight: 900, color: '#FFD60A', lineHeight: 1 }}>{streak}</p>
-          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,.35)', letterSpacing: '1px', marginTop: 3 }}>רצף</p>
+          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: T.textMuted, letterSpacing: '1px', marginTop: 3 }}>רצף</p>
         </div>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 26, fontWeight: 900, color: '#f2f2f7', lineHeight: 1 }}>{totalDays}</p>
-          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,.35)', letterSpacing: '1px', marginTop: 3 }}>ימים</p>
+          <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 26, fontWeight: 900, color: T.text, lineHeight: 1 }}>{totalDays}</p>
+          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: T.textMuted, letterSpacing: '1px', marginTop: 3 }}>ימים</p>
         </div>
         {avg7 !== null && (
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 26, fontWeight: 900, color: avg7 >= 7 ? '#FFD60A' : avg7 >= 5 ? '#FF9F0A' : '#FF375F', lineHeight: 1 }}>{avg7}</p>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,.35)', letterSpacing: '1px', marginTop: 3 }}>ממוצע</p>
+            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: T.textMuted, letterSpacing: '1px', marginTop: 3 }}>ממוצע</p>
           </div>
         )}
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 26, fontWeight: 900, color: '#f2f2f7', lineHeight: 1 }}>{entries.filter(e => e.evening && e.evening.score >= 9).length}</p>
-          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,.35)', letterSpacing: '1px', marginTop: 3 }}>שיאים</p>
+          <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 26, fontWeight: 900, color: T.text, lineHeight: 1 }}>{entries.filter(e => e.evening && e.evening.score >= 9).length}</p>
+          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: T.textMuted, letterSpacing: '1px', marginTop: 3 }}>שיאים</p>
         </div>
       </div>
 
@@ -164,6 +168,7 @@ function ProgressSection({ entries, streak, onNavigate }: {
 }
 
 export function HomeScreen({ streak, today, userName, entries, onNavigate }: Props) {
+  const T = useTheme()
   const hasMorning = !!today?.morning
   const sentences = getSet(streak, hasMorning)
   const date = new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })
@@ -171,19 +176,20 @@ export function HomeScreen({ streak, today, userName, entries, onNavigate }: Pro
   return (
     <div style={{
       height: '100%',
-      background: '#000',
+      background: T.bg,
       display: 'flex', flexDirection: 'column',
       justifyContent: 'center',
       padding: '0 22px',
       position: 'relative',
       overflow: 'hidden',
+      transition: 'background .3s',
     }}>
       {/* Ambient glow */}
       <div style={{
         position: 'absolute', top: '10%', left: '50%',
         transform: 'translateX(-50%)',
         width: '90vw', height: '90vw',
-        background: 'radial-gradient(circle, rgba(255,214,10,.04) 0%, transparent 62%)',
+        background: 'radial-gradient(circle, rgba(255,214,10,.05) 0%, transparent 62%)',
         pointerEvents: 'none',
       }} />
 
@@ -192,7 +198,7 @@ export function HomeScreen({ streak, today, userName, entries, onNavigate }: Pro
         <p style={{
           fontFamily: 'Barlow Condensed, sans-serif',
           fontSize: 10, fontWeight: 700, letterSpacing: '2.5px',
-          color: 'rgba(255,255,255,.18)', textTransform: 'uppercase',
+          color: T.textFaint, textTransform: 'uppercase',
           marginBottom: 8,
         }}>{date}</p>
 
@@ -200,7 +206,7 @@ export function HomeScreen({ streak, today, userName, entries, onNavigate }: Pro
           <p dir="rtl" style={{
             fontFamily: 'Heebo, sans-serif',
             fontSize: 14, fontWeight: 500,
-            color: 'rgba(255,255,255,.32)',
+            color: T.textDim,
           }}>
             {(() => {
               const h = new Date().getHours()
@@ -214,8 +220,9 @@ export function HomeScreen({ streak, today, userName, entries, onNavigate }: Pro
               fontFamily: 'Barlow Condensed, sans-serif',
               fontSize: 11, fontWeight: 800, letterSpacing: '1px',
               color: '#FFD60A',
-              border: '1px solid rgba(255,214,10,.28)',
+              border: '1px solid rgba(255,214,10,.35)',
               borderRadius: 999, padding: '2px 12px',
+              background: 'rgba(255,214,10,.08)',
             }}>{streak} STREAK</span>
           )}
         </div>
@@ -232,7 +239,7 @@ export function HomeScreen({ streak, today, userName, entries, onNavigate }: Pro
             fontWeight: 900,
             lineHeight: 1.05,
             letterSpacing: '-.3px',
-            color: s.color === 'y' ? '#FFD60A' : '#ffffff',
+            color: s.color === 'y' ? '#FFD60A' : T.text,
           }}>{s.text}</p>
         ))}
       </div>

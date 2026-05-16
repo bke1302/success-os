@@ -3,6 +3,7 @@ import { Sunset, Zap, ChevronLeft } from 'lucide-react'
 import { QUOTES } from '../constants'
 import type { EveningEntry } from '../types'
 import { requestAndScheduleReminder, getReminderTime } from '../utils/reminder'
+import { useTheme } from '../contexts/ThemeContext'
 
 interface Props {
   commitment:  string
@@ -40,6 +41,7 @@ const STATE_TIPS = [
 ]
 
 export function DayScreen({ commitment, identity, purpose, onFinishDay, evening, streak, dayCount }: Props) {
+  const T = useTheme()
   const [quoteIdx,     setQuoteIdx]     = useState(() => Math.floor(Math.random() * QUOTES.length))
   const [quoteVisible, setQuoteVisible] = useState(true)
   const [remaining,    setRemaining]    = useState(timeLeft)
@@ -61,14 +63,14 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
   }
 
   return (
-    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#000' }}>
-      <div className="shrink-0 animate-fade-in" style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,.09)' }}>
+    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
+      <div className="shrink-0 animate-fade-in" style={{ padding: '24px 20px 20px', borderBottom: `1px solid ${T.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.38)', textTransform: 'uppercase', marginBottom: 4 }}>
+            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 4 }}>
               {new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}
             </p>
-            <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 20, fontWeight: 700, color: '#f2f2f7' }} dir="rtl">יום {dayCount}</p>
+            <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 20, fontWeight: 700, color: T.text }} dir="rtl">יום {dayCount}</p>
           </div>
           {streak > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(255,214,10,.07)', border: '1px solid rgba(255,214,10,.18)', borderRadius: 12 }}>
@@ -89,12 +91,12 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
 
         <div className="card mb-4" style={{ borderRight: '4px solid #FF375F' }}>
           <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#FF375F', textTransform: 'uppercase', marginBottom: 10 }}>הפעולה המסיבית שלך היום</p>
-          <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 19, fontWeight: 700, color: '#f2f2f7', lineHeight: 1.35 }} dir="rtl">{commitment}</p>
+          <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 19, fontWeight: 700, color: T.text, lineHeight: 1.35 }} dir="rtl">{commitment}</p>
           {purpose && (
-            <p style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.38)', marginTop: 10, lineHeight: 1.5 }} dir="rtl">{purpose}</p>
+            <p style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 13, color: T.textMuted, marginTop: 10, lineHeight: 1.5 }} dir="rtl">{purpose}</p>
           )}
           {evening && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,.09)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: evening.commitmentDone ? '#30D158' : '#FF375F' }} />
               <span style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 12, fontWeight: 600, color: evening.commitmentDone ? '#30D158' : '#FF375F' }} dir="rtl">
                 {evening.commitmentDone ? 'עשית את זה.' : 'לא הושלם — מחר מחדש.'}
@@ -106,12 +108,12 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
         {evening && (
           <div className="card mb-4" style={{ borderRight: `3px solid ${scoreColor(evening.score)}` }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.38)', textTransform: 'uppercase' }}>מה נתת היום</p>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase' }}>מה נתת היום</p>
               <span style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: '2.4rem', color: scoreColor(evening.score), lineHeight: 1 }}>{evening.score}/10</span>
             </div>
-            <p style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 14, fontWeight: 500, color: '#f2f2f7', lineHeight: 1.6 }} dir="rtl">{evening.given ?? evening.win}</p>
+            <p style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 14, fontWeight: 500, color: T.text, lineHeight: 1.6 }} dir="rtl">{evening.given ?? evening.win}</p>
             {evening.lesson && (
-              <p style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 12, color: 'rgba(255,255,255,.38)', marginTop: 8, lineHeight: 1.5 }} dir="rtl">{evening.lesson}</p>
+              <p style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 12, color: T.textMuted, marginTop: 8, lineHeight: 1.5 }} dir="rtl">{evening.lesson}</p>
             )}
           </div>
         )}
@@ -124,7 +126,7 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
           </button>
         )}
         {evening && reminderStatus === 'scheduled' && (
-          <p style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 12, color: 'rgba(255,255,255,.38)', textAlign: 'center', marginBottom: 16 }} dir="rtl">
+          <p style={{ fontFamily: 'Heebo, system-ui, sans-serif', fontSize: 12, color: T.textMuted, textAlign: 'center', marginBottom: 16 }} dir="rtl">
             תזכורת נקבעה ל-{getReminderTime()} — השאר את הטאב פתוח
           </p>
         )}
@@ -140,31 +142,31 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
 
         {stateTip && (
           <div className="card animate-slide-up mb-4" style={{ borderRight: '3px solid #FFD60A' }}>
-            <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 15, fontWeight: 700, color: '#f2f2f7', lineHeight: 1.6 }} dir="rtl">{stateTip}</p>
+            <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 15, fontWeight: 700, color: T.text, lineHeight: 1.6 }} dir="rtl">{stateTip}</p>
           </div>
         )}
 
         <div className="card">
-          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.38)', textTransform: 'uppercase', marginBottom: 12 }}>חוכמת היום</p>
+          <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 12 }}>חוכמת היום</p>
           <p style={{
-            fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 16, fontWeight: 400, color: 'rgba(255,214,10,.8)', lineHeight: 1.75,
+            fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 16, fontWeight: 400, color: 'rgba(255,214,10,.85)', lineHeight: 1.75,
             opacity: quoteVisible ? 1 : 0, transition: 'opacity 0.4s',
           }} dir="rtl">"{QUOTES[quoteIdx]}"</p>
         </div>
 
         {!evening && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 20, padding: '14px 0' }}>
-            <Sunset className="w-4 h-4" strokeWidth={1.5} style={{ color: 'rgba(255,255,255,.38)', flexShrink: 0 }} />
+            <Sunset className="w-4 h-4" strokeWidth={1.5} style={{ color: T.textMuted, flexShrink: 0 }} />
             <div dir="rtl">
-              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.38)', textTransform: 'uppercase', marginBottom: 3 }}>עד שקיעה</p>
-              <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 20, fontWeight: 700, color: '#f2f2f7' }}>{remaining}</p>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 3 }}>עד שקיעה</p>
+              <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 20, fontWeight: 700, color: T.text }}>{remaining}</p>
             </div>
           </div>
         )}
       </div>
 
       {!evening && (
-        <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,.09)', background: '#000' }}>
+        <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s' }}>
           <button onClick={onFinishDay}
             className="btn-gold w-full"
             style={{ padding: '18px', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 16, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }} dir="rtl">

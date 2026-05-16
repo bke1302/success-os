@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Plus, Trash2, CheckCircle } from 'lucide-react'
 import type { UserGoal } from '../types'
 import { playCheck, playComplete } from '../utils/sounds'
+import { useTheme } from '../contexts/ThemeContext'
 
 interface Props {
   userName:   string
@@ -32,13 +33,14 @@ function GoalRow({ goal, onDelete, onUpdate }: {
   onDelete: () => void
   onUpdate: (g: UserGoal) => void
 }) {
+  const T = useTheme()
   const color = CAT_COLORS[goal.category]
   return (
     <div style={{
       display: 'flex', alignItems: 'flex-start', gap: 10,
       padding: '14px 16px',
-      background: 'linear-gradient(160deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.04) 100%)',
-      border: `1px solid rgba(255,255,255,.1)`,
+      background: T.tagBg,
+      border: `1px solid ${T.border}`,
       borderRight: `3px solid ${color}`,
       borderRadius: 14,
       marginBottom: 10,
@@ -53,7 +55,7 @@ function GoalRow({ goal, onDelete, onUpdate }: {
           style={{
             width: '100%', background: 'transparent', border: 'none', outline: 'none',
             fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 15, fontWeight: 700,
-            color: '#f2f2f7', padding: 0,
+            color: T.text, padding: 0,
           }}
         />
         <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
@@ -100,6 +102,7 @@ function GoalRow({ goal, onDelete, onUpdate }: {
 }
 
 export function ProfileScreen({ userName, goals, onSaveGoals }: Props) {
+  const T = useTheme()
   const [localGoals, setLocalGoals] = useState<UserGoal[]>(goals)
   const [saved, setSaved] = useState(false)
 
@@ -136,15 +139,15 @@ export function ProfileScreen({ userName, goals, onSaveGoals }: Props) {
   const needsMore   = filledCount < 2
 
   return (
-    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#000' }}>
+    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
 
       {/* Header */}
-      <div className="shrink-0" style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,.09)' }}>
+      <div className="shrink-0" style={{ padding: '24px 20px 20px', borderBottom: `1px solid ${T.border}` }}>
         <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.6)', textTransform: 'uppercase', marginBottom: 6 }}>פרופיל</p>
-        <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 28, fontWeight: 900, color: '#f2f2f7' }} dir="rtl">
+        <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 28, fontWeight: 900, color: T.text }} dir="rtl">
           {userName}
         </h1>
-        <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.35)', marginTop: 4 }} dir="rtl">
+        <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.textMuted, marginTop: 4 }} dir="rtl">
           הגדר את היעדים שלך — ה-PRIME יעזור לך לרדוף אחריהם כל יום
         </p>
       </div>
@@ -158,10 +161,10 @@ export function ProfileScreen({ userName, goals, onSaveGoals }: Props) {
             background: 'rgba(255,214,10,.07)', border: '1px solid rgba(255,214,10,.2)',
             borderRadius: 14,
           }}>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#FFD60A', textTransform: 'uppercase', marginBottom: 6 }}>
+            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#C8A800', textTransform: 'uppercase', marginBottom: 6 }}>
               {filledCount === 0 ? 'אין יעדים מוגדרים' : 'יעד אחד — תוסיף עוד'}
             </p>
-            <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,214,10,.7)', lineHeight: 1.6 }} dir="rtl">
+            <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.isDark ? 'rgba(255,214,10,.7)' : 'rgba(130,100,0,.85)', lineHeight: 1.6 }} dir="rtl">
               {filledCount === 0
                 ? 'ללא יעדים ברורים, הפעולות שלך מפוזרות. הגדר לפחות 2 יעדים שמניעים אותך.'
                 : 'יעד אחד זה טוב. שניים זה מערכת. הוסף עוד יעד אחד לפחות.'}
@@ -172,7 +175,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals }: Props) {
         {/* Goals list */}
         <div style={{ marginBottom: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.38)', textTransform: 'uppercase' }}>
+            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase' }}>
               היעדים שלי ({filledCount}/5)
             </p>
             {filledCount >= 2 && (
@@ -236,7 +239,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals }: Props) {
       </div>
 
       {/* Save CTA */}
-      <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,.09)', background: '#000' }}>
+      <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s' }}>
         {saved ? (
           <div style={{ padding: '18px', textAlign: 'center', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 700, fontSize: 16, color: '#30D158', background: 'rgba(48,209,88,.06)', border: '1px solid rgba(48,209,88,.2)', borderRadius: 12 }} dir="rtl">
             היעדים נשמרו

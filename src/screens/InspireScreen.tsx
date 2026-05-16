@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { X, ExternalLink, Play, ChevronLeft, ChevronRight, Dumbbell, Brain, Target, Flame, BookOpen } from 'lucide-react'
 import { QUOTES, VIDEO_CARDS, CATEGORY_COLORS, type VideoCard } from '../constants'
+import { useTheme } from '../contexts/ThemeContext'
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   'כושר':    <Dumbbell className="w-5 h-5" strokeWidth={1.5} />,
@@ -10,6 +11,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 }
 const DefaultIcon = <BookOpen className="w-5 h-5" strokeWidth={1.5} />
 
+// YouTube overlay stays dark always — cinematic video context
 function YouTubeOverlay({ card, onClose }: { card: VideoCard; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ background: '#000' }}>
@@ -32,6 +34,7 @@ function YouTubeOverlay({ card, onClose }: { card: VideoCard; onClose: () => voi
 }
 
 function QuoteSection() {
+  const T = useTheme()
   const [idx, setIdx] = useState(() => {
     const d = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000)
     return d % QUOTES.length
@@ -43,13 +46,13 @@ function QuoteSection() {
   }
   return (
     <div className="card" style={{ borderRight: '3px solid rgba(255,214,10,.5)' }}>
-      <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.6)', textTransform: 'uppercase', marginBottom: 12 }}>DAILY WISDOM</p>
+      <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.7)', textTransform: 'uppercase', marginBottom: 12 }}>DAILY WISDOM</p>
       <p style={{ fontSize: 15, fontWeight: 600, color: 'rgba(245,196,53,0.9)', lineHeight: 1.7, opacity: visible ? 1 : 0, transition: 'opacity 0.2s' }} dir="rtl">
         "{QUOTES[idx]}"
       </p>
       <div className="flex items-center justify-between mt-4">
         <button onClick={() => go(-1)} className="btn-ghost" style={{ padding: '6px 10px' }}><ChevronLeft className="w-4 h-4" strokeWidth={1.5} /></button>
-        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.25)', textTransform: 'uppercase' }}>{idx + 1} / {QUOTES.length}</p>
+        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textDim, textTransform: 'uppercase' }}>{idx + 1} / {QUOTES.length}</p>
         <button onClick={() => go(1)} className="btn-ghost" style={{ padding: '6px 10px' }}><ChevronRight className="w-4 h-4" strokeWidth={1.5} /></button>
       </div>
     </div>
@@ -57,6 +60,7 @@ function QuoteSection() {
 }
 
 function VideoItem({ card, onPlay }: { card: VideoCard; onPlay: () => void }) {
+  const T = useTheme()
   const color = CATEGORY_COLORS[card.category] ?? '#FFD60A'
   const hasEmbed = !!card.youtubeId
   const icon = CATEGORY_ICONS[card.category] ?? DefaultIcon
@@ -67,12 +71,12 @@ function VideoItem({ card, onPlay }: { card: VideoCard; onPlay: () => void }) {
         <div className="flex-1 min-w-0" dir="rtl">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
             <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color, textTransform: 'uppercase' }}>{card.category}</span>
-            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.25)', textTransform: 'uppercase' }}>{card.duration}</span>
+            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textDim, textTransform: 'uppercase' }}>{card.duration}</span>
             {hasEmbed && <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#22c55e', textTransform: 'uppercase' }}>IN-APP</span>}
           </div>
-          <p style={{ fontSize: 14, fontWeight: 900, color: '#f2f2f7', lineHeight: 1.35, marginBottom: 2 }}>{card.title}</p>
+          <p style={{ fontSize: 14, fontWeight: 900, color: T.text, lineHeight: 1.35, marginBottom: 2 }}>{card.title}</p>
           <p style={{ fontSize: 11, fontWeight: 700, color: color + 'bb' }}>{card.speaker}</p>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,.35)', lineHeight: 1.5, marginTop: 4 }}>{card.subtitle}</p>
+          <p style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.5, marginTop: 4 }}>{card.subtitle}</p>
         </div>
       </div>
       {hasEmbed ? (
@@ -90,23 +94,24 @@ function VideoItem({ card, onPlay }: { card: VideoCard; onPlay: () => void }) {
 }
 
 export function InspireScreen() {
+  const T = useTheme()
   const [activeVideo, setActiveVideo] = useState<VideoCard | null>(null)
   const embedVideos  = VIDEO_CARDS.filter(v => v.youtubeId)
   const searchVideos = VIDEO_CARDS.filter(v => !v.youtubeId)
   return (
-    <div style={{ height: '100%', overflow: 'hidden', background: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100%', overflow: 'hidden', background: T.bg, display: 'flex', flexDirection: 'column', transition: 'background .3s' }}>
       {activeVideo && <YouTubeOverlay card={activeVideo} onClose={() => setActiveVideo(null)} />}
-      <div className="shrink-0" style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,.09)' }}>
-        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(239,68,68,0.6)', textTransform: 'uppercase', marginBottom: 8 }}>INSPIRE</p>
-        <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 32, fontWeight: 900, color: '#f2f2f7', lineHeight: 1.05 }} dir="rtl">השראה</h1>
-        <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.35)', marginTop: 4 }} dir="rtl">מילים שמזיזות. סרטונים שמשנים.</p>
+      <div className="shrink-0" style={{ padding: '24px 20px 20px', borderBottom: `1px solid ${T.border}` }}>
+        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(239,68,68,0.7)', textTransform: 'uppercase', marginBottom: 8 }}>INSPIRE</p>
+        <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 32, fontWeight: 900, color: T.text, lineHeight: 1.05 }} dir="rtl">השראה</h1>
+        <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.textMuted, marginTop: 4 }} dir="rtl">מילים שמזיזות. סרטונים שמשנים.</p>
       </div>
       <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 32px' }}>
         <div style={{ marginBottom: 20 }}><QuoteSection /></div>
-        <div style={{ height: 1, background: 'rgba(255,255,255,.07)', marginBottom: 20 }} />
+        <div style={{ height: 1, background: T.divider, marginBottom: 20 }} />
         {embedVideos.length > 0 && (
           <>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(34,197,94,0.6)', textTransform: 'uppercase', marginBottom: 14 }}>צפייה ישירה</p>
+            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(34,197,94,0.7)', textTransform: 'uppercase', marginBottom: 14 }}>צפייה ישירה</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
               {embedVideos.map(card => <VideoItem key={card.id} card={card} onPlay={() => setActiveVideo(card)} />)}
             </div>
@@ -114,7 +119,7 @@ export function InspireScreen() {
         )}
         {searchVideos.length > 0 && (
           <>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.3)', textTransform: 'uppercase', marginBottom: 14 }}>חיפוש ביוטיוב</p>
+            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textDim, textTransform: 'uppercase', marginBottom: 14 }}>חיפוש ביוטיוב</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {searchVideos.map(card => <VideoItem key={card.id} card={card} onPlay={() => {}} />)}
             </div>
