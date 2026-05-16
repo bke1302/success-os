@@ -2,14 +2,25 @@ import { useState, useEffect, useRef } from 'react'
 import { X, Timer } from 'lucide-react'
 import { HABITS, CATEGORY_COLORS, type Habit } from '../constants'
 import { playCheck, playUncheck, playComplete, playTimerDone } from '../utils/sounds'
+import type { UserGoal } from '../types'
+
+const GOAL_COLORS: Record<UserGoal['category'], string> = {
+  'עסקי':   '#FFD60A',
+  'כספי':   '#30D158',
+  'בריאות': '#FF375F',
+  'קשרים':  '#BF5AF2',
+  'אישי':   '#FF9F0A',
+}
 
 interface Props {
   completedHabits:  string[]
   onToggle:         (ids: string[]) => void
   requiredHabitIds: string[]
+  userGoals?:       UserGoal[]
+  onGoToProfile?:   () => void
 }
 
-function HabitTimerOverlay({ habit, onClose, onDone }: { habit: Habit; onClose: () => void; onDone: () => void }) {
+function HabitTimerOverlay({ habit, onClose, onDone, userGoals = [], onGoToProfile }: { habit: Habit; onClose: () => void; onDone: () => void; userGoals?: UserGoal[]; onGoToProfile?: () => void }) {
   const [started,  setStarted]  = useState(false)
   const [timeLeft, setTimeLeft] = useState(habit.timerSec ?? 0)
   const [done,     setDone]     = useState(false)
@@ -58,6 +69,34 @@ function HabitTimerOverlay({ habit, onClose, onDone }: { habit: Habit; onClose: 
             {started ? 'נותר' : 'מוכן?'}
           </text>}
         </svg>
+        {/* Goals review content for 'goals' habit */}
+        {habit.id === 'goals' && !done && (
+          <div style={{ width: '100%' }}>
+            {userGoals.length > 0 ? (
+              <div style={{ marginBottom: 16 }}>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.35)', textTransform: 'uppercase', marginBottom: 10, textAlign: 'center' }}>היעדים שלך</p>
+                {userGoals.map(g => (
+                  <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: `${GOAL_COLORS[g.category]}0d`, border: `1px solid ${GOAL_COLORS[g.category]}28`, borderRadius: 10, marginBottom: 8 }}>
+                    <div style={{ width: 7, height: 7, borderRadius: '50%', background: GOAL_COLORS[g.category], flexShrink: 0, boxShadow: `0 0 6px ${GOAL_COLORS[g.category]}88` }} />
+                    <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 14, fontWeight: 600, color: '#f2f2f7' }} dir="rtl">{g.title}</p>
+                  </div>
+                ))}
+                <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 12, color: 'rgba(255,255,255,.35)', textAlign: 'center', marginTop: 8, lineHeight: 1.5 }} dir="rtl">
+                  האם הפעולות של היום מכוונות ליעדים האלה?
+                </p>
+              </div>
+            ) : (
+              <div style={{ marginBottom: 16, padding: '14px', background: 'rgba(255,214,10,.06)', border: '1px dashed rgba(255,214,10,.25)', borderRadius: 12, textAlign: 'center' }}>
+                <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,214,10,.7)', marginBottom: 10 }} dir="rtl">טרם הגדרת יעדים</p>
+                <button onClick={() => { onClose(); onGoToProfile?.() }}
+                  style={{ background: 'rgba(255,214,10,.1)', border: '1px solid rgba(255,214,10,.3)', borderRadius: 8, padding: '8px 16px', color: '#FFD60A', fontFamily: 'Heebo, sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }} dir="rtl">
+                  הגדר יעדים בפרופיל
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {!done && !started && (
           <button onClick={() => setStarted(true)} className="btn-red w-full" style={{ padding: '16px', fontSize: 15 }} dir="rtl">
             התחל {habit.title}
@@ -78,7 +117,7 @@ function HabitTimerOverlay({ habit, onClose, onDone }: { habit: Habit; onClose: 
   )
 }
 
-export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: Props) {
+export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, userGoals = [], onGoToProfile }: Props) {
   const [timerHabit, setTimerHabit] = useState<Habit | null>(null)
 
   const toggle = (id: string) => {
@@ -97,12 +136,26 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
   const required = requiredHabitIds.map(id => HABITS.find(h => h.id === id)).filter((h): h is Habit => !!h)
   const bonus    = HABITS.filter(h => !requiredHabitIds.includes(h.id))
 
+  const CATEGORY_LABELS: Record<string, string> = {
+    production: 'ייצור',
+    learning:   'למידה',
+    network:    'קשרים',
+    discipline: 'משמעת',
+  }
+
+  const bonusByCategory = bonus.reduce<Record<string, Habit[]>>((acc, h) => {
+    if (!acc[h.category]) acc[h.category] = []
+    acc[h.category].push(h)
+    return acc
+  }, {})
+
   return (
     <div style={{ height: '100%', overflow: 'hidden', background: '#000', display: 'flex', flexDirection: 'column' }}>
 
       {timerHabit && (
         <HabitTimerOverlay habit={timerHabit} onClose={() => setTimerHabit(null)}
-          onDone={() => { toggle(timerHabit.id); setTimerHabit(null) }} />
+          onDone={() => { toggle(timerHabit.id); setTimerHabit(null) }}
+          userGoals={userGoals} onGoToProfile={onGoToProfile} />
       )}
 
       {/* Header */}
@@ -184,49 +237,63 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds }: P
 
         <div className="divider mb-6" />
 
-        {/* Bonus */}
+        {/* Bonus — grouped by category */}
         <p className="label-xs mb-4" style={{ color: 'rgba(255,255,255,.35)' }}>— בונוס. כל אחת ששווה</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {bonus.map((habit, i) => {
-            const done  = completedHabits.includes(habit.id)
-            const color = CATEGORY_COLORS[habit.category] ?? '#FFD60A'
-            return (
-              <div key={habit.id} className="animate-slide-up"
-                style={{
-                  animationDelay: `${(required.length + i) * 35}ms`, animationFillMode: 'both',
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: '11px 14px',
-                  background: 'transparent',
-                  border: '1px solid rgba(255,255,255,.1)',
-                  borderRadius: 10,
-                  opacity: done ? 0.45 : 1,
-                }}>
-                <button onClick={() => toggle(habit.id)}
-                  style={{
-                    width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                    background: done ? color : 'transparent',
-                    border: `1.5px solid ${done ? color : 'rgba(255,255,255,.1)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    cursor: 'pointer',
-                  }}>
-                  {done && <span className="check-bounce" style={{ color: '#000', fontSize: 9, fontWeight: 900 }}>✓</span>}
-                </button>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0, opacity: 0.7 }} />
-                <p dir="rtl" style={{
-                  fontSize: 13, flex: 1, fontWeight: done ? 400 : 600,
-                  color: done ? 'rgba(255,255,255,.35)' : 'rgba(232,232,240,0.75)',
-                  textDecoration: done ? 'line-through' : 'none',
-                }}>{habit.title}</p>
-                {habit.timerSec && !done && (
-                  <button onClick={() => setTimerHabit(habit)}
-                    style={{ width: 28, height: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: '1px solid rgba(255,255,255,.1)', cursor: 'pointer', borderRadius: 6 }}>
-                    <Timer className="w-3 h-3" style={{ color: 'rgba(255,255,255,.35)' }} />
-                  </button>
-                )}
+        {Object.entries(bonusByCategory).map(([cat, habits]) => {
+          const catColor = CATEGORY_COLORS[cat] ?? '#FFD60A'
+          const catDone  = habits.filter(h => completedHabits.includes(h.id)).length
+          return (
+            <div key={cat} style={{ marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <div style={{ height: 1, flex: 1, background: `${catColor}30` }} />
+                <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: `${catColor}90`, textTransform: 'uppercase' }}>
+                  {CATEGORY_LABELS[cat] ?? cat} {catDone > 0 ? `· ${catDone}/${habits.length}` : ''}
+                </span>
+                <div style={{ height: 1, flex: 1, background: `${catColor}30` }} />
               </div>
-            )
-          })}
-        </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {habits.map((habit, i) => {
+                  const done  = completedHabits.includes(habit.id)
+                  const color = catColor
+                  return (
+                    <div key={habit.id} className="animate-slide-up"
+                      style={{
+                        animationDelay: `${i * 35}ms`, animationFillMode: 'both',
+                        display: 'flex', alignItems: 'center', gap: 12,
+                        padding: '11px 14px',
+                        background: done ? 'rgba(255,255,255,.02)' : 'transparent',
+                        border: `1px solid ${done ? 'rgba(255,255,255,.07)' : `${color}25`}`,
+                        borderRadius: 10,
+                        opacity: done ? 0.45 : 1,
+                        transition: 'opacity .2s',
+                      }}>
+                      <button onClick={() => toggle(habit.id)}
+                        style={{
+                          width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                          background: done ? color : 'transparent',
+                          border: `1.5px solid ${done ? color : `${color}50`}`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          cursor: 'pointer', transition: 'all .15s',
+                        }}>
+                        {done && <span className="check-bounce" style={{ color: '#000', fontSize: 9, fontWeight: 900 }}>✓</span>}
+                      </button>
+                      <div dir="rtl" style={{ flex: 1 }}>
+                        <p style={{ fontSize: 13, fontWeight: done ? 400 : 600, color: done ? 'rgba(255,255,255,.35)' : 'rgba(242,242,247,.85)', textDecoration: done ? 'line-through' : 'none' }}>{habit.title}</p>
+                        {!done && habit.subtitle && <p style={{ fontSize: 11, color: 'rgba(255,255,255,.28)', marginTop: 2, lineHeight: 1.4 }}>{habit.subtitle}</p>}
+                      </div>
+                      {habit.timerSec && !done && (
+                        <button onClick={() => setTimerHabit(habit)}
+                          style={{ width: 28, height: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${color}12`, border: `1px solid ${color}35`, cursor: 'pointer', borderRadius: 8 }}>
+                          <Timer className="w-3 h-3" style={{ color }} />
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

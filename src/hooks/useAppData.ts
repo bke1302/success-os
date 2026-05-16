@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type {
   AppState, DayEntry, MorningEntry, EveningEntry,
-  BurnTheBoats, FearEntry, WeeklyPlan, EnergyCheckin,
+  BurnTheBoats, FearEntry, WeeklyPlan, EnergyCheckin, UserGoal,
 } from '../types'
 
 const KEY = 'prime_v1'
@@ -130,6 +130,9 @@ export function useAppData() {
   const setUserName = (name: string) =>
     persist({ ...state, userName: name })
 
+  const saveUserGoals = (goals: UserGoal[]) =>
+    persist({ ...state, userGoals: goals })
+
   const clearAll = () => {
     localStorage.removeItem(KEY)
     persist(initialState())
@@ -142,6 +145,6 @@ export function useAppData() {
     saveFearEntry, deleteFearEntry,
     saveWeeklyPlan,
     saveIncantation,
-    setView, setUserName, clearAll,
+    setView, setUserName, saveUserGoals, clearAll,
   }
 }

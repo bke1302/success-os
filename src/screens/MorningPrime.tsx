@@ -1,11 +1,19 @@
 import { useState, useRef } from 'react'
-import { Mic, Square, Play, Pause, ChevronRight, ChevronLeft } from 'lucide-react'
+import { Mic, Square, Play, Pause, ChevronRight, ChevronLeft, Target } from 'lucide-react'
 import { HABITS, getTodayPowerWord, getCommanderRank } from '../constants'
 import { getCurrentWeekTheme, getTodayRequiredHabitIds, getProgramWeekNumber } from '../data/program'
 import { getCoachMessage } from '../utils/coach'
 import { playComplete, playCheck } from '../utils/sounds'
 import { isRecordingSupported, startRecording, playBase64Audio } from '../utils/recorder'
-import type { MorningEntry } from '../types'
+import type { MorningEntry, UserGoal } from '../types'
+
+const GOAL_COLORS: Record<UserGoal['category'], string> = {
+  'עסקי':   '#FFD60A',
+  'כספי':   '#30D158',
+  'בריאות': '#FF375F',
+  'קשרים':  '#BF5AF2',
+  'אישי':   '#FF9F0A',
+}
 
 interface Props {
   onComplete:         (data: MorningEntry) => void
@@ -15,6 +23,8 @@ interface Props {
   yesterdayHabitsPct: number
   incantationB64?:    string
   onSaveIncantation:  (b64: string) => void
+  userGoals?:         UserGoal[]
+  onGoToProfile:      () => void
 }
 
 function StepDots({ step, total }: { step: number; total: number }) {
@@ -83,7 +93,7 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
   )
 }
 
-export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayHabitsPct, incantationB64, onSaveIncantation }: Props) {
+export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayHabitsPct, incantationB64, onSaveIncantation, userGoals = [], onGoToProfile }: Props) {
   const [step,       setStep]       = useState<1|2|3|4>(1)
   const [commitment, setCommitment] = useState('')
   const [oneThing,   setOneThing]   = useState('')
@@ -219,19 +229,42 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
         {/* STEP 3: ONE THING */}
         {step === 3 && (
           <>
-            <div style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 20 }}>
               <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 8 }}>THE ONE THING</p>
-              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: 12 }} dir="rtl">מה הדבר האחד?</h2>
-              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 14, color: 'rgba(255,255,255,.45)', lineHeight: 1.65 }} dir="rtl">
+              <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: 10 }} dir="rtl">מה הדבר האחד?</h2>
+              <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.4)', lineHeight: 1.65 }} dir="rtl">
                 מה הדבר האחד שאם תעשה אותו היום — הכל אחר יהיה קל יותר?
               </p>
             </div>
+
+            {/* User goals reference */}
+            {userGoals.length > 0 ? (
+              <div style={{ marginBottom: 16 }}>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.28)', textTransform: 'uppercase', marginBottom: 8 }}>לקראת מה אתה עובד?</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {userGoals.slice(0, 3).map(g => (
+                    <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: `${GOAL_COLORS[g.category]}0d`, border: `1px solid ${GOAL_COLORS[g.category]}28`, borderRadius: 10 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: GOAL_COLORS[g.category], flexShrink: 0 }} />
+                      <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.65)' }} dir="rtl">{g.title}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <button onClick={onGoToProfile}
+                style={{ width: '100%', marginBottom: 16, padding: '12px 16px', background: 'rgba(255,214,10,.06)', border: '1px dashed rgba(255,214,10,.25)', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, color: 'rgba(255,214,10,.6)', fontFamily: 'Heebo, sans-serif', fontSize: 13 }}
+                dir="rtl">
+                <Target style={{ width: 16, height: 16, flexShrink: 0 }} strokeWidth={1.5} />
+                טרם הגדרת יעדים — לחץ להגדרה בפרופיל
+              </button>
+            )}
+
             <textarea
               value={oneThing}
               onChange={e => { setOneThing(e.target.value); if (e.target.value.length === 1) playCheck() }}
               placeholder="הדבר האחד שלי היום…"
               dir="rtl"
-              rows={5}
+              rows={4}
               autoFocus
               style={{
                 width: '100%', padding: '16px', fontFamily: '"Frank Ruhl Libre", Georgia, serif',

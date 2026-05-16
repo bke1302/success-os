@@ -54,16 +54,25 @@ export interface WeeklyPlan {
   createdAt: string
 }
 
+export interface UserGoal {
+  id:        string
+  title:     string
+  category:  'עסקי' | 'בריאות' | 'קשרים' | 'אישי' | 'כספי'
+  deadline?: string   // YYYY-MM-DD
+  createdAt: string
+}
+
 export interface AppState {
   entries:        DayEntry[]
   streak:         number
   totalDays:      number
-  currentView:    'home' | 'prime' | 'actions' | 'inspire' | 'wins' | 'fear' | 'weekly'
+  currentView:    'home' | 'prime' | 'actions' | 'inspire' | 'wins' | 'fear' | 'weekly' | 'profile'
   burnTheBoats?:  BurnTheBoats
   fearEntries?:   FearEntry[]
   weeklyPlans?:   WeeklyPlan[]
   incantationB64?: string
   userName?:      string
+  userGoals?:     UserGoal[]
 }
 
 export type DayPhase = 'morning' | 'day' | 'evening'

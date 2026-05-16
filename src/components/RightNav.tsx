@@ -1,4 +1,4 @@
-import { Home, Zap, CheckSquare, Play, Trophy, Skull, Swords } from 'lucide-react'
+import { Home, Zap, CheckSquare, Play, Trophy, Skull, Swords, User, Sun, Moon } from 'lucide-react'
 import type { AppState } from '../types'
 
 type View = AppState['currentView']
@@ -16,23 +16,26 @@ const NAV: { id: View; Icon: typeof Home; label: string; color: string }[] = [
 interface Props {
   current: View
   onChange: (v: View) => void
+  theme: 'dark' | 'light'
+  onToggleTheme: () => void
 }
 
-export function RightNav({ current, onChange }: Props) {
+export function RightNav({ current, onChange, theme, onToggleTheme }: Props) {
   return (
     <nav style={{
       position: 'fixed', top: 0, right: 0, bottom: 0,
       width: 62,
-      background: 'rgba(18,18,18,0.97)',
+      background: 'var(--nav-bg)',
       backdropFilter: 'blur(24px) saturate(180%)',
       WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-      borderLeft: '1px solid rgba(255,255,255,.07)',
+      borderLeft: '1px solid var(--nav-border)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       paddingTop: 'max(20px, env(safe-area-inset-top))',
       paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
       zIndex: 30,
+      transition: 'background .3s, border-color .3s',
     }}>
       {/* Logo */}
       <div style={{ marginBottom: 20, textAlign: 'center' }}>
@@ -55,6 +58,7 @@ export function RightNav({ current, onChange }: Props) {
 
       {/* Nav items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', padding: '0 8px', flex: 1 }}>
+
         {NAV.map(({ id, Icon, label, color }) => {
           const active = current === id
           return (
@@ -78,7 +82,7 @@ export function RightNav({ current, onChange }: Props) {
                 transition: 'all .18s',
               }}
               onMouseEnter={e => {
-                if (!active) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,.06)'
+                if (!active) (e.currentTarget as HTMLButtonElement).style.background = 'var(--glass-h)'
               }}
               onMouseLeave={e => {
                 if (!active) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'
@@ -88,7 +92,7 @@ export function RightNav({ current, onChange }: Props) {
                 strokeWidth={active ? 2.5 : 1.5}
                 style={{
                   width: active ? 20 : 18, height: active ? 20 : 18,
-                  color: active ? color : 'rgba(255,255,255,.38)',
+                  color: active ? color : 'var(--muted)',
                   opacity: active ? 1 : .85,
                   filter: active ? `drop-shadow(0 0 6px ${color}80)` : 'none',
                   transition: 'color .18s, filter .18s',
@@ -98,7 +102,7 @@ export function RightNav({ current, onChange }: Props) {
                 fontSize: 8.5,
                 fontWeight: 700,
                 letterSpacing: '.3px',
-                color: active ? color : 'rgba(255,255,255,.25)',
+                color: active ? color : 'var(--muted)',
                 textTransform: 'uppercase',
                 fontFamily: 'Barlow Condensed, sans-serif',
                 transition: 'color .18s',
@@ -106,6 +110,59 @@ export function RightNav({ current, onChange }: Props) {
             </button>
           )
         })}
+      </div>
+
+      {/* Profile + Theme at bottom */}
+      <div style={{ width: '100%', padding: '0 8px', marginTop: 4 }}>
+        <div style={{ height: 1, background: 'var(--nav-border)', marginBottom: 6 }} />
+        <button
+          onClick={() => onChange('profile' as AppState['currentView'])}
+          title="פרופיל"
+          style={{
+            width: '100%', padding: '9px 0', borderRadius: 10, border: 'none',
+            borderRight: current === 'profile' ? '3px solid #FFD60A' : '3px solid transparent',
+            background: current === 'profile' ? 'rgba(255,214,10,.1)' : 'transparent',
+            cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
+            transition: 'all .18s',
+          }}>
+          <User strokeWidth={current === 'profile' ? 2.5 : 1.5}
+            style={{
+              width: current === 'profile' ? 20 : 18, height: current === 'profile' ? 20 : 18,
+              color: current === 'profile' ? '#FFD60A' : 'var(--muted)',
+              filter: current === 'profile' ? 'drop-shadow(0 0 6px rgba(255,214,10,.5))' : 'none',
+              transition: 'color .18s, filter .18s',
+            }} />
+          <span style={{
+            fontSize: 8.5, fontWeight: 700, letterSpacing: '.3px',
+            color: current === 'profile' ? '#FFD60A' : 'var(--muted)',
+            textTransform: 'uppercase', fontFamily: 'Barlow Condensed, sans-serif',
+          }}>פרופיל</span>
+        </button>
+
+        {/* Theme toggle */}
+        <div style={{ height: 1, background: 'var(--nav-border)', margin: '6px 0' }} />
+        <button
+          onClick={onToggleTheme}
+          title={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'}
+          style={{
+            width: '100%', padding: '9px 0', borderRadius: 10, border: 'none',
+            borderRight: '3px solid transparent',
+            background: 'transparent',
+            cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
+            transition: 'all .18s',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--glass-h)' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
+        >
+          {theme === 'dark'
+            ? <Sun strokeWidth={1.5} style={{ width: 17, height: 17, color: 'var(--muted)', transition: 'color .18s' }} />
+            : <Moon strokeWidth={1.5} style={{ width: 17, height: 17, color: 'var(--muted)', transition: 'color .18s' }} />
+          }
+          <span style={{
+            fontSize: 8.5, fontWeight: 700, letterSpacing: '.3px',
+            color: 'var(--muted)', textTransform: 'uppercase', fontFamily: 'Barlow Condensed, sans-serif',
+          }}>{theme === 'dark' ? 'בהיר' : 'כהה'}</span>
+        </button>
       </div>
     </nav>
   )

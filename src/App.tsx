@@ -15,6 +15,7 @@ import { RightNav }             from './components/RightNav'
 import { BurnTheBoats }         from './components/BurnTheBoats'
 import { EnergyCheckinOverlay } from './components/EnergyCheckinOverlay'
 import { OnboardingScreen }     from './screens/OnboardingScreen'
+import { ProfileScreen }        from './screens/ProfileScreen'
 import { SplashScreen }         from './screens/SplashScreen'
 import { CompletionScreen }     from './screens/CompletionScreen'
 import type { EnergyCheckin }   from './types'
@@ -28,14 +29,21 @@ export default function App() {
     saveBurnTheBoats, clearBurnTheBoats,
     saveFearEntry, deleteFearEntry,
     saveWeeklyPlan, saveIncantation,
-    setView, setUserName,
+    setView, setUserName, saveUserGoals,
   } = useAppData()
 
+  const [theme,           setTheme]           = useState<'dark'|'light'>(() => (localStorage.getItem('app_theme') as 'dark'|'light') ?? 'dark')
   const [showSplash,      setShowSplash]      = useState(true)
   const [forceEvening,    setForceEvening]    = useState(false)
   const [checkinPrompt,   setCheckinPrompt]   = useState<EnergyCheckin['label'] | null>(null)
   const [showCompletion,  setShowCompletion]  = useState(false)
   const [completionScore, setCompletionScore] = useState(0)
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    localStorage.setItem('app_theme', next)
+  }
   const splashRef = useRef(false)
   if (!splashRef.current) {
     splashRef.current = true
@@ -101,7 +109,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ background: '#000', height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div data-theme={theme} style={{ background: 'var(--app-bg)', height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'background .3s' }}>
 
       {/* Partner banner */}
       {partnerData && (
@@ -131,7 +139,7 @@ export default function App() {
       )}
 
       {/* Right nav — always visible */}
-      <RightNav current={state.currentView} onChange={v => { setView(v); setForceEvening(false) }} />
+      <RightNav current={state.currentView} onChange={v => { setView(v); setForceEvening(false) }} theme={theme} onToggleTheme={toggleTheme} />
 
       {/* Back bar — shown on prime + sub-views */}
       {canGoBack && (
@@ -139,25 +147,26 @@ export default function App() {
           flexShrink: 0,
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 16px',
-          background: 'rgba(8,8,8,.97)',
-          borderBottom: '1px solid rgba(255,255,255,.07)',
+          background: 'var(--surface-elevated)',
+          borderBottom: '1px solid var(--nav-border)',
           marginRight: NAV_W,
+          transition: 'background .3s',
         }}>
           <button
             onClick={() => { setView('home'); setForceEvening(false) }}
             style={{
-              background: 'rgba(255,255,255,.04)',
-              border: '1px solid rgba(255,255,255,.12)',
+              background: 'var(--glass)',
+              border: '1px solid var(--border)',
               borderRadius: 10, width: 36, height: 36,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: 'rgba(255,255,255,.58)',
+              cursor: 'pointer', color: 'var(--muted2)',
               fontSize: 16, fontWeight: 700,
             }}>
             ←
           </button>
           <span style={{
             fontSize: 12, fontWeight: 700, letterSpacing: '1.5px',
-            color: 'rgba(255,255,255,.3)', textTransform: 'uppercase',
+            color: 'var(--muted)', textTransform: 'uppercase',
             fontFamily: 'Barlow Condensed, sans-serif',
           }}>
             {state.currentView === 'prime' && 'פריים'}
@@ -166,6 +175,7 @@ export default function App() {
             {state.currentView === 'wins' && 'גדילה'}
             {state.currentView === 'fear' && 'פחד'}
             {state.currentView === 'weekly' && 'חדר מלחמה'}
+            {state.currentView === 'profile' && 'פרופיל'}
           </span>
         </div>
       )}
@@ -196,6 +206,8 @@ export default function App() {
                 yesterdayHabitsPct={yesterdayHabitsPct}
                 incantationB64={state.incantationB64}
                 onSaveIncantation={saveIncantation}
+                userGoals={state.userGoals ?? []}
+                onGoToProfile={() => setView('profile')}
               />
             )}
             {screen === 'day' && (
@@ -261,6 +273,14 @@ export default function App() {
             entries={state.entries}
             plans={state.weeklyPlans ?? []}
             onSave={saveWeeklyPlan}
+          />
+        )}
+
+        {state.currentView === 'profile' && (
+          <ProfileScreen
+            userName={state.userName ?? ''}
+            goals={state.userGoals ?? []}
+            onSaveGoals={saveUserGoals}
           />
         )}
       </div>
