@@ -89,9 +89,9 @@ function HabitTimerOverlay({ habit, onClose, onDone, userGoals = [], onGoToProfi
               </div>
             ) : (
               <div style={{ marginBottom: 16, padding: '14px', background: 'rgba(255,214,10,.06)', border: '1px dashed rgba(255,214,10,.25)', borderRadius: 12, textAlign: 'center' }}>
-                <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,214,10,.7)', marginBottom: 10 }} dir="rtl">טרם הגדרת יעדים</p>
+                <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.isDark ? 'rgba(255,214,10,.7)' : '#8B6800', marginBottom: 10 }} dir="rtl">טרם הגדרת יעדים</p>
                 <button onClick={() => { onClose(); onGoToProfile?.() }}
-                  style={{ background: 'rgba(255,214,10,.1)', border: '1px solid rgba(255,214,10,.3)', borderRadius: 8, padding: '8px 16px', color: '#FFD60A', fontFamily: 'Heebo, sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }} dir="rtl">
+                  style={{ background: 'rgba(255,214,10,.1)', border: '1px solid rgba(255,214,10,.3)', borderRadius: 8, padding: '8px 16px', color: T.isDark ? '#FFD60A' : '#8B6800', fontFamily: 'Heebo, sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }} dir="rtl">
                   הגדר יעדים בפרופיל
                 </button>
               </div>
@@ -122,6 +122,8 @@ function HabitTimerOverlay({ habit, onClose, onDone, userGoals = [], onGoToProfi
 export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, userGoals = [], onGoToProfile }: Props) {
   const T = useTheme()
   const [timerHabit, setTimerHabit] = useState<Habit | null>(null)
+  const [burstKey,   setBurstKey]   = useState(0)
+  const prevAllDone = useRef<boolean | null>(null)
 
   const toggle = (id: string) => {
     const already = completedHabits.includes(id)
@@ -135,6 +137,18 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
   const totalDone = completedHabits.length
   const reqPct    = Math.round((reqDone / requiredHabitIds.length) * 100)
   const allDone   = reqPct === 100
+
+  useEffect(() => {
+    if (prevAllDone.current === null) {
+      prevAllDone.current = allDone  // skip first render
+      return
+    }
+    if (allDone && !prevAllDone.current) {
+      setBurstKey(k => k + 1)
+      playComplete()
+    }
+    prevAllDone.current = allDone
+  }, [allDone])
 
   const required = requiredHabitIds.map(id => HABITS.find(h => h.id === id)).filter((h): h is Habit => !!h)
   const bonus    = HABITS.filter(h => !requiredHabitIds.includes(h.id))
@@ -169,8 +183,16 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
             <h1 style={{ fontSize: 26, fontWeight: 900, color: T.text, fontFamily: '"Frank Ruhl Libre", Georgia, serif' }} dir="rtl">פעולות היום</h1>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div className="font-display" style={{ fontSize: '3.5rem', lineHeight: 1, color: allDone ? '#FFD60A' : T.text }}>
+            <div key={burstKey} className={`font-display${burstKey > 0 && allDone ? ' burst-animate' : ''}`}
+              style={{ fontSize: '3.5rem', lineHeight: 1, color: allDone ? (T.isDark ? '#FFD60A' : '#8B6800') : T.text, position: 'relative' }}>
               {reqDone}
+              {burstKey > 0 && allDone && (
+                <div key={`ring-${burstKey}`} className="ring-expand" style={{
+                  position: 'absolute', inset: -8, borderRadius: '50%',
+                  border: '2px solid rgba(255,214,10,.5)',
+                  pointerEvents: 'none',
+                }} />
+              )}
             </div>
             <div style={{ fontSize: 12, color: T.textMuted, fontWeight: 700 }}>/ {requiredHabitIds.length}</div>
             <div className="label-xs" style={{ marginTop: 2 }}>חובה</div>

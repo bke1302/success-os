@@ -1,16 +1,17 @@
 import { useRef, useEffect } from 'react'
 import type { DayEntry } from '../types'
+import { useTheme } from '../contexts/ThemeContext'
 
 interface Props { entries: DayEntry[] }
 
 const HEBREW_DAYS = ['א','ב','ג','ד','ה','ו','ש']
 
-function scoreColor(score: number): string {
+function scoreColor(score: number, isDark: boolean): string {
   if (score >= 9) return '#FFD60A'
   if (score >= 7) return '#e8a020'
   if (score >= 5) return '#FF9F0A'
   if (score >= 1) return '#FF375F'
-  return 'rgba(255,255,255,0.06)'
+  return isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'
 }
 
 function getDateStr(daysAgo: number): string {
@@ -20,6 +21,7 @@ function getDateStr(daysAgo: number): string {
 }
 
 export function HeatmapChart({ entries }: Props) {
+  const T        = useTheme()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const wrapRef   = useRef<HTMLDivElement>(null)
 
@@ -35,9 +37,9 @@ export function HeatmapChart({ entries }: Props) {
 
     const dpr = window.devicePixelRatio || 1
     const W   = wrap.offsetWidth
-    const COLS = 15   // last 15 weeks
+    const COLS = 15
     const ROWS = 7
-    const CELL = Math.floor((W - 40) / COLS)  // cell size
+    const CELL = Math.floor((W - 40) / COLS)
     const GAP  = 3
     const H    = ROWS * (CELL + GAP) + 32
 
@@ -50,12 +52,15 @@ export function HeatmapChart({ entries }: Props) {
     ctx.scale(dpr, dpr)
     ctx.clearRect(0, 0, W, H)
 
+    const labelColor = T.isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)'
+    const emptyColor = T.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'
+
     const today = new Date()
-    const todayDow = today.getDay() // 0=Sun
+    const todayDow = today.getDay()
 
     // Day-of-week labels
     ctx.font = `bold 9px sans-serif`
-    ctx.fillStyle = 'rgba(255,255,255,0.25)'
+    ctx.fillStyle = labelColor
     ctx.textAlign = 'right'
     for (let r = 0; r < ROWS; r++) {
       const y = r * (CELL + GAP) + CELL / 2 + 4
@@ -66,9 +71,6 @@ export function HeatmapChart({ entries }: Props) {
 
     for (let col = 0; col < COLS; col++) {
       for (let row = 0; row < ROWS; row++) {
-        // Calculate which day this cell is
-        // last column = most recent week
-        // today sits at (COLS-1, todayDow)
         const colsFromEnd = COLS - 1 - col
         const daysFromToday = colsFromEnd * 7 + (todayDow - row + 7) % 7
         const dateStr = getDateStr(daysFromToday)
@@ -85,11 +87,11 @@ export function HeatmapChart({ entries }: Props) {
         if (isFuture || daysFromToday > 90) {
           ctx.fillStyle = 'rgba(0,0,0,0)'
         } else if (score !== undefined) {
-          ctx.fillStyle = scoreColor(score)
-          ctx.shadowColor = scoreColor(score)
+          ctx.fillStyle = scoreColor(score, T.isDark)
+          ctx.shadowColor = scoreColor(score, T.isDark)
           ctx.shadowBlur  = score >= 7 ? 6 : 0
         } else {
-          ctx.fillStyle = 'rgba(255,255,255,0.06)'
+          ctx.fillStyle = emptyColor
           ctx.shadowBlur = 0
         }
         ctx.fill()
@@ -99,7 +101,7 @@ export function HeatmapChart({ entries }: Props) {
 
     // Month labels
     ctx.font = '9px sans-serif'
-    ctx.fillStyle = 'rgba(255,255,255,0.2)'
+    ctx.fillStyle = labelColor
     ctx.textAlign = 'left'
     let lastMonth = -1
     for (let col = 0; col < COLS; col++) {
@@ -113,7 +115,9 @@ export function HeatmapChart({ entries }: Props) {
       }
     }
 
-  }, [entries])
+  }, [entries, T.isDark])
+
+  const emptyLegendColor = T.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'
 
   return (
     <div ref={wrapRef} style={{ width: '100%', marginTop: 12 }}>
@@ -121,7 +125,7 @@ export function HeatmapChart({ entries }: Props) {
       <canvas ref={canvasRef} style={{ display: 'block' }} />
       {/* Legend */}
       <div className="flex items-center gap-3 mt-2 justify-end">
-        {[['פחות','rgba(255,255,255,0.06)'], ['5-6','#FF375F'], ['7-8','#FF9F0A'], ['9-10','#FFD60A']].map(([l,c]) => (
+        {[['פחות', emptyLegendColor], ['5-6','#FF375F'], ['7-8','#FF9F0A'], ['9-10','#FFD60A']].map(([l,c]) => (
           <div key={l} className="flex items-center gap-1">
             <div style={{ width: 8, height: 8, borderRadius: 2, background: c }} />
             <span className="text-[8px] text-muted">{l}</span>

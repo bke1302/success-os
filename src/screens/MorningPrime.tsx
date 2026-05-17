@@ -85,7 +85,7 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
         {saved && !recording && (
           <button onClick={playRec}
             className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold"
-            style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#FFD60A', borderRadius: 12 }}
+            style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: T.isDark ? '#FFD60A' : '#8B6800', borderRadius: 12 }}
             dir="rtl">
             {playing ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             {playing ? 'עצור' : 'נגן'}
@@ -113,7 +113,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
   const coach     = getCoachMessage({ streak, dayCount, yesterdayHabitsPct, currentHour: new Date().getHours() })
   const powerWord = getTodayPowerWord()
   const rank      = getCommanderRank(streak)
-  const accentColor = '#FFD60A'
+  const accentColor = T.isDark ? '#FFD60A' : '#8B6800'
 
   const next = () => {
     playCheck()
@@ -153,7 +153,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#FFD60A', letterSpacing: 1, border: '1px solid rgba(255,214,10,.3)', borderRadius: 999, padding: '2px 8px', fontFamily: 'Barlow Condensed, sans-serif' }}>{rank.rank}</span>
+            <span style={{ fontSize: 10, fontWeight: 800, color: accentColor, letterSpacing: 1, border: '1px solid rgba(255,214,10,.3)', borderRadius: 999, padding: '2px 8px', fontFamily: 'Barlow Condensed, sans-serif' }}>{rank.rank}</span>
             <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 11, fontWeight: 700, color: T.textDim }}>יום {dayCount}</span>
           </div>
         </div>
@@ -167,8 +167,8 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
         {step === 1 && (
           <>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.6)', textTransform: 'uppercase', marginBottom: 8 }}>מילת הכוח של היום</p>
-              <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(3rem, 14vw, 5rem)', fontWeight: 900, lineHeight: 1, color: accentColor, letterSpacing: '-2px' }} dir="rtl">{powerWord}</h1>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.6)' : '#8B6800', textTransform: 'uppercase', marginBottom: 8 }}>מילת הכוח של היום</p>
+              <h1 className="power-word-in power-word-pulse" style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(3rem, 14vw, 5rem)', fontWeight: 900, lineHeight: 1, color: accentColor, letterSpacing: '-2px' }} dir="rtl">{powerWord}</h1>
               <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, color: T.textDim, letterSpacing: '1.5px', marginTop: 8 }}>
                 שבוע {weekNum}/4 · יום {dayInWeek}/7
               </p>
@@ -191,7 +191,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
 
             {lastWin && (
               <div className="card" style={{ borderRight: '3px solid rgba(255,214,10,.4)' }}>
-                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#FFD60A', textTransform: 'uppercase', marginBottom: 8 }}>אתמול ניצחת</p>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: accentColor, textTransform: 'uppercase', marginBottom: 8 }}>אתמול ניצחת</p>
                 <p style={{ fontSize: 14, color: T.textSub, lineHeight: 1.6 }} dir="rtl">{lastWin}</p>
               </div>
             )}
@@ -252,7 +252,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
               </div>
             ) : (
               <button onClick={onGoToProfile}
-                style={{ width: '100%', marginBottom: 16, padding: '12px 16px', background: 'rgba(255,214,10,.06)', border: '1px dashed rgba(255,214,10,.25)', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, color: 'rgba(255,214,10,.6)', fontFamily: 'Heebo, sans-serif', fontSize: 13 }}
+                style={{ width: '100%', marginBottom: 16, padding: '12px 16px', background: 'rgba(255,214,10,.06)', border: '1px dashed rgba(255,214,10,.25)', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, color: T.isDark ? 'rgba(255,214,10,.6)' : '#8B6800', fontFamily: 'Heebo, sans-serif', fontSize: 13 }}
                 dir="rtl">
                 <Target style={{ width: 16, height: 16, flexShrink: 0 }} strokeWidth={1.5} />
                 טרם הגדרת יעדים — לחץ להגדרה בפרופיל

@@ -73,9 +73,9 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
             <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 20, fontWeight: 700, color: T.text }} dir="rtl">יום {dayCount}</p>
           </div>
           {streak > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(255,214,10,.07)', border: '1px solid rgba(255,214,10,.18)', borderRadius: 12 }}>
-              <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 18, fontWeight: 900, color: '#FFD60A', lineHeight: 1 }}>{streak}</span>
-              <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: 'rgba(255,214,10,.6)' }}>STREAK</span>
+            <div className={streak >= 7 ? 'streak-pulse' : ''} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(255,214,10,.07)', border: '1px solid rgba(255,214,10,.18)', borderRadius: 12 }}>
+              <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 18, fontWeight: 900, color: T.isDark ? '#FFD60A' : '#8B6800', lineHeight: 1 }}>{streak}</span>
+              <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: T.isDark ? 'rgba(255,214,10,.6)' : '#8B6800' }}>STREAK</span>
             </div>
           )}
         </div>
@@ -84,8 +84,8 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
       <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 32px' }}>
         {identity && (
           <div className="card mb-4" style={{ borderRight: '3px solid rgba(255,214,10,.5)' }}>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.7)', textTransform: 'uppercase', marginBottom: 6 }}>תוכנית השבוע</p>
-            <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 16, fontWeight: 700, color: '#FFD60A' }} dir="rtl">{identity}</p>
+            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.7)' : '#8B6800', textTransform: 'uppercase', marginBottom: 6 }}>תוכנית השבוע</p>
+            <p style={{ fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 16, fontWeight: 700, color: T.isDark ? '#FFD60A' : '#8B6800' }} dir="rtl">{identity}</p>
           </div>
         )}
 
@@ -149,7 +149,7 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
         <div className="card">
           <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 12 }}>חוכמת היום</p>
           <p style={{
-            fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 16, fontWeight: 400, color: 'rgba(255,214,10,.85)', lineHeight: 1.75,
+            fontFamily: 'Frank Ruhl Libre, Georgia, serif', fontSize: 16, fontWeight: 400, color: T.isDark ? 'rgba(255,214,10,.85)' : 'rgba(130,100,0,.85)', lineHeight: 1.75,
             opacity: quoteVisible ? 1 : 0, transition: 'opacity 0.4s',
           }} dir="rtl">"{QUOTES[quoteIdx]}"</p>
         </div>

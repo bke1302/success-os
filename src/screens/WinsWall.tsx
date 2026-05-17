@@ -115,12 +115,12 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
         )}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8 }}>
           {[
-            { v: streak,           l:'STREAK', c:'#FFD60A' },
+            { v: streak,           l:'STREAK', c: T.isDark ? '#FFD60A' : '#8B6800' },
             { v: totalDays,        l:'ימים',   c: T.text },
             { v: String(avgScore), l:'ממוצע',  c: T.text },
             { v: `${commitRate}%`, l:'עמדתי', c:'#30D158' },
           ].map(({ v, l, c }) => (
-            <div key={l} style={{ textAlign:'center', padding:'12px 8px', background: T.tagBg, border:`1px solid ${T.border}`, borderTop:`2px solid ${c === '#FFD60A' ? '#FFD60A' : T.border}`, borderRadius:12 }}>
+            <div key={l} style={{ textAlign:'center', padding:'12px 8px', background: T.tagBg, border:`1px solid ${T.border}`, borderTop:`2px solid ${(c === '#FFD60A' || c === '#8B6800') ? (T.isDark ? '#FFD60A' : '#8B6800') : T.border}`, borderRadius:12 }}>
               <div style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:'1.8rem', color:c, lineHeight:1 }}>{v}</div>
               <div style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:8, fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase', color: T.textMuted, marginTop:5 }}>{l}</div>
             </div>
@@ -132,7 +132,7 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
         {withEvening.length >= 3 && <div className="mb-4"><CoachCard entries={entries} streak={streak} /></div>}
         {peakDays > 0 && (
           <div className="card mb-4" style={{ borderRight:'3px solid #FFD60A' }}>
-            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:14, fontWeight:700, color:'#FFD60A' }} dir="rtl">{peakDays} ימי PEAK — הגעת ל-9 ומעלה.</p>
+            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:14, fontWeight:700, color: T.isDark ? '#FFD60A' : '#8B6800' }} dir="rtl">{peakDays} ימי PEAK — הגעת ל-9 ומעלה.</p>
           </div>
         )}
         {withEvening.length >= 2 && <div className="card mb-4"><ScoreTrendChart entries={entries} /><HeatmapChart entries={entries} /></div>}
@@ -140,9 +140,10 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
         <div className="divider mb-5" />
 
         {withEvening.length === 0 ? (
-          <div style={{ textAlign:'center', padding:'60px 20px' }}>
-            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:22, fontWeight:700, color: T.text, marginBottom:10 }} dir="rtl">עדיין אין ימים סגורים</p>
-            <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:13, color: T.textMuted, lineHeight:1.6 }} dir="rtl">סיים יום ראשון עם סיכום ערב.</p>
+          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px 24px', textAlign:'center' }}>
+            <div style={{ fontSize:52, marginBottom:20 }}>🏆</div>
+            <h2 dir="rtl" style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:26, fontWeight:900, color: T.text, marginBottom:12, lineHeight:1.1 }}>הניצחון הראשון ממתין לך</h2>
+            <p dir="rtl" style={{ fontFamily:"'Heebo', sans-serif", fontSize:14, color: T.textMuted, lineHeight:1.7 }}>סיים את היום הראשון שלך ותראה כאן את כל ההתקדמות שלך.</p>
           </div>
         ) : (
           <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
@@ -154,7 +155,7 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
                   <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:12 }}>
                     <div>
                       <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color: T.textMuted, textTransform:'uppercase', marginBottom:4 }}>{formatDate(entry.date)}</p>
-                      {entry.morning?.identity && <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, color:'rgba(255,214,10,.6)', letterSpacing:'1px' }} dir="rtl">{entry.morning.identity}</p>}
+                      {entry.morning?.identity && <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, color: T.isDark ? 'rgba(255,214,10,.6)' : '#8B6800', letterSpacing:'1px' }} dir="rtl">{entry.morning.identity}</p>}
                     </div>
                     <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                       <div style={{ textAlign:'center' }}>

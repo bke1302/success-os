@@ -60,11 +60,11 @@ export function WeeklyWarRoom({ entries, plans, onSave }: Props) {
         </div>
 
         <div className="card mb-4" style={{ borderRight:'3px solid #FFD60A' }}>
-          <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'#FFD60A', textTransform:'uppercase', marginBottom:6 }}>3 מטרות לשבוע הבא</p>
+          <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color: T.isDark ? '#FFD60A' : '#8B6800', textTransform:'uppercase', marginBottom:6 }}>3 מטרות לשבוע הבא</p>
           <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color: T.textMuted, marginBottom:16, lineHeight:1.5 }} dir="rtl">מה 3 הדברים שאם תעשה אותם — השבוע הזה יהיה ניצחון?</p>
           {([0,1,2] as const).map(i => (
             <div key={i} style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10 }}>
-              <span style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:11, fontWeight:900, color:'#FFD60A', minWidth:16 }}>{i+1}</span>
+              <span style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:11, fontWeight:900, color: T.isDark ? '#FFD60A' : '#8B6800', minWidth:16 }}>{i+1}</span>
               <input value={goals[i]} onChange={e => { updateGoal(i,e.target.value); if(e.target.value.length===1) playCheck() }}
                 placeholder={`מטרה ${i+1}…`} dir="rtl"
                 style={{ flex:1, padding:'11px 14px', fontFamily:"'Heebo', sans-serif", background: T.tagBg,

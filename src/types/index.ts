@@ -66,7 +66,7 @@ export interface AppState {
   entries:        DayEntry[]
   streak:         number
   totalDays:      number
-  currentView:    'home' | 'prime' | 'actions' | 'inspire' | 'wins' | 'fear' | 'weekly' | 'profile'
+  currentView:    'home' | 'prime' | 'actions' | 'inspire' | 'wins' | 'fear' | 'weekly' | 'profile' | 'focus'
   burnTheBoats?:  BurnTheBoats
   fearEntries?:   FearEntry[]
   weeklyPlans?:   WeeklyPlan[]

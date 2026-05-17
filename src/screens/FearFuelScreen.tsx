@@ -56,7 +56,7 @@ export function FearFuelScreen({ entries, onSave, onDelete }: Props) {
             </div>
             {step === 2 && (
               <div className="card animate-slide-up" style={{ borderRight: '3px solid #FFD60A' }}>
-                <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#FFD60A', textTransform: 'uppercase', marginBottom: 6 }}>שלב 2 — איך הפחד הזה משרת אותך?</p>
+                <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? '#FFD60A' : '#8B6800', textTransform: 'uppercase', marginBottom: 6 }}>שלב 2 — איך הפחד הזה משרת אותך?</p>
                 <p style={{ fontFamily: "'Heebo', sans-serif", fontSize: 12, color: T.textMuted, marginBottom: 10, lineHeight: 1.5 }} dir="rtl">הפחד מפני כישלון הוא הוכחה שאכפת לך. הופך אותו.</p>
                 <textarea value={reframe} onChange={e => setReframe(e.target.value)}
                   placeholder="הפחד הזה מלמד אותי ש…" dir="rtl" rows={3}
@@ -97,9 +97,10 @@ export function FearFuelScreen({ entries, onSave, onDelete }: Props) {
         )}
 
         {entries.length === 0 && !done && (
-          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <p style={{ fontFamily: "'Frank Ruhl Libre', Georgia, serif", fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 8 }} dir="rtl">עדיין אין פחדים שהפכת</p>
-            <p style={{ fontFamily: "'Heebo', sans-serif", fontSize: 13, color: T.textMuted }} dir="rtl">הוסף את הראשון.</p>
+          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', padding:'40px 24px', textAlign:'center' }}>
+            <div style={{ fontSize:48, marginBottom:16 }}>🔥</div>
+            <h2 dir="rtl" style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:22, fontWeight:900, color: T.text, marginBottom:10, lineHeight:1.1 }}>הפחד שלך הוא הדלק שלך</h2>
+            <p dir="rtl" style={{ fontFamily:"'Heebo', sans-serif", fontSize:13, color: T.textMuted, lineHeight:1.7 }}>תעד את מה שמפחיד אותך — ותהפוך אותו לכוח.</p>
           </div>
         )}
       </div>

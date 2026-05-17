@@ -46,8 +46,8 @@ function QuoteSection() {
   }
   return (
     <div className="card" style={{ borderRight: '3px solid rgba(255,214,10,.5)' }}>
-      <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.7)', textTransform: 'uppercase', marginBottom: 12 }}>DAILY WISDOM</p>
-      <p style={{ fontSize: 15, fontWeight: 600, color: 'rgba(245,196,53,0.9)', lineHeight: 1.7, opacity: visible ? 1 : 0, transition: 'opacity 0.2s' }} dir="rtl">
+      <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.7)' : '#8B6800', textTransform: 'uppercase', marginBottom: 12 }}>DAILY WISDOM</p>
+      <p style={{ fontSize: 15, fontWeight: 600, color: T.isDark ? 'rgba(245,196,53,0.9)' : 'rgba(130,100,0,.85)', lineHeight: 1.7, opacity: visible ? 1 : 0, transition: 'opacity 0.2s' }} dir="rtl">
         "{QUOTES[idx]}"
       </p>
       <div className="flex items-center justify-between mt-4">

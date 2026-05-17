@@ -1,3 +1,5 @@
+import { useTheme } from '../contexts/ThemeContext'
+
 interface Props {
   value: number
   onChange: (v: number) => void
@@ -23,6 +25,7 @@ const LABEL = (v: number) => {
 }
 
 export function EnergySlider({ value, onChange, label, size = 'lg', readonly = false }: Props) {
+  const T = useTheme()
   const { fill, glow } = COLOR(value)
 
   return (
@@ -63,12 +66,12 @@ export function EnergySlider({ value, onChange, label, size = 'lg', readonly = f
                 fontSize:   size === 'lg' ? '13px' : '9px',
                 background: active
                   ? `radial-gradient(circle, ${dotFill}, ${dotFill}cc)`
-                  : 'rgba(255,255,255,0.04)',
+                  : T.tagBg,
                 border:     active
                   ? `1px solid ${dotFill}`
-                  : '1px solid rgba(255,255,255,0.08)',
+                  : `1px solid ${T.border2}`,
                 boxShadow:  active ? `0 0 12px ${dotGlow}` : 'none',
-                color:      active ? '#000' : 'rgba(255,255,255,0.2)',
+                color:      active ? '#000' : T.textDim,
                 cursor:     readonly ? 'default' : 'pointer',
               }}
             >

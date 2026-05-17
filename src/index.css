@@ -45,58 +45,59 @@
   --shadow-lg: 0 24px 64px rgba(0,0,0,.85);
 
   /* ── Themeable surfaces ── */
-  --app-bg:          #000000;
-  --nav-bg:          rgba(18,18,18,0.97);
+  --app-bg:          #0D0E13;
+  --nav-bg:          rgba(14,16,22,0.97);
   --nav-border:      rgba(255,255,255,.07);
-  --surface-elevated: rgba(8,8,8,.97);
-  --surface-bar:     rgba(255,255,255,.07);
-  --card-from:       rgba(255,255,255,.09);
-  --card-to:         rgba(255,255,255,.05);
-  --card-border:     rgba(255,255,255,.12);
+  --surface-elevated: rgba(12,14,20,.97);
+  --surface-bar:     rgba(255,255,255,.06);
+  --card-from:       rgba(255,255,255,.065);
+  --card-to:         rgba(255,255,255,.03);
+  --card-border:     rgba(255,255,255,.10);
   --card-inset:      rgba(255,255,255,.06);
   --input-bg:        rgba(255,255,255,.065);
   --input-border:    rgba(255,255,255,.16);
   --scroll-thumb:    rgba(255,214,10,.12);
   --label-color:     rgba(255,255,255,.38);
+  --gold-text-light: #8B6800;
 }
 
 /* ─── Light Mode ─────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg:   #f5f5f0;
-  --bg2:  #eeeee9;
-  --bg3:  #e6e6e1;
-  --bg4:  #deded9;
-  --bg5:  #d6d6d1;
+  --bg:   #F0EFE9;
+  --bg2:  #E8E7E1;
+  --bg3:  #E0DFD9;
+  --bg4:  #D8D7D1;
+  --bg5:  #D0CFC9;
 
-  --text:   #111111;
-  --muted:  rgba(0,0,0,.45);
-  --muted2: rgba(0,0,0,.62);
+  --text:   #0D0D0D;
+  --muted:  rgba(0,0,0,.48);
+  --muted2: rgba(0,0,0,.65);
 
   --border:  rgba(0,0,0,.09);
-  --border2: rgba(0,0,0,.15);
+  --border2: rgba(0,0,0,.18);
 
-  --glass:   rgba(0,0,0,.04);
-  --glass-b: rgba(0,0,0,.08);
-  --glass-h: rgba(0,0,0,.06);
+  --glass:   rgba(255,255,255,.70);
+  --glass-b: rgba(255,255,255,.90);
+  --glass-h: rgba(255,255,255,.80);
 
-  --shadow-sm: 0 2px 8px rgba(0,0,0,.10);
-  --shadow-md: 0 8px 32px rgba(0,0,0,.14);
-  --shadow-lg: 0 24px 64px rgba(0,0,0,.20);
+  --shadow-sm: 0 2px 16px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.05);
+  --shadow-md: 0 8px 32px rgba(0,0,0,.13), 0 2px 8px rgba(0,0,0,.07);
+  --shadow-lg: 0 24px 64px rgba(0,0,0,.18);
 
   /* surfaces */
-  --app-bg:           #f5f5f0;
-  --nav-bg:           rgba(245,245,240,0.97);
-  --nav-border:       rgba(0,0,0,.08);
-  --surface-elevated: rgba(248,247,242,.97);
+  --app-bg:           #F0EFE9;
+  --nav-bg:           rgba(255,255,255,0.96);
+  --nav-border:       rgba(0,0,0,.10);
+  --surface-elevated: rgba(255,255,255,.97);
   --surface-bar:      rgba(0,0,0,.06);
-  --card-from:        rgba(0,0,0,.045);
-  --card-to:          rgba(0,0,0,.022);
+  --card-from:        #FFFFFF;
+  --card-to:          #FAFAFA;
   --card-border:      rgba(0,0,0,.10);
-  --card-inset:       rgba(255,255,255,.75);
-  --input-bg:         rgba(0,0,0,.04);
-  --input-border:     rgba(0,0,0,.15);
-  --scroll-thumb:     rgba(0,0,0,.15);
-  --label-color:      rgba(0,0,0,.40);
+  --card-inset:       transparent;
+  --input-bg:         rgba(0,0,0,.05);
+  --input-border:     rgba(0,0,0,.18);
+  --scroll-thumb:     rgba(0,0,0,.18);
+  --label-color:      rgba(0,0,0,.42);
 }
 
 /* ─── Base ────────────────────────────────────────────────────────── */
@@ -160,7 +161,17 @@ body::before {
   transition: opacity .3s;
 }
 [data-theme="light"] body::before {
-  opacity: .4;
+  opacity: 0;
+}
+[data-theme="light"] .btn-ghost:hover {
+  border-color: rgba(0,0,0,.28);
+  color: #0D0D0D;
+  background: rgba(0,0,0,.05);
+}
+[data-theme="light"] .card:hover {
+  border-color: rgba(0,0,0,.18);
+  box-shadow: 0 6px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.07);
+  transform: translateY(-1px);
 }
 #root { position: relative; z-index: 1; }
 
@@ -252,6 +263,10 @@ body::before {
     border-color: var(--border2);
     box-shadow: var(--shadow-md), inset 0 1px 0 var(--card-inset);
     transform: translateY(-1px);
+  }
+  .card:active {
+    transform: scale(0.985);
+    transition: transform .1s;
   }
 
   .card-sm {
@@ -397,3 +412,37 @@ body::before {
 
 /* ─── Touch feedback ────────────────────────────────────────────── */
 button:active { opacity: .8; transform: scale(.97); }
+
+/* ─── Milestone / Celebration animations ────────────────────────── */
+@keyframes goldBurst {
+  0%   { transform: scale(1); }
+  15%  { transform: scale(1.35); filter: drop-shadow(0 0 20px rgba(255,214,10,.8)); }
+  40%  { transform: scale(0.95); }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes ringExpand {
+  0%   { transform: scale(1); opacity: .6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.burst-animate { animation: goldBurst .55s cubic-bezier(.34,1.56,.64,1) both; }
+.ring-expand   { animation: ringExpand .6s ease-out both; }
+
+@keyframes powerWordIn {
+  0%   { opacity: 0; transform: scale(0.75); filter: blur(8px); }
+  60%  { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+.power-word-in { animation: powerWordIn .7s cubic-bezier(.16,1,.3,1) .15s both; }
+
+@keyframes powerWordPulse {
+  0%,100% { text-shadow: 0 0 40px rgba(255,214,10,.2); }
+  50%     { text-shadow: 0 0 60px rgba(255,214,10,.4), 0 0 120px rgba(255,214,10,.15); }
+}
+.power-word-pulse { animation: powerWordPulse 3s ease-in-out infinite; }
+
+@keyframes streakPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,214,10,0); }
+  50%     { box-shadow: 0 0 0 6px rgba(255,214,10,.14); }
+}
+.streak-pulse { animation: streakPulse 2.5s ease-in-out infinite; }

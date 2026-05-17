@@ -5,9 +5,11 @@ import { playCheck, playComplete } from '../utils/sounds'
 import { useTheme } from '../contexts/ThemeContext'
 
 interface Props {
-  userName:   string
-  goals:      UserGoal[]
-  onSaveGoals: (goals: UserGoal[]) => void
+  userName:      string
+  goals:         UserGoal[]
+  onSaveGoals:   (goals: UserGoal[]) => void
+  theme?:        'dark' | 'light'
+  onToggleTheme?: () => void
 }
 
 const CATEGORIES: UserGoal['category'][] = ['עסקי', 'כספי', 'בריאות', 'קשרים', 'אישי']
@@ -66,8 +68,8 @@ function GoalRow({ goal, onDelete, onUpdate }: {
                 fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1px',
                 cursor: 'pointer',
                 background: goal.category === cat ? `${CAT_COLORS[cat]}22` : 'transparent',
-                borderColor: goal.category === cat ? CAT_COLORS[cat] : 'rgba(255,255,255,.12)',
-                color: goal.category === cat ? CAT_COLORS[cat] : 'rgba(255,255,255,.35)',
+                borderColor: goal.category === cat ? CAT_COLORS[cat] : T.border2,
+                color: goal.category === cat ? CAT_COLORS[cat] : T.textDim,
                 transition: 'all .15s',
               }}>
               {cat}
@@ -80,8 +82,8 @@ function GoalRow({ goal, onDelete, onUpdate }: {
             value={goal.deadline ?? ''}
             onChange={e => onUpdate({ ...goal, deadline: e.target.value || undefined })}
             style={{
-              background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,.12)',
-              outline: 'none', color: goal.deadline ? 'rgba(255,255,255,.5)' : 'rgba(255,255,255,.2)',
+              background: 'transparent', border: 'none', borderBottom: `1px solid ${T.border2}`,
+              outline: 'none', color: goal.deadline ? T.textMuted : T.textFaint,
               fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700,
               letterSpacing: '1px', padding: '3px 0', colorScheme: 'dark',
             }}
@@ -101,7 +103,7 @@ function GoalRow({ goal, onDelete, onUpdate }: {
   )
 }
 
-export function ProfileScreen({ userName, goals, onSaveGoals }: Props) {
+export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleTheme }: Props) {
   const T = useTheme()
   const [localGoals, setLocalGoals] = useState<UserGoal[]>(goals)
   const [saved, setSaved] = useState(false)
@@ -143,7 +145,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals }: Props) {
 
       {/* Header */}
       <div className="shrink-0" style={{ padding: '24px 20px 20px', borderBottom: `1px solid ${T.border}` }}>
-        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.6)', textTransform: 'uppercase', marginBottom: 6 }}>פרופיל</p>
+        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.6)' : '#8B6800', textTransform: 'uppercase', marginBottom: 6 }}>פרופיל</p>
         <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 28, fontWeight: 900, color: T.text }} dir="rtl">
           {userName}
         </h1>
@@ -209,15 +211,15 @@ export function ProfileScreen({ userName, goals, onSaveGoals }: Props) {
             <button onClick={addGoal}
               style={{
                 width: '100%', padding: '14px',
-                background: 'transparent', border: '1px dashed rgba(255,255,255,.15)',
+                background: 'transparent', border: `1px dashed ${T.border2}`,
                 borderRadius: 14, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                color: 'rgba(255,255,255,.35)',
+                color: T.textDim,
                 fontFamily: 'Heebo, sans-serif', fontSize: 13, fontWeight: 600,
                 transition: 'border-color .2s, color .2s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,214,10,.3)'; e.currentTarget.style.color = '#FFD60A' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,.15)'; e.currentTarget.style.color = 'rgba(255,255,255,.35)' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,214,10,.4)'; e.currentTarget.style.color = T.isDark ? '#FFD60A' : '#8B6800' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = T.border2; e.currentTarget.style.color = T.textDim }}
               dir="rtl">
               <Plus style={{ width: 16, height: 16 }} strokeWidth={2} />
               הוסף יעד {localGoals.length === 0 ? 'ראשון' : ''}
@@ -225,14 +227,43 @@ export function ProfileScreen({ userName, goals, onSaveGoals }: Props) {
           )}
         </div>
 
+        {/* Theme toggle */}
+        {onToggleTheme && (
+          <div style={{ marginTop: 8, marginBottom: 20 }}>
+            <div style={{ height: 1, background: T.divider, marginBottom: 20 }} />
+            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 12 }}>מראה</p>
+            <button onClick={onToggleTheme}
+              style={{
+                width: '100%', padding: '14px 18px',
+                background: T.tagBg, border: `1px solid ${T.border2}`,
+                borderRadius: 14, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                transition: 'border-color .2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,214,10,.35)'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = T.border2}
+              dir="rtl">
+              <span style={{ fontFamily: 'Heebo, sans-serif', fontSize: 14, fontWeight: 600, color: T.text }}>
+                {theme === 'dark' ? 'מצב כהה 🌙' : 'מצב בהיר ☀️'}
+              </span>
+              <span style={{
+                fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700,
+                letterSpacing: '1.5px', color: T.textMuted, textTransform: 'uppercase',
+              }}>
+                {theme === 'dark' ? 'עבור לבהיר' : 'עבור לכהה'}
+              </span>
+            </button>
+          </div>
+        )}
+
         {/* Goal examples hint */}
         {localGoals.length === 0 && (
           <div className="card" style={{ borderRight: '3px solid rgba(255,214,10,.3)' }}>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.5)', textTransform: 'uppercase', marginBottom: 12 }}>
+            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.5)' : '#8B6800', textTransform: 'uppercase', marginBottom: 12 }}>
               דוגמאות ליעדים
             </p>
             {GOAL_PLACEHOLDERS.map((p, i) => (
-              <p key={i} style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: 'rgba(255,255,255,.35)', lineHeight: 1.5, marginBottom: 6 }} dir="rtl">· {p}</p>
+              <p key={i} style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.textMuted, lineHeight: 1.5, marginBottom: 6 }} dir="rtl">· {p}</p>
             ))}
           </div>
         )}

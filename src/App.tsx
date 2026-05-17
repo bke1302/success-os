@@ -18,11 +18,14 @@ import { OnboardingScreen }     from './screens/OnboardingScreen'
 import { ProfileScreen }        from './screens/ProfileScreen'
 import { SplashScreen }         from './screens/SplashScreen'
 import { CompletionScreen }     from './screens/CompletionScreen'
+import { FocusScreen }          from './screens/FocusScreen'
+import { MilestoneScreen }      from './screens/MilestoneScreen'
 import type { EnergyCheckin }   from './types'
 import { ThemeContext }          from './contexts/ThemeContext'
 import { darkTokens, lightTokens } from './theme'
 
 const NAV_W = 62
+const MILESTONE_DAYS = [7, 14, 21, 30, 60, 100]
 
 export default function App() {
   const {
@@ -40,6 +43,15 @@ export default function App() {
   const [checkinPrompt,   setCheckinPrompt]   = useState<EnergyCheckin['label'] | null>(null)
   const [showCompletion,  setShowCompletion]  = useState(false)
   const [completionScore, setCompletionScore] = useState(0)
+  const [showMilestone,   setShowMilestone]   = useState(false)
+
+  useEffect(() => {
+    const lastShown = Number(localStorage.getItem('last_milestone_shown') ?? 0)
+    if (MILESTONE_DAYS.includes(state.streak) && state.streak > lastShown) {
+      localStorage.setItem('last_milestone_shown', String(state.streak))
+      setTimeout(() => setShowMilestone(true), 800)
+    }
+  }, [state.streak]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark'
@@ -134,6 +146,14 @@ export default function App() {
         />
       )}
 
+      {/* Milestone overlay */}
+      {showMilestone && (
+        <MilestoneScreen
+          streak={state.streak}
+          onDone={() => setShowMilestone(false)}
+        />
+      )}
+
       {/* Energy overlay */}
       {checkinPrompt && (
         <EnergyCheckinOverlay
@@ -176,6 +196,7 @@ export default function App() {
           }}>
             {state.currentView === 'prime' && 'פריים'}
             {state.currentView === 'actions' && 'פעולות'}
+            {state.currentView === 'focus'   && 'פוקוס'}
             {state.currentView === 'inspire' && 'השראה'}
             {state.currentView === 'wins' && 'גדילה'}
             {state.currentView === 'fear' && 'פחד'}
@@ -259,6 +280,8 @@ export default function App() {
           />
         )}
 
+        {state.currentView === 'focus'   && <FocusScreen />}
+
         {state.currentView === 'inspire' && <InspireScreen />}
 
         {state.currentView === 'wins' && (
@@ -286,6 +309,8 @@ export default function App() {
             userName={state.userName ?? ''}
             goals={state.userGoals ?? []}
             onSaveGoals={saveUserGoals}
+            theme={theme}
+            onToggleTheme={toggleTheme}
           />
         )}
       </div>

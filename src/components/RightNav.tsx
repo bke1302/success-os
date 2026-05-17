@@ -1,4 +1,4 @@
-import { Home, Zap, CheckSquare, Play, Trophy, Skull, Swords, User, Sun, Moon } from 'lucide-react'
+import { Home, Zap, CheckSquare, Play, Trophy, Skull, Swords, User, Sun, Moon, Timer } from 'lucide-react'
 import type { AppState } from '../types'
 
 type View = AppState['currentView']
@@ -7,6 +7,7 @@ const NAV: { id: View; Icon: typeof Home; label: string; color: string }[] = [
   { id: 'home',    Icon: Home,        label: 'בית',   color: '#f2f2f7' },
   { id: 'prime',   Icon: Zap,         label: 'פריים', color: '#FFD60A' },
   { id: 'actions', Icon: CheckSquare, label: 'יומי',  color: '#30D158' },
+  { id: 'focus',   Icon: Timer,       label: 'פוקוס', color: '#0A84FF' },
   { id: 'inspire', Icon: Play,        label: 'השראה', color: '#FF375F' },
   { id: 'wins',    Icon: Trophy,      label: 'גדילה', color: '#FFD60A' },
   { id: 'fear',    Icon: Skull,       label: 'פחד',   color: '#BF5AF2' },
@@ -29,13 +30,14 @@ export function RightNav({ current, onChange, theme, onToggleTheme }: Props) {
       backdropFilter: 'blur(24px) saturate(180%)',
       WebkitBackdropFilter: 'blur(24px) saturate(180%)',
       borderLeft: '1px solid var(--nav-border)',
+      boxShadow: theme === 'light' ? '-4px 0 20px rgba(0,0,0,.08)' : 'none',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       paddingTop: 'max(20px, env(safe-area-inset-top))',
       paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
       zIndex: 30,
-      transition: 'background .3s, border-color .3s',
+      transition: 'background .3s, border-color .3s, box-shadow .3s',
     }}>
       {/* Logo */}
       <div style={{ marginBottom: 20, textAlign: 'center' }}>
@@ -50,11 +52,11 @@ export function RightNav({ current, onChange, theme, onToggleTheme }: Props) {
           backgroundClip: 'text',
           lineHeight: 1,
         }}>S</div>
-        <div style={{ fontSize: 6, fontWeight: 700, letterSpacing: '1px', color: 'rgba(255,255,255,.3)', textTransform: 'uppercase', marginTop: 2 }}>OS</div>
+        <div style={{ fontSize: 6, fontWeight: 700, letterSpacing: '1px', color: 'var(--muted)', textTransform: 'uppercase', marginTop: 2 }}>OS</div>
       </div>
 
       {/* Divider */}
-      <div style={{ width: 28, height: 1, background: 'rgba(255,255,255,.07)', marginBottom: 8 }} />
+      <div style={{ width: 28, height: 1, background: 'var(--nav-border)', marginBottom: 8 }} />
 
       {/* Nav items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', padding: '0 8px', flex: 1 }}>

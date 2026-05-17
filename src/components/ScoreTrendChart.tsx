@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react'
 import type { DayEntry } from '../types'
+import { useTheme } from '../contexts/ThemeContext'
 
 interface Props {
   entries: DayEntry[]
@@ -14,6 +15,7 @@ function barColor(score: number): string {
 }
 
 export function ScoreTrendChart({ entries }: Props) {
+  const T          = useTheme()
   const canvasRef  = useRef<HTMLCanvasElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
@@ -44,6 +46,11 @@ export function ScoreTrendChart({ entries }: Props) {
 
     if (last14.length === 0) return
 
+    const isDark     = T.isDark
+    const gridColor  = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.09)'
+    const labelColor = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.38)'
+    const trendColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.12)'
+
     const leftPad   = 18
     const rightPad  = 6
     const topPad    = 6
@@ -55,7 +62,7 @@ export function ScoreTrendChart({ entries }: Props) {
 
     // Y gridlines at 5 and 7
     ctx.setLineDash([3, 4])
-    ctx.strokeStyle = 'rgba(255,255,255,0.07)'
+    ctx.strokeStyle = gridColor
     ctx.lineWidth = 1
     ;[5, 7].forEach(score => {
       const y = topPad + chartH - (score / 10) * chartH
@@ -63,9 +70,8 @@ export function ScoreTrendChart({ entries }: Props) {
       ctx.moveTo(leftPad, y)
       ctx.lineTo(leftPad + chartW, y)
       ctx.stroke()
-      // Y label
       ctx.setLineDash([])
-      ctx.fillStyle = 'rgba(255,255,255,0.2)'
+      ctx.fillStyle = labelColor
       ctx.font = `${8 * dpr / dpr}px sans-serif`
       ctx.textAlign = 'right'
       ctx.fillText(String(score), leftPad - 3, y + 3)
@@ -80,9 +86,8 @@ export function ScoreTrendChart({ entries }: Props) {
       const x      = leftPad + i * colW + (colW - barW) / 2
       const y      = topPad + chartH - barH
 
-      // Glow
       ctx.shadowColor = color
-      ctx.shadowBlur  = 8
+      ctx.shadowBlur  = isDark ? 8 : 4
 
       ctx.fillStyle = color
       if (ctx.roundRect) {
@@ -94,10 +99,9 @@ export function ScoreTrendChart({ entries }: Props) {
       }
       ctx.shadowBlur = 0
 
-      // X label — Hebrew day letter
       const [yr, mo, dy] = entry.date.split('-').map(Number)
       const dayIdx = new Date(yr, mo - 1, dy).getDay()
-      ctx.fillStyle = 'rgba(255,255,255,0.25)'
+      ctx.fillStyle = labelColor
       ctx.font      = `${9 * dpr / dpr}px sans-serif`
       ctx.textAlign = 'center'
       ctx.fillText(DAY_LETTERS[dayIdx], x + barW / 2, cssH - 3)
@@ -106,7 +110,7 @@ export function ScoreTrendChart({ entries }: Props) {
     // Trend line across bar tops
     if (last14.length >= 2) {
       ctx.beginPath()
-      ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+      ctx.strokeStyle = trendColor
       ctx.lineWidth = 1.5
       last14.forEach((entry, i) => {
         const score = entry.evening!.score
@@ -125,14 +129,17 @@ export function ScoreTrendChart({ entries }: Props) {
     if (wrapperRef.current) observer.observe(wrapperRef.current)
     return () => observer.disconnect()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [last14])
+  }, [last14, T.isDark])
 
   if (last14.length < 2) return null
 
   return (
     <div
       className="rounded-2xl px-4 pt-4 pb-2 mt-3"
-      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
+      style={{
+        background: T.isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.03)',
+        border: `1px solid ${T.border}`,
+      }}
     >
       <p className="text-[8px] tracking-[3px] uppercase text-muted mb-3" dir="rtl">
         {last14.length} ימים אחרונים — מסלול הגדילה שלך
