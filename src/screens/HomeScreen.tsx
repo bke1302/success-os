@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react'
+import { Bell, Menu, ChevronLeft, Flame, Check, Plus } from 'lucide-react'
 import type { DayEntry } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 import { getTodayFocusSessions } from './FocusScreen'
+import { HABITS, CATEGORY_COLORS, QUOTES } from '../constants'
 
 interface Props {
   dayCount:   number
@@ -12,325 +15,467 @@ interface Props {
   onNavigate: (v: 'home' | 'prime' | 'actions' | 'inspire' | 'wins' | 'fear' | 'weekly' | 'focus') => void
 }
 
-const SETS: { text: string; color: 'w' | 'y'; size: 'lg' | 'md' }[][] = [
-  [
-    { text: 'הכאב הוא זמני.', color: 'w', size: 'lg' },
-    { text: 'הוויתור הוא לנצח.', color: 'y', size: 'lg' },
-    { text: 'כל אלוף בעולם עשה', color: 'w', size: 'md' },
-    { text: 'מה שלא רצה לעשות.', color: 'w', size: 'md' },
-  ],
-  [
-    { text: 'אל תנהל את זמנך —', color: 'w', size: 'md' },
-    { text: 'נהל את עצמך.', color: 'y', size: 'lg' },
-    { text: 'ההחלטה שינתה הכל.', color: 'w', size: 'lg' },
-    { text: 'לא הגורל. הבחירה.', color: 'w', size: 'md' },
-  ],
-  [
-    { text: 'מה שאתה עושה היום', color: 'w', size: 'md' },
-    { text: 'קובע מי שתהיה מחר.', color: 'y', size: 'lg' },
-    { text: 'אתה לא מחפש מוטיבציה.', color: 'w', size: 'md' },
-    { text: 'אתה בונה משמעת.', color: 'w', size: 'lg' },
-  ],
-  [
-    { text: 'העולם שייך לאלה', color: 'w', size: 'md' },
-    { text: 'שלא מחכים לרגע הנכון.', color: 'y', size: 'lg' },
-    { text: 'ללא פחד אין גדולה.', color: 'w', size: 'lg' },
-    { text: 'הפחד הוא הדלק.', color: 'w', size: 'md' },
-  ],
-  [
-    { text: 'אנרגיה היא הכל.', color: 'y', size: 'lg' },
-    { text: 'שמור עליה. הגן עליה.', color: 'w', size: 'md' },
-    { text: 'לא מה שקרה —', color: 'w', size: 'md' },
-    { text: 'אלא מה שתעשה עכשיו.', color: 'w', size: 'lg' },
-  ],
+const QUOTE_IMAGES = [
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=700&q=80',
+  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=700&q=80',
+  'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=700&q=80',
 ]
 
-const MORNING_SET: { text: string; color: 'w' | 'y'; size: 'lg' | 'md' }[] = [
-  { text: 'הבוקר הוא שלך.', color: 'y', size: 'lg' },
-  { text: 'כל גדול בעולם', color: 'w', size: 'md' },
-  { text: 'קם לפני שהוא רוצה.', color: 'w', size: 'lg' },
-  { text: 'עכשיו. לא אחר כך.', color: 'w', size: 'md' },
-]
-
-const AFTERNOON_SET: { text: string; color: 'w' | 'y'; size: 'lg' | 'md' }[] = [
-  { text: 'עדיין יש זמן.', color: 'y', size: 'lg' },
-  { text: 'לא איחרת.', color: 'w', size: 'lg' },
-  { text: 'מי שמחכה לרגע המושלם', color: 'w', size: 'md' },
-  { text: 'לא מתחיל לעולם.', color: 'w', size: 'md' },
-]
-
-function getSet(streak: number, hasMorning: boolean) {
-  const h = new Date().getHours()
-  const d = new Date().getDay()
-  if (!hasMorning && h < 12) return MORNING_SET
-  if (!hasMorning && h >= 12) return AFTERNOON_SET
-  if (streak >= 7) return [
-    { text: `${streak} ימים ברצף.`, color: 'y' as const, size: 'lg' as const },
-    { text: 'זה כבר לא רצון —', color: 'w' as const, size: 'md' as const },
-    { text: 'זה מי שאתה.', color: 'w' as const, size: 'lg' as const },
-    { text: 'מעטים מגיעים לכאן.', color: 'w' as const, size: 'md' as const },
-  ]
-  return SETS[d % SETS.length]
+const CATEGORY_EMOJI: Record<string, string> = {
+  production: '⚡',
+  learning:   '📚',
+  network:    '🤝',
+  discipline: '💪',
 }
 
-function ProgressSection({ entries, streak, onNavigate }: {
-  entries: DayEntry[]
-  streak: number
-  onNavigate: Props['onNavigate']
-}) {
+function getGreeting(hour: number): { text: string; emoji: string; sub: string } {
+  if (hour < 12) return { text: 'בוקר טוב',     emoji: '🌅', sub: 'כל יום הוא הזדמנות לגדול.' }
+  if (hour < 17) return { text: 'צהריים טובים', emoji: '☀️', sub: 'המשך חזק — היום עוד לא נגמר.' }
+  return               { text: 'ערב טוב',       emoji: '🌙', sub: 'שעת הסיכום. מה נתת היום?' }
+}
+
+export function HomeScreen({ streak, today, userName, entries, onStart, onNavigate }: Props) {
   const T = useTheme()
-  const last7       = entries.filter(e => e.evening).slice(-7)
-  const avg7        = last7.length
+  const hour = new Date().getHours()
+  const { text: greetText, emoji: greetEmoji, sub: greetSub } = getGreeting(hour)
+
+  const [quoteIdx, setQuoteIdx] = useState(() => {
+    const d = new Date().getDay()
+    return d % QUOTE_IMAGES.length
+  })
+  const [imgLoaded, setImgLoaded] = useState(false)
+
+  // Auto-rotate quote every 6 seconds
+  useEffect(() => {
+    const id = setInterval(() => setQuoteIdx(i => (i + 1) % QUOTE_IMAGES.length), 6000)
+    return () => clearInterval(id)
+  }, [])
+
+  // Stats
+  const completedHabits = today?.habits ?? []
+  const totalHabits = HABITS.length
+  const focusSessions = getTodayFocusSessions()
+  const last7 = entries.filter(e => e.evening).slice(-7)
+  const avg7  = last7.length
     ? Math.round(last7.reduce((s, e) => s + (e.evening?.score ?? 0), 0) / last7.length * 10) / 10
     : null
-  const totalDays   = entries.length
-  const peakDays    = entries.filter(e => e.evening && e.evening.score >= 9).length
-  const focusSessions = getTodayFocusSessions()
+  const totalDays = entries.length
 
-  if (totalDays === 0) return null
+  // Score ring
+  const ringR    = 38
+  const ringCirc = 2 * Math.PI * ringR
+  const ringPct  = avg7 ? avg7 / 10 : 0
+  const ringColor = !avg7 ? '#4F7DFF' : avg7 >= 7 ? '#FFD60A' : avg7 >= 5 ? '#FF9F0A' : '#FF375F'
 
-  const avgColor  = !avg7 ? '#FFD60A' : avg7 >= 7 ? '#FFD60A' : avg7 >= 5 ? '#FF9F0A' : '#FF375F'
-  const r         = 36
-  const circ      = 2 * Math.PI * r
-  const pct       = avg7 ? avg7 / 10 : 0
+  // Preview habits (first 4)
+  const previewHabits = HABITS.slice(0, 4)
 
-  return (
-    <div
-      onClick={() => onNavigate('wins')}
-      style={{
-        cursor: 'pointer',
-        borderRadius: 18,
-        padding: '18px 20px',
-        background: T.isDark
-          ? 'linear-gradient(145deg, rgba(255,255,255,.065) 0%, rgba(255,255,255,.03) 100%)'
-          : '#FFFFFF',
-        border: `1px solid ${T.border}`,
-        boxShadow: T.cardShadow,
-        transition: 'border-color .25s, box-shadow .25s',
-      }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,214,10,.35)'; e.currentTarget.style.boxShadow = `${T.cardShadow}, 0 0 0 1px rgba(255,214,10,.1)` }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = T.cardShadow }}
-    >
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', color: T.isDark ? 'rgba(255,214,10,.65)' : '#8B6800', textTransform: 'uppercase' }}>
-          ההתקדמות שלך
-        </p>
-        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: T.textFaint, textTransform: 'uppercase' }}>
-          פרטים ←
-        </p>
-      </div>
-
-      {/* Ring + stats row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-
-        {/* Score ring */}
-        {avg7 !== null ? (
-          <div style={{ position: 'relative', flexShrink: 0, width: 88, height: 88 }}>
-            <svg width={88} height={88} viewBox="0 0 88 88">
-              <circle cx={44} cy={44} r={r} fill="none"
-                stroke={T.isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)'}
-                strokeWidth={5} />
-              <circle cx={44} cy={44} r={r} fill="none"
-                stroke={avgColor} strokeWidth={5} strokeLinecap="round"
-                strokeDasharray={circ} strokeDashoffset={circ * (1 - pct)}
-                transform="rotate(-90 44 44)"
-                style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1)', filter: `drop-shadow(0 0 6px ${avgColor}66)` }} />
-            </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 22, fontWeight: 900, lineHeight: 1, color: avgColor }}>{avg7}</span>
-              <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 8, fontWeight: 700, letterSpacing: '1.5px', color: T.textDim, marginTop: 2 }}>AVG</span>
-            </div>
-          </div>
-        ) : (
-          <div style={{ width: 88, height: 88, borderRadius: '50%', background: T.isDark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: `1px dashed ${T.border2}` }}>
-            <span style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 20, fontWeight: 900, color: T.textDim }}>—</span>
-          </div>
-        )}
-
-        {/* Side stats */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {[
-            { v: streak,         l: 'ימי רצף',    c: T.isDark ? '#FFD60A' : '#8B6800' },
-            { v: totalDays,      l: 'ימים סה״כ',  c: T.text },
-            { v: peakDays,       l: 'ימי שיא',    c: '#30D158' },
-            { v: focusSessions,  l: 'סשני פוקוס', c: '#0A84FF' },
-          ].map(({ v, l, c }) => (
-            <div key={l} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontFamily: 'Heebo, sans-serif', fontSize: 12, color: T.textMuted }} dir="rtl">{l}</span>
-              <span style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 20, fontWeight: 900, color: c, lineHeight: 1 }}>{v}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function HomeScreen({ streak, today, userName, entries, onNavigate }: Props) {
-  const T = useTheme()
-  const hasMorning = !!today?.morning
-  const sentences = getSet(streak, hasMorning)
-  const date = new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })
+  const cardBg = T.isDark ? '#1A1C22' : '#FFFFFF'
+  const cardBorder = T.isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)'
+  const accent = '#4F7DFF'
 
   return (
     <div style={{
       height: '100%',
       background: T.bg,
-      display: 'flex', flexDirection: 'column',
-      justifyContent: 'center',
-      padding: '0 22px',
-      position: 'relative',
-      overflow: 'hidden',
+      overflowY: 'auto',
+      overflowX: 'hidden',
+      WebkitOverflowScrolling: 'touch',
       transition: 'background .3s',
     }}>
-      {/* Ambient glow */}
-      <div style={{
-        position: 'absolute', top: '10%', left: '50%',
-        transform: 'translateX(-50%)',
-        width: '90vw', height: '90vw',
-        background: 'radial-gradient(circle, rgba(255,214,10,.05) 0%, transparent 62%)',
-        pointerEvents: 'none',
-      }} />
+      <div style={{ padding: '0 0 16px', maxWidth: 480, margin: '0 auto' }}>
 
-      {/* Date + greeting */}
-      <div style={{ marginBottom: 28, position: 'relative' }}>
-        <p style={{
-          fontFamily: 'Barlow Condensed, sans-serif',
-          fontSize: 9, fontWeight: 700, letterSpacing: '3px',
-          color: T.textFaint, textTransform: 'uppercase',
-          marginBottom: 10,
-        }}>{date}</p>
+        {/* ── Top header ─────────────────────────────────────────── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '20px 20px 12px',
+          direction: 'ltr',
+        }}>
+          {/* Hamburger */}
+          <button
+            onClick={() => onNavigate('weekly')}
+            style={{
+              background: cardBg, border: `1px solid ${cardBorder}`,
+              borderRadius: 12, width: 40, height: 40,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', flexShrink: 0,
+            }}
+          >
+            <Menu style={{ width: 18, height: 18, color: T.textMuted }} strokeWidth={2} />
+          </button>
 
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-          <div dir="rtl" style={{ flex: 1 }}>
-            <p style={{
+          {/* Center greeting */}
+          <div style={{ flex: 1, textAlign: 'center', direction: 'rtl' }}>
+            <p dir="rtl" style={{
               fontFamily: '"Frank Ruhl Libre", Georgia, serif',
-              fontSize: 'clamp(1.5rem, 6vw, 2rem)',
-              fontWeight: 900, lineHeight: 1.1,
-              color: T.text, letterSpacing: '-.3px',
+              fontSize: 18, fontWeight: 900, color: T.text, lineHeight: 1.2,
+              margin: 0,
             }}>
-              {(() => {
-                const h = new Date().getHours()
-                if (h < 12) return `בוקר טוב, ${userName}.`
-                if (h < 17) return `צהריים טובים, ${userName}.`
-                return `ערב טוב, ${userName}.`
-              })()}
+              {greetEmoji} {greetText}, {userName}
             </p>
-          </div>
-          {streak > 0 && (
-            <span className={streak >= 7 ? 'streak-pulse' : ''} style={{
-              flexShrink: 0,
-              fontFamily: 'Barlow Condensed, sans-serif',
-              fontSize: 11, fontWeight: 800, letterSpacing: '1px',
-              color: T.isDark ? '#FFD60A' : '#8B6800',
-              border: `1px solid ${T.isDark ? 'rgba(255,214,10,.35)' : 'rgba(139,104,0,.3)'}`,
-              borderRadius: 999, padding: '4px 14px',
-              background: T.isDark ? 'rgba(255,214,10,.08)' : 'rgba(139,104,0,.07)',
-              marginTop: 4,
-            }}>{streak} STREAK</span>
-          )}
-        </div>
-      </div>
-
-      {/* ONE THING hero — when morning done */}
-      {hasMorning && today?.morning?.oneThing ? (
-        <div style={{ position: 'relative', marginBottom: 28 }}>
-          <p style={{
-            fontFamily: 'Barlow Condensed, sans-serif',
-            fontSize: 9, fontWeight: 700, letterSpacing: '3px',
-            color: T.isDark ? 'rgba(255,214,10,.5)' : '#8B6800',
-            textTransform: 'uppercase', marginBottom: 16,
-          }}>המשימה שלך היום</p>
-
-          <h2 dir="rtl" style={{
-            fontFamily: '"Frank Ruhl Libre", Georgia, serif',
-            fontSize: 'clamp(2rem, 8vw, 3.2rem)',
-            fontWeight: 900, lineHeight: 1.1,
-            color: T.text, letterSpacing: '-1px',
-            marginBottom: 16,
-            animation: 'sentenceIn .5s cubic-bezier(.16,1,.3,1) both',
-          }}>{today.morning.oneThing}</h2>
-
-          {today.morning.commitment && (
             <p dir="rtl" style={{
               fontFamily: 'Heebo, sans-serif',
-              fontSize: 14, color: T.textMuted, lineHeight: 1.6,
-              animation: 'sentenceIn .4s cubic-bezier(.16,1,.3,1) .12s both',
-            }}>{today.morning.commitment}</p>
-          )}
+              fontSize: 11.5, color: T.textMuted, margin: '2px 0 0', lineHeight: 1.4,
+            }}>{greetSub}</p>
+          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 20 }}>
-            {[
-              { label: 'בוקר', done: true },
-              { label: 'פעולות', done: !!(today.habits?.length) },
-              { label: 'ערב', done: !!today.evening },
-            ].map(({ label, done }, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {i > 0 && <div style={{ width: 20, height: 1, background: T.border }} />}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <div style={{
-                    width: 6, height: 6, borderRadius: '50%',
-                    background: done ? '#30D158' : T.border2,
-                    boxShadow: done ? '0 0 6px rgba(48,209,88,.5)' : 'none',
-                    transition: 'all .3s',
-                  }} />
-                  <span style={{
-                    fontFamily: 'Barlow Condensed, sans-serif',
-                    fontSize: 9, fontWeight: 700, letterSpacing: '1px',
-                    color: done ? '#30D158' : T.textFaint,
-                    textTransform: 'uppercase',
-                  }}>{label}</span>
-                </div>
+          {/* Bell */}
+          <button
+            style={{
+              background: cardBg, border: `1px solid ${cardBorder}`,
+              borderRadius: 12, width: 40, height: 40,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', flexShrink: 0,
+              position: 'relative',
+            }}
+          >
+            <Bell style={{ width: 18, height: 18, color: T.textMuted }} strokeWidth={2} />
+            {streak > 0 && (
+              <div style={{
+                position: 'absolute', top: 6, right: 6,
+                width: 7, height: 7, borderRadius: '50%',
+                background: '#FFD60A',
+                boxShadow: '0 0 6px rgba(255,214,10,.7)',
+              }} />
+            )}
+          </button>
+        </div>
+
+        {/* ── Quote card ──────────────────────────────────────────── */}
+        <div style={{ padding: '0 16px 16px' }}>
+          <div style={{
+            position: 'relative',
+            borderRadius: 20,
+            overflow: 'hidden',
+            height: 160,
+            background: T.isDark
+              ? 'linear-gradient(135deg, #1a1c2e 0%, #0f1020 100%)'
+              : 'linear-gradient(135deg, #1a2040 0%, #0f1020 100%)',
+          }}>
+            {/* Background image */}
+            <img
+              src={QUOTE_IMAGES[quoteIdx]}
+              alt=""
+              onLoad={() => setImgLoaded(true)}
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%',
+                objectFit: 'cover',
+                opacity: imgLoaded ? 0.45 : 0,
+                transition: 'opacity .8s ease',
+              }}
+            />
+            {/* Gradient overlay */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(135deg, rgba(0,0,0,.65) 0%, rgba(0,0,0,.35) 100%)',
+            }} />
+
+            {/* Quote text */}
+            <div style={{
+              position: 'relative', zIndex: 1,
+              padding: '22px 22px 18px',
+              display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between',
+            }}>
+              <p dir="rtl" style={{
+                fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+                fontSize: 16.5, fontWeight: 700, color: '#fff',
+                lineHeight: 1.55, margin: 0,
+                textShadow: '0 1px 8px rgba(0,0,0,.5)',
+                maxWidth: 280,
+              }}>
+                {QUOTES[(quoteIdx * 7 + Math.floor(streak / 3)) % QUOTES.length]}
+              </p>
+
+              {/* Dots */}
+              <div style={{ display: 'flex', gap: 5, justifyContent: 'center' }}>
+                {QUOTE_IMAGES.map((_, i) => (
+                  <div
+                    key={i}
+                    onClick={() => setQuoteIdx(i)}
+                    style={{
+                      width: i === quoteIdx ? 18 : 6, height: 6,
+                      borderRadius: 3,
+                      background: i === quoteIdx ? '#fff' : 'rgba(255,255,255,.35)',
+                      cursor: 'pointer',
+                      transition: 'all .3s cubic-bezier(.16,1,.3,1)',
+                    }}
+                  />
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
-      ) : (
-        /* Generic motivational sentences */
-        <div dir="rtl" style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', marginBottom: 28 }}>
-          {sentences.map((s, i) => (
-            <p key={i} className={`sentence-in s-delay-${i}`} style={{
+
+        {/* ── Tasks / Habits section ───────────────────────────── */}
+        <div style={{ padding: '0 16px 16px' }}>
+          {/* Section header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginBottom: 12, direction: 'rtl',
+          }}>
+            <p dir="rtl" style={{
               fontFamily: '"Frank Ruhl Libre", Georgia, serif',
-              fontSize: s.size === 'lg'
-                ? 'clamp(2.2rem, 9vw, 3.8rem)'
-                : 'clamp(1.4rem, 6vw, 2.4rem)',
-              fontWeight: 900,
-              lineHeight: 1.05,
-              letterSpacing: '-.3px',
-              color: s.color === 'y' ? (T.isDark ? '#FFD60A' : '#8B6800') : T.text,
-            }}>{s.text}</p>
+              fontSize: 16, fontWeight: 900, color: T.text, margin: 0,
+            }}>המשימות שלי להיום</p>
+            <button
+              onClick={() => onNavigate('actions')}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 3,
+                color: accent, fontSize: 12, fontWeight: 700,
+                fontFamily: 'Barlow Condensed, sans-serif',
+                letterSpacing: '.5px',
+              }}
+              dir="rtl"
+            >
+              ראה הכל <ChevronLeft style={{ width: 13, height: 13 }} strokeWidth={2.5} />
+            </button>
+          </div>
+
+          {/* Task list card */}
+          <div style={{
+            background: cardBg,
+            border: `1px solid ${cardBorder}`,
+            borderRadius: 18,
+            overflow: 'hidden',
+          }}>
+            {previewHabits.map((habit, i) => {
+              const done = completedHabits.includes(habit.id)
+              const color = CATEGORY_COLORS[habit.category] ?? '#4F7DFF'
+              const emoji = CATEGORY_EMOJI[habit.category] ?? '•'
+              return (
+                <div
+                  key={habit.id}
+                  onClick={() => onNavigate('actions')}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 14,
+                    padding: '14px 16px',
+                    borderBottom: i < previewHabits.length - 1
+                      ? `1px solid ${T.isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.05)'}` : 'none',
+                    cursor: 'pointer',
+                    direction: 'rtl',
+                    transition: 'background .15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = T.isDark ? 'rgba(255,255,255,.025)' : 'rgba(0,0,0,.025)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                >
+                  {/* Category icon */}
+                  <div style={{
+                    width: 38, height: 38, borderRadius: 11,
+                    background: `${color}18`,
+                    border: `1px solid ${color}30`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexShrink: 0, fontSize: 17,
+                  }}>
+                    {emoji}
+                  </div>
+
+                  {/* Text */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p dir="rtl" style={{
+                      fontFamily: 'Heebo, sans-serif',
+                      fontSize: 14, fontWeight: 700,
+                      color: done ? T.textMuted : T.text,
+                      margin: 0, lineHeight: 1.3,
+                      textDecoration: done ? 'line-through' : 'none',
+                    }}>{habit.title}</p>
+                    <p dir="rtl" style={{
+                      fontFamily: 'Heebo, sans-serif',
+                      fontSize: 11.5, color: T.textDim,
+                      margin: '2px 0 0', lineHeight: 1.3,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>{habit.subtitle}</p>
+                  </div>
+
+                  {/* Checkbox */}
+                  <div style={{
+                    width: 24, height: 24, borderRadius: '50%',
+                    border: done ? 'none' : `2px solid ${T.isDark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.18)'}`,
+                    background: done ? accent : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexShrink: 0,
+                    boxShadow: done ? `0 0 10px ${accent}55` : 'none',
+                    transition: 'all .2s',
+                  }}>
+                    {done && <Check style={{ width: 13, height: 13, color: '#fff' }} strokeWidth={3} />}
+                  </div>
+                </div>
+              )
+            })}
+
+            {/* Add task row */}
+            <div
+              onClick={onStart}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '13px 16px',
+                cursor: 'pointer', direction: 'rtl',
+                borderTop: `1px solid ${T.isDark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.04)'}`,
+                transition: 'background .15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = T.isDark ? 'rgba(255,255,255,.02)' : 'rgba(0,0,0,.02)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+            >
+              <div style={{
+                width: 22, height: 22, borderRadius: '50%',
+                border: `2px dashed ${T.isDark ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.15)'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Plus style={{ width: 11, height: 11, color: T.textMuted }} strokeWidth={2.5} />
+              </div>
+              <span dir="rtl" style={{
+                fontFamily: 'Heebo, sans-serif',
+                fontSize: 13.5, fontWeight: 600, color: T.textMuted,
+              }}>התחל את הפריים של היום</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Stats bar ────────────────────────────────────────── */}
+        <div style={{ padding: '0 16px 8px' }}>
+          <div style={{
+            background: cardBg,
+            border: `1px solid ${cardBorder}`,
+            borderRadius: 18,
+            padding: '16px 20px',
+            display: 'flex', alignItems: 'center',
+            direction: 'ltr',
+            gap: 0,
+          }}>
+            {/* Streak */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              paddingRight: 20, borderRight: `1px solid ${T.isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)'}`,
+            }}>
+              <Flame style={{ width: 22, height: 22, color: '#FF9F0A' }} strokeWidth={2} fill="rgba(255,159,10,.25)" />
+              <div>
+                <p style={{
+                  fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+                  fontSize: 24, fontWeight: 900, color: T.isDark ? '#FFD60A' : '#8B6800',
+                  margin: 0, lineHeight: 1,
+                }}>{streak}</p>
+                <p style={{
+                  fontFamily: 'Barlow Condensed, sans-serif',
+                  fontSize: 8.5, fontWeight: 700, letterSpacing: '1.5px',
+                  color: T.textDim, textTransform: 'uppercase', margin: 0,
+                }}>STREAK</p>
+              </div>
+            </div>
+
+            {/* Score ring */}
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              {avg7 !== null ? (
+                <div style={{ position: 'relative', width: 90, height: 90 }}>
+                  <svg width={90} height={90} viewBox="0 0 90 90">
+                    <circle cx={45} cy={45} r={ringR} fill="none"
+                      stroke={T.isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)'}
+                      strokeWidth={5.5} />
+                    <circle cx={45} cy={45} r={ringR} fill="none"
+                      stroke={ringColor} strokeWidth={5.5} strokeLinecap="round"
+                      strokeDasharray={ringCirc}
+                      strokeDashoffset={ringCirc * (1 - ringPct)}
+                      transform="rotate(-90 45 45)"
+                      style={{
+                        transition: 'stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1)',
+                        filter: `drop-shadow(0 0 6px ${ringColor}88)`,
+                      }}
+                    />
+                  </svg>
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <span style={{
+                      fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+                      fontSize: 20, fontWeight: 900, color: ringColor, lineHeight: 1,
+                    }}>{avg7}</span>
+                    <span style={{
+                      fontFamily: 'Barlow Condensed, sans-serif',
+                      fontSize: 7.5, fontWeight: 700, letterSpacing: '1.5px',
+                      color: T.textDim, textTransform: 'uppercase', marginTop: 2,
+                    }}>ניקוד</span>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onClick={onStart}
+                  style={{
+                    width: 72, height: 72, borderRadius: '50%',
+                    background: `${accent}14`,
+                    border: `2px dashed ${accent}40`,
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{
+                    fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+                    fontSize: 12, fontWeight: 900, color: accent,
+                    textAlign: 'center', lineHeight: 1.3,
+                  }} dir="rtl">התחל<br/>היום</span>
+                </div>
+              )}
+            </div>
+
+            {/* Mini stats */}
+            <div style={{
+              paddingLeft: 20, borderLeft: `1px solid ${T.isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)'}`,
+              display: 'flex', flexDirection: 'column', gap: 10,
+            }}>
+              {[
+                { v: `${completedHabits.length}/${totalHabits}`, l: 'הרגלים',  c: '#30D158' },
+                { v: `${focusSessions}`,                         l: 'פוקוס',   c: accent },
+                { v: `${totalDays}`,                             l: 'ימים',    c: T.text },
+              ].map(({ v, l, c }) => (
+                <div key={l} style={{ textAlign: 'center' }}>
+                  <p style={{
+                    fontFamily: '"Frank Ruhl Libre", Georgia, serif',
+                    fontSize: 16, fontWeight: 900, color: c, margin: 0, lineHeight: 1,
+                  }}>{v}</p>
+                  <p style={{
+                    fontFamily: 'Barlow Condensed, sans-serif',
+                    fontSize: 8, fontWeight: 700, letterSpacing: '1px',
+                    color: T.textDim, textTransform: 'uppercase', margin: '2px 0 0',
+                  }}>{l}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Quick actions ────────────────────────────────────── */}
+        <div style={{ padding: '0 16px', display: 'flex', gap: 10 }}>
+          {[
+            { label: 'פחדים',  view: 'fear'   as const, color: '#BF5AF2', emoji: '🔥' },
+            { label: 'שבועי',  view: 'weekly' as const, color: '#FF9F0A', emoji: '⚔️' },
+          ].map(({ label, view, color, emoji }) => (
+            <button
+              key={view}
+              onClick={() => onNavigate(view)}
+              style={{
+                flex: 1,
+                background: T.isDark ? `${color}10` : `${color}0d`,
+                border: `1px solid ${color}25`,
+                borderRadius: 14,
+                padding: '14px 12px',
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                transition: 'all .18s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = `${color}20` }}
+              onMouseLeave={e => { e.currentTarget.style.background = T.isDark ? `${color}10` : `${color}0d` }}
+            >
+              <span style={{ fontSize: 16 }}>{emoji}</span>
+              <span dir="rtl" style={{
+                fontFamily: 'Heebo, sans-serif',
+                fontSize: 13, fontWeight: 700, color,
+              }}>{label}</span>
+            </button>
           ))}
         </div>
-      )}
 
-      {/* Progress section */}
-      <div className="animate-slide-up" style={{ animationDelay: '400ms' }}>
-        <ProgressSection entries={entries} streak={streak} onNavigate={onNavigate} />
-      </div>
-
-      {/* Quick actions */}
-      <div className="animate-slide-up" style={{ display: 'flex', gap: 8, marginTop: 12, animationDelay: '500ms' }}>
-        {([
-          { label: 'פעולות', view: 'actions', color: '#FF375F' },
-          { label: 'פוקוס',  view: 'focus',   color: '#0A84FF' },
-          { label: 'גדילה',  view: 'wins',    color: T.isDark ? '#FFD60A' : '#8B6800' },
-        ] as const).map(({ label, view, color }) => (
-          <button key={view} onClick={() => onNavigate(view)}
-            style={{
-              flex: 1, padding: '10px 0',
-              background: 'transparent',
-              border: `1px solid ${T.border}`,
-              borderRadius: 12, cursor: 'pointer',
-              fontFamily: 'Barlow Condensed, sans-serif',
-              fontSize: 11, fontWeight: 700, letterSpacing: '1.5px',
-              color: T.textMuted,
-              transition: 'border-color .2s, color .2s, background .2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = color + '60'; e.currentTarget.style.color = color; e.currentTarget.style.background = color + '0d' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textMuted; e.currentTarget.style.background = 'transparent' }}
-            dir="rtl">{label}</button>
-        ))}
       </div>
     </div>
   )

@@ -11,7 +11,7 @@ import { InspireScreen }        from './screens/InspireScreen'
 import { WinsWall }             from './screens/WinsWall'
 import { FearFuelScreen }       from './screens/FearFuelScreen'
 import { WeeklyWarRoom }        from './screens/WeeklyWarRoom'
-import { RightNav }             from './components/RightNav'
+import { BottomNav }            from './components/BottomNav'
 import { BurnTheBoats }         from './components/BurnTheBoats'
 import { EnergyCheckinOverlay } from './components/EnergyCheckinOverlay'
 import { OnboardingScreen }     from './screens/OnboardingScreen'
@@ -24,7 +24,6 @@ import type { EnergyCheckin }   from './types'
 import { ThemeContext }          from './contexts/ThemeContext'
 import { darkTokens, lightTokens } from './theme'
 
-const NAV_W = 62
 const MILESTONE_DAYS = [7, 14, 21, 30, 60, 100]
 
 export default function App() {
@@ -130,7 +129,7 @@ export default function App() {
 
       {/* Partner banner */}
       {partnerData && (
-        <div style={{ flexShrink: 0, padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'rgba(255,214,10,.07)', borderBottom: '1px solid rgba(255,214,10,.2)', marginRight: NAV_W }}>
+        <div style={{ flexShrink: 0, padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'rgba(255,214,10,.07)', borderBottom: '1px solid rgba(255,214,10,.2)' }}>
           
           <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,214,10,.85)' }} dir="rtl">
             השותף שלך: {partnerData.streak} STREAK · {partnerData.totalDays} ימים · ממוצע {partnerData.avgScore}
@@ -163,8 +162,8 @@ export default function App() {
         />
       )}
 
-      {/* Right nav — always visible */}
-      <RightNav current={state.currentView} onChange={v => { setView(v); setForceEvening(false) }} theme={theme} onToggleTheme={toggleTheme} />
+      {/* Bottom nav — always visible */}
+      <BottomNav current={state.currentView} onChange={v => { setView(v); setForceEvening(false) }} />
 
       {/* Back bar — shown on prime + sub-views */}
       {canGoBack && (
@@ -174,7 +173,6 @@ export default function App() {
           padding: '10px 16px',
           background: tokens.bgRaised,
           borderBottom: `1px solid ${tokens.border}`,
-          marginRight: NAV_W,
           transition: 'background .3s',
         }}>
           <button
@@ -207,7 +205,7 @@ export default function App() {
       )}
 
       {/* Content */}
-      <div key={state.currentView} className="screen-in" style={{ flex: 1, overflow: 'hidden', marginRight: NAV_W }}>
+      <div key={state.currentView} className="screen-in" style={{ flex: 1, overflow: 'hidden' }}>
 
         {state.currentView === 'home' && (
           <HomeScreen
@@ -315,9 +313,12 @@ export default function App() {
         )}
       </div>
 
+      {/* Bottom nav spacer — prevents content from hiding behind fixed nav */}
+      <div style={{ flexShrink: 0, height: 68 }} />
+
       {/* Burn the Boats */}
       {state.currentView === 'prime' && screen === 'day' && (
-        <div style={{ position: 'fixed', bottom: 20, left: 16, right: NAV_W + 16, zIndex: 20 }}>
+        <div style={{ position: 'fixed', bottom: 88, left: 16, right: 16, zIndex: 20 }}>
           <BurnTheBoats
             current={state.burnTheBoats}
             onSave={saveBurnTheBoats}

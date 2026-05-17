@@ -4,6 +4,7 @@ export interface ThemeTokens {
   isDark:      boolean
   bg:          string   // main screen background
   bgRaised:    string   // footer/header bars
+  card:        string   // card / list item background
   text:        string   // primary text
   textSub:     string   // slightly muted (55-60% opacity)
   textMuted:   string   // muted labels / secondary info
@@ -16,12 +17,14 @@ export interface ThemeTokens {
   inputBorder: string   // input border
   surface:     string   // elevated surfaces (nav, overlays)
   cardShadow:  string   // card box-shadow override for .card class
+  accent:      string   // primary accent color
 }
 
 export const darkTokens: ThemeTokens = {
   isDark:      true,
   bg:          '#0D0E13',
   bgRaised:    '#12141A',
+  card:        '#1A1C22',
   text:        '#f2f2f7',
   textSub:     'rgba(255,255,255,.60)',
   textMuted:   'rgba(255,255,255,.40)',
@@ -34,12 +37,14 @@ export const darkTokens: ThemeTokens = {
   inputBorder: 'rgba(255,255,255,.13)',
   surface:     'rgba(8,8,8,.97)',
   cardShadow:  '0 2px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06)',
+  accent:      '#4F7DFF',
 }
 
 export const lightTokens: ThemeTokens = {
   isDark:      false,
   bg:          '#F0EFE9',
   bgRaised:    '#FFFFFF',
+  card:        '#FFFFFF',
   text:        '#0D0D0D',
   textSub:     'rgba(0,0,0,.70)',
   textMuted:   'rgba(0,0,0,.50)',
@@ -52,4 +57,5 @@ export const lightTokens: ThemeTokens = {
   inputBorder: 'rgba(0,0,0,.18)',
   surface:     'rgba(255,255,255,.97)',
   cardShadow:  '0 2px 16px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.05)',
+  accent:      '#3B6FEF',
 }
