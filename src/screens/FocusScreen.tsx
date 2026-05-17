@@ -127,7 +127,7 @@ export function FocusScreen() {
       background: T.bg,
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
-      padding: '0 28px',
+      padding: '0 28px 68px',
       transition: 'background .3s',
       position: 'relative',
     }}>
@@ -252,7 +252,7 @@ export function FocusScreen() {
 
       {/* Today's sessions */}
       {todaySessions > 0 && (
-        <div style={{ position: 'absolute', bottom: 36, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ position: 'absolute', bottom: 84, display: 'flex', alignItems: 'center', gap: 8, background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: '10px 18px' }}>
           <span style={{
             fontFamily: '"Frank Ruhl Libre", Georgia, serif',
             fontSize: 22, fontWeight: 900,

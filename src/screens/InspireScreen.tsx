@@ -45,7 +45,7 @@ function QuoteSection() {
     setTimeout(() => { setIdx(i => (i + dir + QUOTES.length) % QUOTES.length); setVisible(true) }, 200)
   }
   return (
-    <div className="card" style={{ borderRight: '3px solid rgba(255,214,10,.5)' }}>
+    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '18px', borderRight: '3px solid rgba(255,214,10,.6)' }}>
       <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.7)' : '#8B6800', textTransform: 'uppercase', marginBottom: 12 }}>DAILY WISDOM</p>
       <p style={{ fontSize: 15, fontWeight: 600, color: T.isDark ? 'rgba(245,196,53,0.9)' : 'rgba(130,100,0,.85)', lineHeight: 1.7, opacity: visible ? 1 : 0, transition: 'opacity 0.2s' }} dir="rtl">
         "{QUOTES[idx]}"
@@ -65,7 +65,7 @@ function VideoItem({ card, onPlay }: { card: VideoCard; onPlay: () => void }) {
   const hasEmbed = !!card.youtubeId
   const icon = CATEGORY_ICONS[card.category] ?? DefaultIcon
   return (
-    <div className="card" style={{ borderRight: `3px solid ${color}55` }}>
+    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '16px 18px', borderRight: `3px solid ${color}70` }}>
       <div className="flex items-start gap-3 mb-3">
         <span style={{ color: color + '99', marginTop: 2, flexShrink: 0 }}>{icon}</span>
         <div className="flex-1 min-w-0" dir="rtl">
@@ -85,7 +85,7 @@ function VideoItem({ card, onPlay }: { card: VideoCard; onPlay: () => void }) {
         </button>
       ) : (
         <a href={card.searchUrl} target="_blank" rel="noopener noreferrer"
-          style={{ display: 'flex', padding: '12px', fontSize: 13, fontWeight: 700, background: 'transparent', border: `1px solid ${color}30`, color, cursor: 'pointer', borderRadius: 12, textDecoration: 'none', alignItems: 'center', justifyContent: 'center', gap: 8 }} dir="rtl">
+          style={{ display: 'flex', padding: '12px', fontSize: 13, fontWeight: 700, background: 'transparent', border: `1px solid ${color}35`, color, cursor: 'pointer', borderRadius: 14, textDecoration: 'none', alignItems: 'center', justifyContent: 'center', gap: 8 }} dir="rtl">
           <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.5} />חפש ביוטיוב
         </a>
       )}
@@ -106,7 +106,7 @@ export function InspireScreen() {
         <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 32, fontWeight: 900, color: T.text, lineHeight: 1.05 }} dir="rtl">השראה</h1>
         <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.textMuted, marginTop: 4 }} dir="rtl">מילים שמזיזות. סרטונים שמשנים.</p>
       </div>
-      <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 32px' }}>
+      <div className="flex-1 overflow-y-auto" style={{ padding: '16px 16px 68px' }}>
         <div style={{ marginBottom: 20 }}><QuoteSection /></div>
         <div style={{ height: 1, background: T.divider, marginBottom: 20 }} />
         {embedVideos.length > 0 && (

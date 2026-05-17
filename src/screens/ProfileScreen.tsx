@@ -41,10 +41,10 @@ function GoalRow({ goal, onDelete, onUpdate }: {
     <div style={{
       display: 'flex', alignItems: 'flex-start', gap: 10,
       padding: '14px 16px',
-      background: T.tagBg,
+      background: T.card,
       border: `1px solid ${T.border}`,
       borderRight: `3px solid ${color}`,
-      borderRadius: 14,
+      borderRadius: 16,
       marginBottom: 10,
     }}>
       <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, marginTop: 6, boxShadow: `0 0 8px ${color}88` }} />
@@ -154,7 +154,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 32px' }}>
+      <div className="flex-1 overflow-y-auto" style={{ padding: '16px 16px 68px' }}>
 
         {/* Guidance banner */}
         {needsMore && (
@@ -235,8 +235,8 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
             <button onClick={onToggleTheme}
               style={{
                 width: '100%', padding: '14px 18px',
-                background: T.tagBg, border: `1px solid ${T.border2}`,
-                borderRadius: 14, cursor: 'pointer',
+                background: T.card, border: `1px solid ${T.border}`,
+                borderRadius: 16, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 transition: 'border-color .2s',
               }}
@@ -258,7 +258,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
 
         {/* Goal examples hint */}
         {localGoals.length === 0 && (
-          <div className="card" style={{ borderRight: '3px solid rgba(255,214,10,.3)' }}>
+          <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '16px 18px', borderRight: '3px solid rgba(255,214,10,.35)' }}>
             <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.5)' : '#8B6800', textTransform: 'uppercase', marginBottom: 12 }}>
               דוגמאות ליעדים
             </p>
@@ -270,7 +270,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
       </div>
 
       {/* Save CTA */}
-      <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s' }}>
+      <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(84px, calc(68px + env(safe-area-inset-bottom)))', borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s' }}>
         {saved ? (
           <div style={{ padding: '18px', textAlign: 'center', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 700, fontSize: 16, color: '#30D158', background: 'rgba(48,209,88,.06)', border: '1px solid rgba(48,209,88,.2)', borderRadius: 12 }} dir="rtl">
             היעדים נשמרו

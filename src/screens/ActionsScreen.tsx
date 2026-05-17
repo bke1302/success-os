@@ -176,49 +176,45 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
       )}
 
       {/* Header */}
-      <div className="shrink-0 animate-fade-in" style={{ padding: '28px 20px 20px', borderBottom: `1px solid ${T.border}` }}>
-        <div className="flex items-end justify-between mb-5">
-          <div>
-            <p className="label-xs mb-2">{new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-            <h1 style={{ fontSize: 26, fontWeight: 900, color: T.text, fontFamily: '"Frank Ruhl Libre", Georgia, serif' }} dir="rtl">פעולות היום</h1>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div key={burstKey} className={`font-display${burstKey > 0 && allDone ? ' burst-animate' : ''}`}
-              style={{ fontSize: '3.5rem', lineHeight: 1, color: allDone ? (T.isDark ? '#FFD60A' : '#8B6800') : T.text, position: 'relative' }}>
+      <div className="shrink-0 animate-fade-in" style={{ padding: '20px 16px 16px', borderBottom: `1px solid ${T.border}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <h1 dir="rtl" style={{ fontSize: 24, fontWeight: 900, color: T.text, fontFamily: '"Frank Ruhl Libre", Georgia, serif', margin: 0 }}>פעולות היום</h1>
+          <div key={burstKey} style={{ textAlign: 'center', position: 'relative' }}>
+            <div className={burstKey > 0 && allDone ? 'burst-animate' : ''}
+              style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: '2.6rem', lineHeight: 1, color: allDone ? (T.isDark ? '#FFD60A' : '#8B6800') : T.text, position: 'relative' }}>
               {reqDone}
               {burstKey > 0 && allDone && (
                 <div key={`ring-${burstKey}`} className="ring-expand" style={{
                   position: 'absolute', inset: -8, borderRadius: '50%',
-                  border: '2px solid rgba(255,214,10,.5)',
-                  pointerEvents: 'none',
+                  border: '2px solid rgba(255,214,10,.5)', pointerEvents: 'none',
                 }} />
               )}
             </div>
-            <div style={{ fontSize: 12, color: T.textMuted, fontWeight: 700 }}>/ {requiredHabitIds.length}</div>
-            <div className="label-xs" style={{ marginTop: 2 }}>חובה</div>
+            <div style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: T.textDim, textTransform: 'uppercase', marginTop: 1 }}>/ {requiredHabitIds.length} חובה</div>
           </div>
         </div>
 
         {/* Progress bar */}
-        <div style={{ height: 6, background: T.border2, borderRadius: 3, marginBottom: 8, overflow: 'hidden' }}>
+        <div style={{ height: 5, background: T.isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)', borderRadius: 3, marginBottom: 8, overflow: 'hidden' }}>
           <div style={{
             height: '100%', width: `${reqPct}%`, borderRadius: 3,
-            background: allDone ? '#FFD60A' : 'linear-gradient(90deg, #FFD60A, rgba(255,214,10,.4))',
-            transition: 'width 0.5s ease',
+            background: allDone ? 'linear-gradient(90deg, #FFD60A, #FF9F0A)' : 'linear-gradient(90deg, #4F7DFF, rgba(79,125,255,.5))',
+            transition: 'width 0.5s cubic-bezier(.16,1,.3,1)',
+            boxShadow: allDone ? '0 0 8px rgba(255,214,10,.4)' : '0 0 8px rgba(79,125,255,.3)',
           }} />
         </div>
-        <div className="flex items-center justify-between">
-          <span className="label-xs">{totalDone}/{HABITS.length} סה״כ</span>
-          {allDone && <span style={{ fontSize: 10, fontWeight: 900, color: '#30D158', letterSpacing: 1 }}>✓ כל החובה הושלמו</span>}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: T.textDim, textTransform: 'uppercase' }}>{totalDone}/{HABITS.length} סה״כ</span>
+          {allDone && <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 900, color: '#30D158', letterSpacing: '1px' }}>✓ כל החובה הושלמו</span>}
         </div>
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 32px' }}>
+      <div className="flex-1 overflow-y-auto" style={{ padding: '16px 16px 68px' }}>
 
         {/* Required */}
-        <p className="label-xs mb-4" style={{ color: '#FF375F' }}>— חובה. אסור לדלג</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+        <p className="label-xs mb-3" style={{ color: '#FF375F', paddingRight: 4 }}>— חובה. אסור לדלג</p>
+        <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, overflow: 'hidden', marginBottom: 20 }}>
           {required.map((habit, i) => {
             const done  = completedHabits.includes(habit.id)
             const color = CATEGORY_COLORS[habit.category] ?? '#FF375F'
@@ -228,90 +224,88 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
                   animationDelay: `${i * 50}ms`, animationFillMode: 'both',
                   display: 'flex', alignItems: 'center', gap: 12,
                   padding: '14px 16px',
-                  background: T.tagBg,
-                  border: `1px solid ${done ? T.border : color + '40'}`,
-                  borderRadius: 12,
-                  opacity: done ? 0.55 : 1,
-                  transition: 'opacity 0.2s',
+                  borderBottom: i < required.length - 1 ? `1px solid ${T.divider}` : 'none',
+                  direction: 'rtl',
+                  transition: 'background .15s',
                 }}>
-                <button onClick={() => toggle(habit.id)}
-                  style={{
-                    width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
-                    background: done ? color : 'transparent',
-                    border: `2px solid ${done ? color : T.border2}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                  }}>
-                  {done && <span className="check-bounce" style={{ color: '#000', fontSize: 10, fontWeight: 900 }}>✓</span>}
-                </button>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, boxShadow: `0 0 6px ${color}88` }} />
-                <div dir="rtl" style={{ flex: 1 }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: done ? T.textMuted : T.text, textDecoration: done ? 'line-through' : 'none' }}>{habit.title}</p>
-                  {!done && <p style={{ fontSize: 11, color: T.textDim, marginTop: 2 }}>{habit.subtitle}</p>}
+                {/* Category dot */}
+                <div style={{ width: 36, height: 36, borderRadius: 11, background: `${color}18`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 9, height: 9, borderRadius: '50%', background: color, boxShadow: `0 0 6px ${color}99` }} />
+                </div>
+                <div dir="rtl" style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: done ? T.textMuted : T.text, textDecoration: done ? 'line-through' : 'none', margin: 0, lineHeight: 1.3 }}>{habit.title}</p>
+                  {!done && <p style={{ fontSize: 11.5, color: T.textDim, marginTop: 2, lineHeight: 1.35, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{habit.subtitle}</p>}
                 </div>
                 {habit.timerSec && !done && (
                   <button onClick={() => setTimerHabit(habit)}
-                    style={{ width: 32, height: 32, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: `1px solid ${T.border}`, cursor: 'pointer', borderRadius: 8 }}>
+                    style={{ width: 30, height: 30, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: T.tagBg, border: `1px solid ${T.border}`, cursor: 'pointer', borderRadius: 9 }}>
                     <Timer className="w-3.5 h-3.5" style={{ color: T.textMuted }} />
                   </button>
                 )}
+                <button onClick={() => toggle(habit.id)}
+                  style={{
+                    width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
+                    background: done ? '#4F7DFF' : 'transparent',
+                    border: `2px solid ${done ? '#4F7DFF' : T.border2}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', transition: 'all 0.18s',
+                    boxShadow: done ? '0 0 10px rgba(79,125,255,.45)' : 'none',
+                  }}>
+                  {done && <span className="check-bounce" style={{ color: '#fff', fontSize: 10, fontWeight: 900 }}>✓</span>}
+                </button>
               </div>
             )
           })}
         </div>
 
-        <div className="divider mb-6" />
-
         {/* Bonus — grouped by category */}
-        <p className="label-xs mb-4">— בונוס. כל אחת ששווה</p>
+        <p className="label-xs mb-3" style={{ paddingRight: 4 }}>— בונוס. כל אחת ששווה</p>
         {Object.entries(bonusByCategory).map(([cat, habits]) => {
           const catColor = CATEGORY_COLORS[cat] ?? '#FFD60A'
           const catDone  = habits.filter(h => completedHabits.includes(h.id)).length
           return (
-            <div key={cat} style={{ marginBottom: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ height: 1, flex: 1, background: `${catColor}30` }} />
-                <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: `${catColor}90`, textTransform: 'uppercase' }}>
-                  {CATEGORY_LABELS[cat] ?? cat} {catDone > 0 ? `· ${catDone}/${habits.length}` : ''}
+            <div key={cat} style={{ marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '0 4px' }}>
+                <div style={{ height: 1, flex: 1, background: `${catColor}25` }} />
+                <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: `${catColor}80`, textTransform: 'uppercase' }}>
+                  {CATEGORY_LABELS[cat] ?? cat}{catDone > 0 ? ` · ${catDone}/${habits.length}` : ''}
                 </span>
-                <div style={{ height: 1, flex: 1, background: `${catColor}30` }} />
+                <div style={{ height: 1, flex: 1, background: `${catColor}25` }} />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, overflow: 'hidden' }}>
                 {habits.map((habit, i) => {
-                  const done  = completedHabits.includes(habit.id)
-                  const color = catColor
+                  const done = completedHabits.includes(habit.id)
                   return (
                     <div key={habit.id} className="animate-slide-up"
                       style={{
                         animationDelay: `${i * 35}ms`, animationFillMode: 'both',
                         display: 'flex', alignItems: 'center', gap: 12,
-                        padding: '11px 14px',
-                        background: done ? T.tagBg : 'transparent',
-                        border: `1px solid ${done ? T.border : `${color}25`}`,
-                        borderRadius: 10,
-                        opacity: done ? 0.45 : 1,
+                        padding: '12px 14px',
+                        borderBottom: i < habits.length - 1 ? `1px solid ${T.divider}` : 'none',
+                        direction: 'rtl',
+                        opacity: done ? 0.5 : 1,
                         transition: 'opacity .2s',
                       }}>
-                      <button onClick={() => toggle(habit.id)}
-                        style={{
-                          width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                          background: done ? color : 'transparent',
-                          border: `1.5px solid ${done ? color : `${color}50`}`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          cursor: 'pointer', transition: 'all .15s',
-                        }}>
-                        {done && <span className="check-bounce" style={{ color: '#000', fontSize: 9, fontWeight: 900 }}>✓</span>}
-                      </button>
-                      <div dir="rtl" style={{ flex: 1 }}>
-                        <p style={{ fontSize: 13, fontWeight: done ? 400 : 600, color: done ? T.textMuted : T.textSub, textDecoration: done ? 'line-through' : 'none' }}>{habit.title}</p>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: done ? T.textMuted : T.textSub, textDecoration: done ? 'line-through' : 'none', margin: 0 }}>{habit.title}</p>
                         {!done && habit.subtitle && <p style={{ fontSize: 11, color: T.textDim, marginTop: 2, lineHeight: 1.4 }}>{habit.subtitle}</p>}
                       </div>
                       {habit.timerSec && !done && (
                         <button onClick={() => setTimerHabit(habit)}
-                          style={{ width: 28, height: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${color}12`, border: `1px solid ${color}35`, cursor: 'pointer', borderRadius: 8 }}>
-                          <Timer className="w-3 h-3" style={{ color }} />
+                          style={{ width: 28, height: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${catColor}12`, border: `1px solid ${catColor}30`, cursor: 'pointer', borderRadius: 8 }}>
+                          <Timer className="w-3 h-3" style={{ color: catColor }} />
                         </button>
                       )}
+                      <button onClick={() => toggle(habit.id)}
+                        style={{
+                          width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                          background: done ? '#4F7DFF' : 'transparent',
+                          border: `1.5px solid ${done ? '#4F7DFF' : T.border2}`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          cursor: 'pointer', transition: 'all .15s',
+                        }}>
+                        {done && <span className="check-bounce" style={{ color: '#fff', fontSize: 9, fontWeight: 900 }}>✓</span>}
+                      </button>
                     </div>
                   )
                 })}
