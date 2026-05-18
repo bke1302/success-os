@@ -30,7 +30,7 @@ function CoachCard({ entries, streak }: { entries: DayEntry[]; streak: number })
   const r = generateCoachReport(entries, streak)
   const c = r.tone === 'fire' ? '#FF375F' : r.tone === 'green' ? '#30D158' : '#FFD60A'
   return (
-    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '16px 18px', borderRight: `3px solid ${c}` }}>
+    <div className="card" style={{ borderRight: `3px solid ${c}` }}>
       <button className="w-full" onClick={() => setOpen(v => !v)}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div dir="rtl">
@@ -67,7 +67,7 @@ function AccountabilityCard({ streak, totalDays, avgScore }: { streak: number; t
     setCopied(true); setTimeout(() => setCopied(false), 2500)
   }
   return (
-    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '16px 18px' }}>
+    <div className="card">
       <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color: T.textMuted, textTransform:'uppercase', marginBottom:10 }}>שותף לאחריות</p>
       <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color: T.textMuted, lineHeight:1.5, marginBottom:12 }} dir="rtl">שתף קישור עם חבר — הוא יראה את ה-streak שלך.</p>
       <button onClick={copy} className="btn-ghost w-full" style={{ padding:'12px', fontFamily:"'Heebo', sans-serif", fontSize:13, display:'flex', alignItems:'center', justifyContent:'center', gap:8 }} dir="rtl">
@@ -114,29 +114,34 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
           </div>
         )}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8 }}>
-          {[
-            { v: streak,           l:'STREAK', c: T.isDark ? '#FFD60A' : '#8B6800' },
-            { v: totalDays,        l:'ימים',   c: '#4F7DFF' },
-            { v: String(avgScore), l:'ממוצע',  c: T.text },
-            { v: `${commitRate}%`, l:'עמדתי', c:'#30D158' },
-          ].map(({ v, l, c }) => (
-            <div key={l} style={{ textAlign:'center', padding:'14px 6px', background: T.card, border:`1px solid ${T.border}`, borderRadius:16, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: c, opacity: 0.7, borderRadius: '16px 16px 0 0' }} />
-              <div style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:'1.85rem', color:c, lineHeight:1 }}>{v}</div>
-              <div style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:8, fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase', color: T.textDim, marginTop:5 }}>{l}</div>
-            </div>
-          ))}
+          <div className="stat-box sm gold">
+            <div className="stat-val">{streak}</div>
+            <div className="stat-lbl">STREAK</div>
+          </div>
+          <div className="stat-box sm blue">
+            <div className="stat-val">{totalDays}</div>
+            <div className="stat-lbl">ימים</div>
+          </div>
+          <div className="stat-box sm green">
+            <div className="stat-val">{avgScore}</div>
+            <div className="stat-lbl">ממוצע</div>
+          </div>
+          <div className="stat-box sm green">
+            <div className="stat-val">{commitRate}%</div>
+            <div className="stat-lbl">עמדתי</div>
+          </div>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto" style={{ padding:'16px 16px 68px' }}>
         {withEvening.length >= 3 && <div className="mb-4"><CoachCard entries={entries} streak={streak} /></div>}
         {peakDays > 0 && (
-          <div style={{ background: T.card, border:`1px solid ${T.border}`, borderRadius:18, padding:'16px 18px', marginBottom:16, borderRight:'3px solid #FFD60A' }}>
-            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:14, fontWeight:700, color: T.isDark ? '#FFD60A' : '#8B6800' }} dir="rtl">{peakDays} ימי PEAK — הגעת ל-9 ומעלה.</p>
+          <div className="card mb-4" style={{ borderRight:'3px solid #FFD60A' }}>
+            <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color: T.isDark ? 'rgba(255,214,10,.6)' : '#8B6800', textTransform:'uppercase', marginBottom:6 }}>PEAK DAYS</p>
+            <p style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:18, fontWeight:700, color: T.isDark ? '#FFD60A' : '#8B6800' }} dir="rtl">{peakDays} ימי PEAK — הגעת ל-9 ומעלה.</p>
           </div>
         )}
-        {withEvening.length >= 2 && <div style={{ background: T.card, border:`1px solid ${T.border}`, borderRadius:18, padding:'16px', marginBottom:16 }}><ScoreTrendChart entries={entries} /><HeatmapChart entries={entries} /></div>}
+        {withEvening.length >= 2 && <div className="card mb-4"><ScoreTrendChart entries={entries} /><HeatmapChart entries={entries} /></div>}
         {totalDays >= 1 && <div className="mb-4"><AccountabilityCard streak={streak} totalDays={totalDays} avgScore={avgScore} /></div>}
         <div className="divider mb-5" />
 
@@ -152,7 +157,7 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
               const ev = entry.evening!
               const c  = scoreColor(ev.score)
               return (
-                <div key={entry.date} style={{ background: T.card, border:`1px solid ${T.border}`, borderRadius:18, padding:'18px 16px', borderRight:`3px solid ${c}` }}>
+                <div key={entry.date} className="card" style={{ borderRight:`3px solid ${c}` }}>
                   <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:12 }}>
                     <div>
                       <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color: T.textMuted, textTransform:'uppercase', marginBottom:4 }}>{formatDate(entry.date)}</p>
