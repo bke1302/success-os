@@ -7,7 +7,7 @@ import { MorningPrime }         from './screens/MorningPrime'
 import { DayScreen }            from './screens/DayScreen'
 import { EveningReview }        from './screens/EveningReview'
 import { ActionsScreen }        from './screens/ActionsScreen'
-import { InspireScreen }        from './screens/InspireScreen'
+import { TasksScreen }          from './screens/TasksScreen'
 import { WinsWall }             from './screens/WinsWall'
 import { FearFuelScreen }       from './screens/FearFuelScreen'
 import { WeeklyWarRoom }        from './screens/WeeklyWarRoom'
@@ -20,7 +20,7 @@ import { SplashScreen }         from './screens/SplashScreen'
 import { CompletionScreen }     from './screens/CompletionScreen'
 import { FocusScreen }          from './screens/FocusScreen'
 import { MilestoneScreen }      from './screens/MilestoneScreen'
-import type { EnergyCheckin }   from './types'
+import type { EnergyCheckin, AppState }   from './types'
 import { ThemeContext }          from './contexts/ThemeContext'
 import { darkTokens, lightTokens } from './theme'
 
@@ -34,6 +34,7 @@ export default function App() {
     saveFearEntry, deleteFearEntry,
     saveWeeklyPlan, saveIncantation,
     setView, setUserName, saveUserGoals,
+    saveTask, deleteTask, toggleTask,
   } = useAppData()
 
   const [theme,           setTheme]           = useState<'dark'|'light'>(() => (localStorage.getItem('app_theme') as 'dark'|'light') ?? 'dark')
@@ -195,7 +196,7 @@ export default function App() {
             {state.currentView === 'prime' && 'פריים'}
             {state.currentView === 'actions' && 'פעולות'}
             {state.currentView === 'focus'   && 'פוקוס'}
-            {state.currentView === 'inspire' && 'השראה'}
+            {state.currentView === 'tasks'   && 'משימות'}
             {state.currentView === 'wins' && 'גדילה'}
             {state.currentView === 'fear' && 'פחד'}
             {state.currentView === 'weekly' && 'חדר מלחמה'}
@@ -214,8 +215,9 @@ export default function App() {
             today={today}
             userName={state.userName ?? ''}
             entries={state.entries}
+            tasks={state.tasks ?? []}
             onStart={() => setView('prime')}
-            onNavigate={v => { setView(v); setForceEvening(false) }}
+            onNavigate={(v) => { setView(v as AppState['currentView']); setForceEvening(false) }}
           />
         )}
 
@@ -280,7 +282,14 @@ export default function App() {
 
         {state.currentView === 'focus'   && <FocusScreen />}
 
-        {state.currentView === 'inspire' && <InspireScreen />}
+        {state.currentView === 'tasks' && (
+          <TasksScreen
+            tasks={state.tasks ?? []}
+            onSave={saveTask}
+            onDelete={deleteTask}
+            onToggle={toggleTask}
+          />
+        )}
 
         {state.currentView === 'wins' && (
           <WinsWall entries={state.entries} streak={state.streak} totalDays={state.totalDays} />

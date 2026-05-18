@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type {
   AppState, DayEntry, MorningEntry, EveningEntry,
-  BurnTheBoats, FearEntry, WeeklyPlan, EnergyCheckin, UserGoal,
+  BurnTheBoats, FearEntry, WeeklyPlan, EnergyCheckin, UserGoal, Task,
 } from '../types'
 
 const KEY = 'prime_v1'
@@ -133,6 +133,27 @@ export function useAppData() {
   const saveUserGoals = (goals: UserGoal[]) =>
     persist({ ...state, userGoals: goals })
 
+  const saveTask = (task: Task) => {
+    const existing = state.tasks ?? []
+    const idx = existing.findIndex(t => t.id === task.id)
+    const tasks = idx === -1
+      ? [...existing, task]
+      : existing.map(t => t.id === task.id ? task : t)
+    persist({ ...state, tasks })
+  }
+
+  const deleteTask = (id: string) =>
+    persist({ ...state, tasks: (state.tasks ?? []).filter(t => t.id !== id) })
+
+  const toggleTask = (id: string) => {
+    const tasks = (state.tasks ?? []).map(t =>
+      t.id === id
+        ? { ...t, completedAt: t.completedAt ? undefined : new Date().toISOString() }
+        : t
+    )
+    persist({ ...state, tasks })
+  }
+
   const clearAll = () => {
     localStorage.removeItem(KEY)
     persist(initialState())
@@ -145,6 +166,8 @@ export function useAppData() {
     saveFearEntry, deleteFearEntry,
     saveWeeklyPlan,
     saveIncantation,
-    setView, setUserName, saveUserGoals, clearAll,
+    setView, setUserName, saveUserGoals,
+    saveTask, deleteTask, toggleTask,
+    clearAll,
   }
 }

@@ -62,17 +62,28 @@ export interface UserGoal {
   createdAt: string
 }
 
+export interface Task {
+  id:           string
+  title:        string
+  priority:     'high' | 'normal'
+  dueDate?:     string        // YYYY-MM-DD
+  recurring?:   'daily' | 'weekly'
+  completedAt?: string        // ISO — present means done
+  createdAt:    string
+}
+
 export interface AppState {
   entries:        DayEntry[]
   streak:         number
   totalDays:      number
-  currentView:    'home' | 'prime' | 'actions' | 'inspire' | 'wins' | 'fear' | 'weekly' | 'profile' | 'focus'
+  currentView:    'home' | 'prime' | 'actions' | 'inspire' | 'tasks' | 'wins' | 'fear' | 'weekly' | 'profile' | 'focus'
   burnTheBoats?:  BurnTheBoats
   fearEntries?:   FearEntry[]
   weeklyPlans?:   WeeklyPlan[]
   incantationB64?: string
   userName?:      string
   userGoals?:     UserGoal[]
+  tasks?:         Task[]
 }
 
 export type DayPhase = 'morning' | 'day' | 'evening'
