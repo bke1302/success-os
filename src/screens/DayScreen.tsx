@@ -81,7 +81,7 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 32px' }}>
+      <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 68px' }}>
         {identity && (
           <div className="card mb-4" style={{ borderRight: '3px solid rgba(255,214,10,.5)' }}>
             <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.7)' : '#8B6800', textTransform: 'uppercase', marginBottom: 6 }}>תוכנית השבוע</p>
@@ -168,7 +168,7 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
       {!evening && (
         <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s' }}>
           <button onClick={onFinishDay}
-            className="btn-gold w-full"
+            className="btn-blue w-full"
             style={{ padding: '18px', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 16, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }} dir="rtl">
             <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
             סגור את היום — סיכום 3 דקות

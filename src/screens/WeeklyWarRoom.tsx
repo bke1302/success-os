@@ -44,7 +44,7 @@ export function WeeklyWarRoom({ entries, plans, onSave }: Props) {
         <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color: T.textMuted, marginTop:4 }} dir="rtl">שבוע {weekLabel}</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto" style={{ padding:'20px 20px 32px' }}>
+      <div className="flex-1 overflow-y-auto" style={{ padding:'20px 20px 88px' }}>
         <div className="card mb-4" style={{ borderRight:'3px solid #30D158' }}>
           <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, letterSpacing:'2px', color:'#30D158', textTransform:'uppercase', marginBottom:16 }}>3 ניצחונות השבוע שעבר</p>
           {([0,1,2] as const).map(i => (

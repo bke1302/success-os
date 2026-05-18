@@ -45,7 +45,7 @@ export function OnboardingScreen({ onComplete }: Props) {
 
   return (
     <div style={{
-      height: '100dvh', background: '#000',
+      height: '100dvh', background: '#0E0F13',
       display: 'flex', flexDirection: 'column',
       justifyContent: 'center', alignItems: 'flex-start',
       padding: '0 36px',

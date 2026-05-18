@@ -18,7 +18,7 @@ function StepDots({ step, total }: { step: number; total: number }) {
       {Array.from({ length: total }, (_, i) => (
         <div key={i} style={{
           width: i + 1 === step ? 20 : 6, height: 6, borderRadius: 3,
-          background: i + 1 < step ? 'rgba(48,209,88,.7)' : i + 1 === step ? '#FFD60A' : T.border2,
+          background: i + 1 < step ? '#4ADE80' : i + 1 === step ? '#5B8CFF' : T.border2,
           transition: 'all .3s cubic-bezier(.16,1,.3,1)',
         }} />
       ))}
@@ -70,7 +70,7 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto" style={{ padding: '24px 20px 16px' }}>
+      <div className="flex-1 overflow-y-auto" style={{ padding: '24px 20px 68px' }}>
 
         {/* STEP 1: Commitment */}
         {step === 1 && (
@@ -209,7 +209,7 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
         {step < 3 ? (
           <button onClick={next}
             disabled={step === 1 ? !canNext1 : !canNext2}
-            className="btn-gold w-full"
+            className="btn-blue w-full"
             style={{ padding: '18px', fontSize: 17, fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}
             dir="rtl">
             המשך
@@ -217,7 +217,7 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
           </button>
         ) : (
           <button onClick={submit}
-            className="btn-gold w-full"
+            className="btn-blue w-full"
             style={{ padding: '18px', fontSize: 17, fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900 }}
             dir="rtl">
             סגור את היום בכבוד

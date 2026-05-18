@@ -38,7 +38,7 @@ export function FearFuelScreen({ entries, onSave, onDelete }: Props) {
         <p style={{ fontFamily: "'Heebo', sans-serif", fontSize: 12, color: T.textMuted, marginTop: 4 }} dir="rtl">פחד שנכתב מאבד 70% מכוחו.</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 32px' }}>
+      <div className="flex-1 overflow-y-auto" style={{ padding: '20px 20px 68px' }}>
         {!done ? (
           <>
             <div className="card mb-4" style={{ borderRight: `3px solid ${step === 1 ? 'rgba(191,90,242,.8)' : T.border}` }}>

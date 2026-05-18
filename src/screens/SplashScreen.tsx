@@ -2,7 +2,7 @@ export function SplashScreen() {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: '#000',
+      background: '#0E0F13',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       zIndex: 999,

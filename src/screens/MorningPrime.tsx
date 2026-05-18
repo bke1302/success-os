@@ -35,7 +35,7 @@ function StepDots({ step, total }: { step: number; total: number }) {
       {Array.from({ length: total }, (_, i) => (
         <div key={i} style={{
           width: i + 1 === step ? 20 : 6, height: 6, borderRadius: 3,
-          background: i + 1 <= step ? '#FFD60A' : T.border2,
+          background: i + 1 < step ? '#4ADE80' : i + 1 === step ? '#5B8CFF' : T.border2,
           transition: 'all .3s cubic-bezier(.16,1,.3,1)',
         }} />
       ))}
@@ -161,7 +161,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
       </div>
 
       {/* ── STEP CONTENT ─────────────────────────────────────────── */}
-      <div key={step} className="flex-1 overflow-y-auto animate-slide-up" style={{ padding: '24px 20px 32px' }}>
+      <div key={step} className="flex-1 overflow-y-auto animate-slide-up" style={{ padding: '24px 20px 68px' }}>
 
         {/* STEP 1: הכנה */}
         {step === 1 && (
@@ -268,8 +268,8 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
               autoFocus
               style={{
                 width: '100%', padding: '16px', fontFamily: '"Frank Ruhl Libre", Georgia, serif',
-                background: oneThing.trim() ? 'rgba(255,214,10,.05)' : T.tagBg,
-                border: `1.5px solid ${oneThing.trim() ? 'rgba(255,214,10,.4)' : T.border}`,
+                background: oneThing.trim() ? 'rgba(91,140,255,.05)' : T.tagBg,
+                border: `1.5px solid ${oneThing.trim() ? 'rgba(91,140,255,.5)' : T.border}`,
                 color: T.text, fontSize: 18, fontWeight: 700, lineHeight: 1.6, resize: 'none', outline: 'none', borderRadius: 14,
                 transition: 'border-color .2s',
               }}
@@ -313,7 +313,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
           </button>
         ) : (
           <button onClick={handleStart} dir="rtl"
-            className="btn-gold w-full"
+            className="btn-blue w-full"
             style={{ padding: '18px', fontSize: 17, fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900, letterSpacing: '-.2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             יוצא לדרך
             <ChevronRight style={{ width: 20, height: 20 }} strokeWidth={2.5} />
