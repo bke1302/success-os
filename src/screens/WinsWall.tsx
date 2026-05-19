@@ -12,8 +12,8 @@ import { useTheme } from '../contexts/ThemeContext'
 interface Props { entries: DayEntry[]; streak: number; totalDays: number }
 
 function scoreColor(s: number) {
-  if (s >= 9) return '#FFD60A'; if (s >= 7) return '#30D158'
-  if (s >= 5) return '#FF9F0A'; return '#FF375F'
+  if (s >= 9) return '#FFD60A'; if (s >= 7) return '#4ADE80'
+  if (s >= 5) return '#FF9F0A'; return '#FF5C5C'
 }
 function scoreLabel(s: number) {
   if (s >= 9) return 'PEAK'; if (s >= 7) return 'SOLID'
@@ -28,7 +28,7 @@ function CoachCard({ entries, streak }: { entries: DayEntry[]; streak: number })
   const T = useTheme()
   const [open, setOpen] = useState(false)
   const r = generateCoachReport(entries, streak)
-  const c = r.tone === 'fire' ? '#FF375F' : r.tone === 'green' ? '#30D158' : '#FFD60A'
+  const c = r.tone === 'fire' ? '#FF5C5C' : r.tone === 'green' ? '#4ADE80' : '#FFD60A'
   return (
     <div className="card" style={{ borderRight: `3px solid ${c}` }}>
       <button className="w-full" onClick={() => setOpen(v => !v)}>
@@ -177,8 +177,8 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
                   <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:14, fontWeight:500, color: T.text, lineHeight:1.5, marginBottom:6 }} dir="rtl">{ev.given ?? ev.win}</p>
                   {ev.lesson && <p style={{ fontFamily:"'Heebo', sans-serif", fontSize:12, color: T.textMuted, lineHeight:1.5, marginBottom:6 }} dir="rtl">{ev.lesson}</p>}
                   <div style={{ display:'flex', alignItems:'center', gap:10, marginTop:8 }}>
-                    <div style={{ width:5, height:5, borderRadius:'50%', background: ev.commitmentDone ? '#30D158' : '#FF375F', flexShrink:0 }} />
-                    <span style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:10, fontWeight:700, letterSpacing:'1px', color: ev.commitmentDone ? '#30D158' : '#FF375F' }} dir="rtl">{ev.commitmentDone ? 'עמדתי' : 'לא הספקתי'}</span>
+                    <div style={{ width:5, height:5, borderRadius:'50%', background: ev.commitmentDone ? '#4ADE80' : '#FF5C5C', flexShrink:0 }} />
+                    <span style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:10, fontWeight:700, letterSpacing:'1px', color: ev.commitmentDone ? '#4ADE80' : '#FF5C5C' }} dir="rtl">{ev.commitmentDone ? 'עמדתי' : 'לא הספקתי'}</span>
                     {entry.morning?.oneThing && <span style={{ fontFamily:"'Heebo', sans-serif", fontSize:11, color: T.textMuted }} dir="rtl">· {entry.morning.oneThing}</span>}
                   </div>
                   {entry.morning && <div style={{ marginTop:10 }}><EnergySlider value={entry.morning.energyLevel} onChange={() => {}} size="sm" readonly /></div>}

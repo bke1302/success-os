@@ -77,9 +77,9 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
         ) : (
           <button onClick={stopRec}
             className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold animate-pulse-red"
-            style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: 12 }}
+            style={{ background: 'rgba(255,92,92,0.12)', border: '1px solid #FF5C5C', color: '#FF5C5C', borderRadius: 12 }}
             dir="rtl">
-            <Square className="w-3.5 h-3.5" fill="#ef4444" /> עצור
+            <Square className="w-3.5 h-3.5" fill="#FF5C5C" /> עצור
           </button>
         )}
         {saved && !recording && (

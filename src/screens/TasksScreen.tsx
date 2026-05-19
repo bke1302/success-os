@@ -31,7 +31,7 @@ function TaskRow({ task, onToggle, onDelete }: { task: Task; onToggle: () => voi
       padding: '13px 14px',
       background: T.card,
       border: `1px solid ${T.border}`,
-      borderRight: isHigh && !done ? '2px solid #5B8CFF' : `1px solid ${T.border}`,
+      borderRight: isHigh && !done ? `2px solid ${T.accent}` : `1px solid ${T.border}`,
       borderRadius: 14,
       opacity: done ? 0.5 : 1,
       transition: 'opacity .2s',
@@ -42,7 +42,7 @@ function TaskRow({ task, onToggle, onDelete }: { task: Task; onToggle: () => voi
         onClick={() => { onToggle(); if (!done) playCheck(); else playComplete() }}
         style={{
           width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-          border: done ? 'none' : `2px solid ${isHigh ? '#5B8CFF' : T.border2}`,
+          border: done ? 'none' : `2px solid ${isHigh ? T.accent : T.border2}`,
           background: done ? '#4ADE80' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer',
@@ -191,9 +191,9 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
               style={{
                 padding: '5px 14px',
                 borderRadius: 999,
-                border: `1px solid ${filter === f.id ? '#5B8CFF' : T.border2}`,
-                background: filter === f.id ? 'rgba(91,140,255,.12)' : 'transparent',
-                color: filter === f.id ? '#5B8CFF' : T.textMuted,
+                border: `1px solid ${filter === f.id ? T.accent : T.border2}`,
+                background: filter === f.id ? `${T.accent}1F` : 'transparent',
+                color: filter === f.id ? T.accent : T.textMuted,
                 fontFamily: 'Heebo, sans-serif',
                 fontSize: 12, fontWeight: 600,
                 cursor: 'pointer', transition: 'all .15s',
@@ -217,12 +217,12 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
           title="עדיפות גבוהה"
           style={{
             width: 32, height: 32, borderRadius: 10, flexShrink: 0,
-            border: `1px solid ${highPrio ? '#5B8CFF' : T.border2}`,
-            background: highPrio ? 'rgba(91,140,255,.14)' : 'transparent',
+            border: `1px solid ${highPrio ? T.accent : T.border2}`,
+            background: highPrio ? `${T.accent}24` : 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer', transition: 'all .15s',
           }}>
-          <ArrowUp style={{ width: 14, height: 14, color: highPrio ? '#5B8CFF' : T.textDim }} strokeWidth={2.5} />
+          <ArrowUp style={{ width: 14, height: 14, color: highPrio ? T.accent : T.textDim }} strokeWidth={2.5} />
         </button>
 
         <input
@@ -246,11 +246,11 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
           style={{
             width: 32, height: 32, borderRadius: 10, flexShrink: 0,
             border: 'none',
-            background: draft.trim() ? '#5B8CFF' : T.tagBg,
+            background: draft.trim() ? T.accent : T.tagBg,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: draft.trim() ? 'pointer' : 'default',
             transition: 'all .15s',
-            boxShadow: draft.trim() ? '0 2px 12px rgba(91,140,255,.3)' : 'none',
+            boxShadow: draft.trim() ? `0 2px 12px ${T.accent}4D` : 'none',
           }}>
           <ArrowUp
             style={{ width: 14, height: 14, color: draft.trim() ? '#fff' : T.textDim }}
@@ -270,12 +270,12 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
           }}>
             <div style={{
               width: 56, height: 56, borderRadius: 16,
-              background: 'rgba(91,140,255,.08)',
-              border: '1px solid rgba(91,140,255,.16)',
+              background: `${T.accent}14`,
+              border: `1px solid ${T.accent}29`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               marginBottom: 16,
             }}>
-              <Check style={{ width: 24, height: 24, color: 'rgba(91,140,255,.5)' }} strokeWidth={2} />
+              <Check style={{ width: 24, height: 24, color: `${T.accent}80` }} strokeWidth={2} />
             </div>
             <p dir="rtl" style={{
               fontFamily: '"Frank Ruhl Libre", Georgia, serif',

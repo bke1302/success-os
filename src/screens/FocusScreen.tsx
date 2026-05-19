@@ -13,8 +13,8 @@ export function getTodayFocusSessions(): number {
 type Phase = 'work' | 'short-break' | 'long-break'
 
 const PHASES: Record<Phase, { label: string; duration: number; color: string; sub: string }> = {
-  'work':        { label: 'ריכוז',       duration: 25 * 60, color: '#0A84FF', sub: 'הפסקות אחר כך. עכשיו — מיקוד מלא.' },
-  'short-break': { label: 'הפסקה קצרה', duration:  5 * 60, color: '#30D158', sub: 'נשום. שתה מים. תחזור חזק.' },
+  'work':        { label: 'ריכוז',       duration: 25 * 60, color: '#5B8CFF', sub: 'הפסקות אחר כך. עכשיו — מיקוד מלא.' },
+  'short-break': { label: 'הפסקה קצרה', duration:  5 * 60, color: '#4ADE80', sub: 'נשום. שתה מים. תחזור חזק.' },
   'long-break':  { label: 'הפסקה ארוכה', duration: 15 * 60, color: '#BF5AF2', sub: 'סיימת 4 סשנים. מגיע לך לנוח.' },
 }
 
@@ -238,7 +238,7 @@ export function FocusScreen() {
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           fontFamily: '"Frank Ruhl Libre", Georgia, serif',
           fontSize: 16, fontWeight: 900,
-          color: running ? color : '#000',
+          color: running ? color : '#fff',
           transition: 'all .25s',
           position: 'relative', zIndex: 1,
           boxShadow: running ? 'none' : `0 0 20px ${color}40`,

@@ -287,7 +287,7 @@ body::before {
   }
   .card:hover {
     border-color: var(--border2);
-    box-shadow: 0 4px 24px rgba(0,0,0,.45), 0 1px 4px rgba(0,0,0,.3);
+    box-shadow: 0 12px 48px rgba(0,0,0,.6);
     transform: translateY(-2px);
   }
   .card:active {
@@ -347,6 +347,26 @@ body::before {
   .stat-box.green .stat-val { color: var(--green);  }
   .stat-box.gold  .stat-val { color: var(--gold);   }
   .stat-box.red   .stat-val { color: var(--red);    }
+  /* ProFit radial glow ::before */
+  .stat-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity .25s;
+    pointer-events: none;
+  }
+  .stat-box:hover::before { opacity: 1; }
+  .stat-box.blue::before  { background: radial-gradient(circle at 50% 0%, rgba(91,140,255,.22), transparent 70%); }
+  .stat-box.green::before { background: radial-gradient(circle at 50% 0%, rgba(74,222,128,.18), transparent 70%); }
+  .stat-box.gold::before  { background: radial-gradient(circle at 50% 0%, rgba(251,191,36,.18), transparent 70%); }
+  .stat-box.red::before   { background: radial-gradient(circle at 50% 0%, rgba(255,92,92,.18),  transparent 70%); }
+  /* Color-specific hover border + shadow */
+  .stat-box.blue:hover  { border-color: rgba(91,140,255,.45);  box-shadow: 0 8px 32px rgba(91,140,255,.18); }
+  .stat-box.green:hover { border-color: rgba(74,222,128,.45);  box-shadow: 0 8px 32px rgba(74,222,128,.15); }
+  .stat-box.gold:hover  { border-color: rgba(251,191,36,.45);  box-shadow: 0 8px 32px rgba(251,191,36,.12); }
+  .stat-box.red:hover   { border-color: rgba(255,92,92,.45);   box-shadow: 0 8px 32px rgba(255,92,92,.12);  }
   /* compact variant for 4-col grids */
   .stat-box.sm { padding: 14px 6px; }
   .stat-box.sm .stat-val { font-size: 1.7rem; letter-spacing: -.4px; }
