@@ -7,6 +7,7 @@ import { playComplete, playCheck } from '../utils/sounds'
 import { isRecordingSupported, startRecording, playBase64Audio } from '../utils/recorder'
 import type { MorningEntry, UserGoal, DayEntry } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
+import { StepDots } from '../components/StepDots'
 
 const GOAL_COLORS: Record<UserGoal['category'], string> = {
   'עסקי':   '#FBBF24',
@@ -29,20 +30,6 @@ interface Props {
   onGoToProfile:      () => void
 }
 
-function StepDots({ step, total }: { step: number; total: number }) {
-  return (
-    <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'center' }}>
-      {Array.from({ length: total }, (_, i) => (
-        <div key={i} style={{
-          width: i + 1 === step ? 24 : 6, height: 6, borderRadius: 3,
-          background: i + 1 < step ? '#4ADE80' : i + 1 === step ? '#5B8CFF' : 'rgba(255,255,255,.15)',
-          transition: 'all .3s cubic-bezier(.16,1,.3,1)',
-          boxShadow: i + 1 === step ? '0 0 8px rgba(91,140,255,.5)' : 'none',
-        }} />
-      ))}
-    </div>
-  )
-}
 
 function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: string) => void }) {
   const T = useTheme()
@@ -191,7 +178,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
 
           {/* Progress bar + step dots */}
           <div style={{ position: 'relative', zIndex: 1, marginTop: 14 }}>
-            <StepDots step={step} total={4} />
+            <StepDots step={step} total={4} activeWidth={24} />
             <div style={{ height: 3, background: 'rgba(255,255,255,.12)', borderRadius: 2, marginTop: 10, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${(step / 4) * 100}%`, background: 'rgba(255,255,255,.8)', borderRadius: 2, transition: 'width .4s cubic-bezier(.16,1,.3,1)', boxShadow: '0 0 8px rgba(255,255,255,.3)' }} />
             </div>

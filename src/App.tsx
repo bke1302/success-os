@@ -25,8 +25,8 @@ import { HabitChallengeScreen }  from './screens/HabitChallengeScreen'
 import type { EnergyCheckin, AppState }   from './types'
 import { ThemeContext }          from './contexts/ThemeContext'
 import { darkTokens, lightTokens } from './theme'
-
-const MILESTONE_DAYS = [7, 14, 21, 30, 60, 100]
+import { useMilestone }          from './hooks/useMilestone'
+import { useInstallPrompt }      from './hooks/useInstallPrompt'
 
 export default function App() {
   const {
@@ -47,15 +47,9 @@ export default function App() {
   const [checkinPrompt,   setCheckinPrompt]   = useState<EnergyCheckin['label'] | null>(null)
   const [showCompletion,  setShowCompletion]  = useState(false)
   const [completionScore, setCompletionScore] = useState(0)
-  const [showMilestone,   setShowMilestone]   = useState(false)
 
-  useEffect(() => {
-    const lastShown = Number(localStorage.getItem('last_milestone_shown') ?? 0)
-    if (MILESTONE_DAYS.includes(state.streak) && state.streak > lastShown) {
-      localStorage.setItem('last_milestone_shown', String(state.streak))
-      setTimeout(() => setShowMilestone(true), 800)
-    }
-  }, [state.streak]) // eslint-disable-line react-hooks/exhaustive-deps
+  const { showMilestone, dismissMilestone }   = useMilestone(state.streak)
+  const { showInstallBanner, triggerInstall, dismissInstall } = useInstallPrompt()
 
   // Schedule notification on app load if already granted
   useEffect(() => {
@@ -63,6 +57,7 @@ export default function App() {
       requestAndScheduleReminder()
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark'
@@ -149,6 +144,22 @@ export default function App() {
         </div>
       )}
 
+      {/* PWA Install Banner */}
+      {showInstallBanner && (
+        <div style={{ flexShrink: 0, padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, background: 'rgba(91,140,255,.08)', borderBottom: `1px solid ${tokens.border}` }}>
+          <p dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 600, color: tokens.textSub, margin: 0 }}>הוסף לדף הבית לחוויה מלאה</p>
+          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            <button onClick={triggerInstall} style={{ padding: '5px 12px', background: '#5B8CFF', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700, color: '#fff' }}>
+              הוסף
+            </button>
+            <button onClick={dismissInstall}
+              style={{ padding: '5px 10px', background: 'transparent', border: `1px solid ${tokens.border}`, borderRadius: 8, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 11, color: tokens.textMuted }}>
+              לא עכשיו
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Completion overlay */}
       {showCompletion && (
         <CompletionScreen
@@ -161,7 +172,7 @@ export default function App() {
       {showMilestone && (
         <MilestoneScreen
           streak={state.streak}
-          onDone={() => setShowMilestone(false)}
+          onDone={dismissMilestone}
         />
       )}
 
@@ -188,6 +199,7 @@ export default function App() {
         <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px' }}>
           <button
             onClick={() => { setView('home'); setForceEvening(false) }}
+            aria-label="חזור לדף הבית"
             style={{
               background: 'transparent',
               border: `1px solid ${tokens.border}`,
@@ -210,8 +222,8 @@ export default function App() {
             {state.currentView === 'wins' && 'גדילה'}
             {state.currentView === 'fear' && 'פחד'}
             {state.currentView === 'weekly' && 'חדר מלחמה'}
-            {state.currentView === 'profile' && 'פרופיל'}
-            {state.currentView === 'challenge' && 'אתגר הרגל'}
+            {state.currentView === 'profile'   && 'פרופיל'}
+            {state.currentView === 'challenge'  && 'אתגר הרגל'}
           </span>
         </div>
         </div>

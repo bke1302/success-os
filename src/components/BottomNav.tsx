@@ -25,7 +25,7 @@ export function BottomNav({ current, onChange }: Props) {
   const ACCENT = T.isDark ? ACCENT_DARK : ACCENT_LIGHT
 
   return (
-    <nav style={{
+    <nav aria-label="ניווט ראשי" style={{
       position: 'fixed',
       bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
       left: '50%',
@@ -57,6 +57,8 @@ export function BottomNav({ current, onChange }: Props) {
           <button
             key={id}
             onClick={() => onChange(id)}
+            aria-label={label}
+            aria-current={active ? 'page' : undefined}
             style={{
               flex: 1,
               height: 48,

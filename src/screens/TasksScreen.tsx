@@ -3,6 +3,7 @@ import { Check, Trash2, ArrowUp, RotateCcw, ChevronDown } from 'lucide-react'
 import type { Task } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 import { playCheck, playComplete } from '../utils/sounds'
+import { formatDate } from '../utils/dateUtils'
 
 interface Props {
   tasks:    Task[]
@@ -15,10 +16,6 @@ type Filter = 'all' | 'today' | 'done'
 
 function todayStr() { return new Date().toISOString().slice(0, 10) }
 
-function formatDate(iso: string) {
-  const d = new Date(iso + 'T00:00:00')
-  return d.toLocaleDateString('he-IL', { day: 'numeric', month: 'short' })
-}
 
 function TaskRow({ task, onToggle, onDelete, isLast }: {
   task: Task; onToggle: () => void; onDelete: () => void; isLast: boolean

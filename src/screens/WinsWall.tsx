@@ -9,25 +9,11 @@ import { generateCoachReport } from '../utils/aiCoach'
 import { shareWinCard } from '../utils/shareCard'
 import type { DayEntry } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
+import { scoreColor, scoreLabel } from '../utils/colorUtils'
+import { formatDate } from '../utils/dateUtils'
 
 interface Props { entries: DayEntry[]; streak: number; totalDays: number }
 
-function scoreColor(s: number) {
-  if (s >= 9) return '#FBBF24'
-  if (s >= 7) return '#4ADE80'
-  if (s >= 5) return '#FB923C'
-  return '#FF5C5C'
-}
-function scoreLabel(s: number) {
-  if (s >= 9) return 'PEAK'
-  if (s >= 7) return 'SOLID'
-  if (s >= 5) return 'GRIND'
-  return 'START'
-}
-function formatDate(iso: string) {
-  const [y,m,d] = iso.split('-').map(Number)
-  return new Date(y,m-1,d).toLocaleDateString('he-IL',{weekday:'short',day:'numeric',month:'short'})
-}
 
 function CoachCard({ entries, streak }: { entries: DayEntry[]; streak: number }) {
   const T = useTheme()
@@ -74,7 +60,7 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
   const allWithEvening = entries.filter(e => e.evening).sort((a,b) => b.date.localeCompare(a.date))
   const withEvening = allWithEvening.filter(e => {
     const text = (e.evening!.given ?? e.evening!.win ?? '') + ' ' + (e.evening!.lesson ?? '')
-    const matchSearch = !search || text.includes(search) || formatDate(e.date).includes(search)
+    const matchSearch = !search || text.includes(search) || formatDate(e.date, true).includes(search)
     const matchScore  = e.evening!.score >= minScore
     return matchSearch && matchScore
   })

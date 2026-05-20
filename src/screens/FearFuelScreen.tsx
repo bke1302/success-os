@@ -3,16 +3,12 @@ import { Trash2, ChevronRight } from 'lucide-react'
 import type { FearEntry } from '../types'
 import { playCheck, playComplete } from '../utils/sounds'
 import { useTheme } from '../contexts/ThemeContext'
+import { formatDate } from '../utils/dateUtils'
 
 interface Props {
   entries:  FearEntry[]
   onSave:   (e: FearEntry) => void
   onDelete: (id: string)   => void
-}
-
-function formatDate(iso: string) {
-  const [y,m,d] = iso.split('-').map(Number)
-  return new Date(y,m-1,d).toLocaleDateString('he-IL',{day:'numeric',month:'short'})
 }
 
 export function FearFuelScreen({ entries, onSave, onDelete }: Props) {

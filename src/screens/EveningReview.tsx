@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Check, X, ChevronRight } from 'lucide-react'
 import { EnergySlider } from '../components/EnergySlider'
+import { StepDots } from '../components/StepDots'
 import type { EveningEntry } from '../types'
 import { playComplete, playCheck } from '../utils/sounds'
 import { useTheme } from '../contexts/ThemeContext'
@@ -11,20 +12,6 @@ interface Props {
   onComplete: (data: EveningEntry) => void
 }
 
-function StepDots({ step, total }: { step: number; total: number }) {
-  const T = useTheme()
-  return (
-    <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'center' }}>
-      {Array.from({ length: total }, (_, i) => (
-        <div key={i} style={{
-          width: i + 1 === step ? 20 : 6, height: 6, borderRadius: 3,
-          background: i + 1 < step ? '#4ADE80' : i + 1 === step ? '#5B8CFF' : T.border2,
-          transition: 'all .3s cubic-bezier(.16,1,.3,1)',
-        }} />
-      ))}
-    </div>
-  )
-}
 
 export function EveningReview({ commitment, identity, onComplete }: Props) {
   const T = useTheme()

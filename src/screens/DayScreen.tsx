@@ -4,6 +4,7 @@ import { QUOTES } from '../constants'
 import type { EveningEntry } from '../types'
 import { requestAndScheduleReminder, getReminderTime } from '../utils/reminder'
 import { useTheme } from '../contexts/ThemeContext'
+import { scoreColor } from '../utils/colorUtils'
 
 interface Props {
   commitment:  string
@@ -26,10 +27,6 @@ function timeLeft(): string {
   if (diff <= 0) return 'השמש שקעה'
   const h = Math.floor(diff/60), m = diff%60
   return h > 0 ? `${h}ש׳ ${m}ד׳` : `${m} דקות`
-}
-function scoreColor(s: number) {
-  if (s >= 9) return '#FFD60A'; if (s >= 7) return '#30D158'
-  if (s >= 5) return '#FF9F0A'; return '#FF375F'
 }
 
 const STATE_TIPS = [
@@ -166,13 +163,28 @@ export function DayScreen({ commitment, identity, purpose, onFinishDay, evening,
       </div>
 
       {!evening && (
-        <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s' }}>
-          <button onClick={onFinishDay}
-            className="btn-blue w-full"
-            style={{ padding: '18px', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 16, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }} dir="rtl">
-            <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
-            סגור את היום — סיכום 3 דקות
-          </button>
+        <div className="shrink-0" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s' }}>
+          {/* Evening nudge — show after 20:00 */}
+          {new Date().getHours() >= 20 && (
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              padding: '8px 20px', background: 'rgba(255,214,10,.08)',
+              borderBottom: '1px solid rgba(255,214,10,.15)',
+            }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFD60A', animation: 'pulse-red 1.5s ease-in-out infinite' }} />
+              <span dir="rtl" style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,214,10,.85)', textTransform: 'uppercase' }}>
+                כבר ערב — סיים את היום
+              </span>
+            </div>
+          )}
+          <div style={{ padding: '12px 20px' }}>
+            <button onClick={onFinishDay}
+              className="btn-blue w-full"
+              style={{ padding: '18px', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 16, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }} dir="rtl">
+              <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
+              סגור את היום — סיכום 3 דקות
+            </button>
+          </div>
         </div>
       )}
     </div>
