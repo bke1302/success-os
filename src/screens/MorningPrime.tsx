@@ -145,10 +145,14 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
   const STEP_WATERMARKS = ['⚡', '📋', '🎯', '🚀']
 
   return (
-    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
 
-      {/* ── Hero header ── */}
-      <div style={{ flexShrink: 0, padding: '0 16px', paddingTop: 16 }}>
+      {/* ── Scrollable: hero + step content ── */}
+      <div key={step} className="animate-slide-up" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 0 100px' }}>
+
+        {/* Hero */}
+        <div style={{ padding: '16px 16px 14px' }}>
         <div className="today-hero" style={{
           background: T.isDark ? STEP_GRADIENTS[step - 1] : STEP_GRADIENTS[step - 1].replace('180deg, #111318 0%, #1a1c24', '180deg, #f8f9ff 0%, #f0f4ff'),
           border: `1px solid ${STEP_BORDERS[step - 1]}`,
@@ -192,10 +196,10 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
             </div>
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* ── Step content ── */}
-      <div key={step} className="flex-1 overflow-y-auto animate-slide-up" style={{ padding: '20px 16px 100px' }}>
+        {/* ── Step content ── */}
+        <div style={{ padding: '0 16px' }}>
 
         {/* STEP 1: הכנה */}
         {step === 1 && (
@@ -324,6 +328,8 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
             </div>
           </>
         )}
+        </div>
+        </div>
       </div>
 
       {/* ── CTA ── */}
