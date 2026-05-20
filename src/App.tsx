@@ -170,26 +170,26 @@ export default function App() {
       {canGoBack && (
         <div style={{
           flexShrink: 0,
-          display: 'flex', alignItems: 'center', gap: 10,
-          padding: '10px 16px',
-          background: tokens.bgRaised,
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 16px',
+          background: tokens.bg,
           borderBottom: `1px solid ${tokens.border}`,
           transition: 'background .3s',
         }}>
           <button
             onClick={() => { setView('home'); setForceEvening(false) }}
             style={{
-              background: tokens.tagBg,
+              background: 'transparent',
               border: `1px solid ${tokens.border}`,
-              borderRadius: 10, width: 36, height: 36,
+              borderRadius: 9, width: 28, height: 28,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: tokens.textSub,
-              fontSize: 16, fontWeight: 700,
+              cursor: 'pointer', color: tokens.textMuted,
+              fontSize: 13, fontWeight: 700,
             }}>
             ←
           </button>
           <span style={{
-            fontSize: 12, fontWeight: 700, letterSpacing: '1.5px',
+            fontSize: 10, fontWeight: 700, letterSpacing: '2px',
             color: tokens.textMuted, textTransform: 'uppercase',
             fontFamily: 'Barlow Condensed, sans-serif',
           }}>
