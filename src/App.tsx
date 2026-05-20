@@ -113,7 +113,7 @@ export default function App() {
   const screen = primeScreen()
 
   // Back button: prime/sub-views go back to home
-  const canGoBack = state.currentView !== 'home'
+  const canGoBack = !['home', 'prime', 'wins', 'tasks', 'profile'].includes(state.currentView)
 
   if (showSplash) return <SplashScreen />
 

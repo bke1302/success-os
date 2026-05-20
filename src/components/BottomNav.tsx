@@ -1,14 +1,15 @@
-import { Home, Zap, Trophy, ListTodo } from 'lucide-react'
+import { Home, Zap, Trophy, ListTodo, Settings } from 'lucide-react'
 import type { AppState } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 
 type View = AppState['currentView']
 
 const TABS: { id: View; Icon: typeof Home; label: string }[] = [
-  { id: 'home',  Icon: Home,     label: 'בית'    },
-  { id: 'prime', Icon: Zap,      label: 'יומי'   },
-  { id: 'wins',  Icon: Trophy,   label: 'גדילה'  },
-  { id: 'tasks', Icon: ListTodo, label: 'משימות' },
+  { id: 'home',    Icon: Home,     label: 'בית'      },
+  { id: 'prime',   Icon: Zap,      label: 'יומי'     },
+  { id: 'wins',    Icon: Trophy,   label: 'גדילה'    },
+  { id: 'tasks',   Icon: ListTodo, label: 'משימות'   },
+  { id: 'profile', Icon: Settings, label: 'הגדרות'   },
 ]
 
 const ACCENT_DARK  = '#5B8CFF'
@@ -30,7 +31,7 @@ export function BottomNav({ current, onChange }: Props) {
       left: '50%',
       transform: 'translateX(-50%)',
       width: 'calc(100% - 32px)',
-      maxWidth: 420,
+      maxWidth: 460,
       height: 64,
       background: T.isDark
         ? 'rgba(13,14,19,.93)'
@@ -48,7 +49,7 @@ export function BottomNav({ current, onChange }: Props) {
       alignItems: 'center',
       padding: '0 8px',
       zIndex: 30,
-      direction: 'ltr',
+      direction: 'rtl',
     }}>
       {TABS.map(({ id, Icon, label }) => {
         const active = current === id
