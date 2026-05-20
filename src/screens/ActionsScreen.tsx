@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { X, Timer } from 'lucide-react'
 import { HABITS, CATEGORY_COLORS, type Habit } from '../constants'
 import { playCheck, playUncheck, playComplete, playTimerDone } from '../utils/sounds'
-import type { UserGoal } from '../types'
+import type { UserGoal, UserHabit } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 
 const GOAL_COLORS: Record<UserGoal['category'], string> = {
@@ -18,6 +18,7 @@ interface Props {
   onToggle:         (ids: string[]) => void
   requiredHabitIds: string[]
   userGoals?:       UserGoal[]
+  userHabits?:      UserHabit[]
   onGoToProfile?:   () => void
 }
 
@@ -119,17 +120,19 @@ function HabitTimerOverlay({ habit, onClose, onDone, userGoals = [], onGoToProfi
   )
 }
 
-export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, userGoals = [], onGoToProfile }: Props) {
+export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, userGoals = [], userHabits = [], onGoToProfile }: Props) {
   const T = useTheme()
   const [timerHabit, setTimerHabit] = useState<Habit | null>(null)
   const [burstKey,   setBurstKey]   = useState(0)
   const prevAllDone = useRef<boolean | null>(null)
 
+  const totalHabits = HABITS.length + userHabits.length
+
   const toggle = (id: string) => {
     const already = completedHabits.includes(id)
     const next = already ? completedHabits.filter(h => h !== id) : [...completedHabits, id]
     if (already) playUncheck(); else playCheck()
-    if (next.length === HABITS.length) playComplete()
+    if (next.length === totalHabits) playComplete()
     onToggle(next)
   }
 
@@ -204,7 +207,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
           }} />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: T.textDim, textTransform: 'uppercase' }}>{totalDone}/{HABITS.length} סה״כ</span>
+          <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: T.textDim, textTransform: 'uppercase' }}>{totalDone}/{totalHabits} סה״כ</span>
           {allDone && <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 900, color: '#30D158', letterSpacing: '1px' }}>✓ כל החובה הושלמו</span>}
         </div>
       </div>
@@ -262,7 +265,7 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
         </div>
 
         {/* Bonus — grouped by category */}
-        <p className="label-xs mb-3" style={{ paddingRight: 4 }}>— בונוס. כל אחת ששווה</p>
+        <p className="label-xs mb-3" style={{ paddingRight: 4, color: T.textMuted }}>— בונוס. כל אחת ששווה</p>
         {Object.entries(bonusByCategory).map(([cat, habits]) => {
           const catColor = CATEGORY_COLORS[cat] ?? '#FFD60A'
           const catDone  = habits.filter(h => completedHabits.includes(h.id)).length
@@ -319,6 +322,48 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
             </div>
           )
         })}
+
+        {/* Personal (user-defined) habits */}
+        {userHabits.length > 0 && (
+          <div style={{ marginTop: 8, marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '0 4px' }}>
+              <div style={{ height: 1, flex: 1, background: 'rgba(191,90,242,.25)' }} />
+              <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(191,90,242,.7)', textTransform: 'uppercase' }}>אישי</span>
+              <div style={{ height: 1, flex: 1, background: 'rgba(191,90,242,.25)' }} />
+            </div>
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, overflow: 'hidden' }}>
+              {userHabits.map((habit, i) => {
+                const done = completedHabits.includes(habit.id)
+                return (
+                  <div key={habit.id}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
+                      borderBottom: i < userHabits.length - 1 ? `1px solid ${T.divider}` : 'none',
+                      direction: 'rtl', opacity: done ? 0.5 : 1, transition: 'opacity .2s',
+                    }}>
+                    <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>{habit.emoji}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: done ? T.textMuted : T.textSub, textDecoration: done ? 'line-through' : 'none', margin: 0 }}>{habit.title}</p>
+                      {!done && habit.subtitle && <p style={{ fontSize: 11, color: T.textDim, marginTop: 2 }}>{habit.subtitle}</p>}
+                    </div>
+                    <button onClick={() => toggle(habit.id)}
+                      aria-label={done ? `בטל — ${habit.title}` : `סמן כהושלם — ${habit.title}`}
+                      aria-pressed={done}
+                      style={{
+                        width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                        background: done ? '#BF5AF2' : 'transparent',
+                        border: `1.5px solid ${done ? '#BF5AF2' : T.border2}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: 'pointer', transition: 'all .15s',
+                      }}>
+                      {done && <span style={{ color: '#fff', fontSize: 9, fontWeight: 900 }}>✓</span>}
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

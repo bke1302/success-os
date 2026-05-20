@@ -1,8 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Props {
-  score: number
-  onDone: () => void
+  score:       number
+  onDone:      () => void
+  win?:        string
+  commitment?: string
+  dayCount?:   number
 }
 
 function getMessage(score: number): { label: string; title: string; sub: string } {
@@ -28,14 +31,26 @@ function getMessage(score: number): { label: string; title: string; sub: string 
   }
 }
 
-export function CompletionScreen({ score, onDone }: Props) {
+export function CompletionScreen({ score, onDone, win, commitment, dayCount }: Props) {
   const { label, title, sub } = getMessage(score)
   const color = score >= 7 ? '#FFD60A' : score >= 5 ? '#fff' : 'rgba(255,255,255,.5)'
+  const [shared, setShared] = useState(false)
 
   useEffect(() => {
     const t = setTimeout(onDone, 3200)
     return () => clearTimeout(t)
   }, [onDone])
+
+  const handleWitness = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const parts = [`✅ SUCCESS OS — יום ${dayCount ?? ''}`, `ציון: ${score}/10`, win ? `ניצחון: ${win}` : '', commitment ? `התחייבות: ${commitment}` : ''].filter(Boolean)
+    const text = parts.join('\n')
+    try {
+      if (navigator.share) { await navigator.share({ text }); setShared(true) }
+      else { await navigator.clipboard.writeText(text); setShared(true) }
+    } catch { /* ignore */ }
+    setTimeout(() => setShared(false), 2000)
+  }
 
   return (
     <div
@@ -97,6 +112,22 @@ export function CompletionScreen({ score, onDone }: Props) {
         lineHeight: 1.7, textAlign: 'center',
         animation: 'sentenceIn .4s cubic-bezier(.16,1,.3,1) .45s both',
       }}>{sub}</p>
+
+      {/* Witness Mode button */}
+      <button onClick={handleWitness} dir="rtl"
+        style={{
+          position: 'absolute', bottom: 80,
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '10px 20px',
+          background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.12)',
+          borderRadius: 999, cursor: 'pointer',
+          fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700,
+          letterSpacing: '1.5px', color: shared ? '#4ADE80' : 'rgba(255,255,255,.45)',
+          textTransform: 'uppercase', transition: 'all .2s',
+          animation: 'sentenceIn .4s ease .9s both',
+        }}>
+        {shared ? '✓ שותף' : 'שתף עם עד'}
+      </button>
 
       {/* Tap hint */}
       <p style={{

@@ -139,6 +139,98 @@ export async function shareWinCard(data: CardData): Promise<void> {
   a.click()
 }
 
+// ─── Weekly Report Card (9:16) ────────────────────────────────────────────────
+
+interface WeeklyCardData {
+  avgScore:   number
+  streak:     number
+  totalDays:  number
+  bestScore:  number
+  quote:      string
+  daysLogged: number
+}
+
+export async function generateWeeklyCard(data: WeeklyCardData): Promise<string> {
+  const W = 1080, H = 1920
+  const canvas = document.createElement('canvas')
+  canvas.width = W; canvas.height = H
+  const ctx = canvas.getContext('2d')!
+
+  // Background
+  const bg = ctx.createLinearGradient(0, 0, 0, H)
+  bg.addColorStop(0, '#0d0f18')
+  bg.addColorStop(1, '#060810')
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+  // Glow orb
+  const color = scoreColor(Math.round(data.avgScore))
+  const orb = ctx.createRadialGradient(W * 0.5, H * 0.3, 0, W * 0.5, H * 0.3, 550)
+  orb.addColorStop(0, color + '35'); orb.addColorStop(1, 'transparent')
+  ctx.fillStyle = orb; ctx.fillRect(0, 0, W, H)
+
+  // Top label
+  ctx.font = 'bold 36px sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.25)'
+  ctx.textAlign = 'center'
+  ctx.fillText('SUCCESS OS · דוח שבועי', W / 2, 120)
+
+  // Average score ring
+  const cx = W / 2, cy = 520, r = 180
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2)
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 20; ctx.stroke()
+  const pct = data.avgScore / 10
+  ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pct)
+  ctx.strokeStyle = color; ctx.lineWidth = 20; ctx.lineCap = 'round'
+  ctx.shadowColor = color; ctx.shadowBlur = 40; ctx.stroke(); ctx.shadowBlur = 0
+
+  ctx.font = 'bold 130px sans-serif'; ctx.fillStyle = color; ctx.textAlign = 'center'
+  ctx.fillText(data.avgScore.toFixed(1), cx, cy + 44)
+  ctx.font = 'bold 32px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.25)'
+  ctx.fillText('ממוצע שבועי', cx, cy + 96)
+
+  // Stats row
+  const statsY = 800
+  const statItems = [
+    { label: 'STREAK', val: String(data.streak) },
+    { label: 'ימים', val: String(data.daysLogged) },
+    { label: 'שיא', val: String(data.bestScore) },
+  ]
+  statItems.forEach((s, i) => {
+    const x = 180 + i * 360
+    ctx.font = 'bold 72px sans-serif'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'
+    ctx.fillText(s.val, x, statsY)
+    ctx.font = 'bold 26px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)'
+    ctx.fillText(s.label, x, statsY + 48)
+  })
+
+  // Divider
+  const div = ctx.createLinearGradient(120, 0, W - 120, 0)
+  div.addColorStop(0, 'transparent'); div.addColorStop(0.5, color + '50'); div.addColorStop(1, 'transparent')
+  ctx.fillStyle = div; ctx.fillRect(120, 920, W - 240, 1)
+
+  // Quote
+  ctx.font = '38px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.textAlign = 'center'
+  wrapText(ctx, `"${data.quote}"`, W / 2, 1020, W - 200, 58)
+
+  // Bottom brand
+  ctx.font = '28px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.15)'
+  ctx.fillText('bke1302.github.io/success-os', W / 2, H - 80)
+
+  return canvas.toDataURL('image/png')
+}
+
+export async function shareWeeklyCard(data: WeeklyCardData): Promise<void> {
+  const dataUrl = await generateWeeklyCard(data)
+  if (navigator.share) {
+    const res = await fetch(dataUrl); const blob = await res.blob()
+    const file = new File([blob], 'weekly-report.png', { type: 'image/png' })
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'הדוח השבועי שלי' }); return
+    }
+  }
+  const a = document.createElement('a'); a.href = dataUrl; a.download = 'weekly-report.png'; a.click()
+}
+
 // ── Helpers ────────────────────────────────────────────────────────
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath()

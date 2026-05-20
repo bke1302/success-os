@@ -1,16 +1,18 @@
 import { useState } from 'react'
-import { Settings, Share2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Settings, Share2, ChevronDown, ChevronUp, BarChart2 } from 'lucide-react'
 import { ScoreTrendChart } from '../components/ScoreTrendChart'
 import { HeatmapChart } from '../components/HeatmapChart'
 import { HabitStreakGrid } from '../components/HabitStreakGrid'
 import { EnergySlider } from '../components/EnergySlider'
 import { getReminderTime, setReminderTime } from '../utils/reminder'
-import { generateCoachReport } from '../utils/aiCoach'
-import { shareWinCard } from '../utils/shareCard'
+import { generateCoachReport, getHabitCorrelations } from '../utils/aiCoach'
+import { shareWinCard, shareWeeklyCard } from '../utils/shareCard'
 import type { DayEntry } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 import { scoreColor, scoreLabel } from '../utils/colorUtils'
 import { formatDate } from '../utils/dateUtils'
+import { HABITS } from '../constants'
+import { getTodayQuote } from '../constants'
 
 interface Props { entries: DayEntry[]; streak: number; totalDays: number }
 
@@ -51,11 +53,12 @@ function CoachCard({ entries, streak }: { entries: DayEntry[]; streak: number })
 
 export function WinsWall({ entries, streak, totalDays }: Props) {
   const T = useTheme()
-  const [showSettings, setShowSettings] = useState(false)
-  const [reminderTime, setRT]           = useState(getReminderTime)
-  const [sharingEntry, setSharingEntry] = useState<string | null>(null)
-  const [search,       setSearch]       = useState('')
-  const [minScore,     setMinScore]     = useState(0)
+  const [showSettings,  setShowSettings]  = useState(false)
+  const [reminderTime,  setRT]            = useState(getReminderTime)
+  const [sharingEntry,  setSharingEntry]  = useState<string | null>(null)
+  const [search,        setSearch]        = useState('')
+  const [minScore,      setMinScore]      = useState(0)
+  const [sharingWeekly, setSharingWeekly] = useState(false)
 
   const allWithEvening = entries.filter(e => e.evening).sort((a,b) => b.date.localeCompare(a.date))
   const withEvening = allWithEvening.filter(e => {
@@ -77,6 +80,19 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
     try { await shareWinCard({ win: entry.evening!.given ?? entry.evening!.win, score: entry.evening!.score, date: formatDate(entry.date), streak }) }
     finally { setSharingEntry(null) }
   }
+
+  const handleShareWeekly = async () => {
+    if (sharingWeekly) return
+    setSharingWeekly(true)
+    const last7   = allWithEvening.slice(0, 7)
+    const avgW    = last7.length ? Math.round(last7.reduce((s, e) => s + e.evening!.score, 0) / last7.length * 10) / 10 : 0
+    const bestW   = last7.length ? Math.max(...last7.map(e => e.evening!.score)) : 0
+    try {
+      await shareWeeklyCard({ avgScore: avgW, streak, totalDays, bestScore: bestW, daysLogged: last7.length, quote: getTodayQuote() })
+    } finally { setSharingWeekly(false) }
+  }
+
+  const correlations = getHabitCorrelations(entries)
 
   return (
     <div style={{ height: '100%', overflow: 'hidden', background: T.bg, display: 'flex', flexDirection: 'column', transition: 'background .3s' }}>
@@ -167,6 +183,51 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, fontWeight: 800, color: T.text, letterSpacing: '-.3px' }} dir="rtl">{peakDays} ימי PEAK — הגעת ל-9+</p>
               </div>
               <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '2rem', fontWeight: 900, color: '#FBBF24', lineHeight: 1 }}>{peakDays}</span>
+            </div>
+          )}
+
+          {/* Weekly Report Card */}
+          {allWithEvening.length >= 3 && (
+            <button onClick={handleShareWeekly} disabled={sharingWeekly}
+              dir="rtl"
+              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', background: 'rgba(91,140,255,.07)', border: '1px solid rgba(91,140,255,.2)', borderRadius: 16, cursor: 'pointer', marginBottom: 12, transition: 'all .2s', textAlign: 'right' }}>
+              <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(91,140,255,.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Share2 style={{ width: 14, height: 14, color: '#5B8CFF' }} strokeWidth={2} />
+              </div>
+              <div dir="rtl">
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 800, color: '#5B8CFF', margin: 0 }}>
+                  {sharingWeekly ? 'מייצר…' : 'שתף דוח שבועי'}
+                </p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: T.textMuted, margin: '2px 0 0' }}>כרטיס 9:16 עם הסטטיסטיקות שלך</p>
+              </div>
+            </button>
+          )}
+
+          {/* Habit Correlation Insights */}
+          {correlations.length > 0 && (
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '16px 18px', marginBottom: 12, animation: 'cardStagger .38s var(--ease-out) .15s both' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, direction: 'rtl' }}>
+                <BarChart2 style={{ width: 14, height: 14, color: '#5B8CFF' }} strokeWidth={2} />
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#5B8CFF', textTransform: 'uppercase', margin: 0 }}>תובנות הרגלים</p>
+              </div>
+              {correlations.map((c, i) => {
+                const habit = HABITS.find(h => h.id === c.habitId)
+                if (!habit) return null
+                return (
+                  <div key={c.habitId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: i < correlations.length - 1 ? `1px solid ${T.divider}` : 'none', direction: 'rtl' }}>
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: T.textSub, margin: 0, flex: 1 }}>{habit.title}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                      <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 11, fontWeight: 700, color: c.lift > 0 ? '#4ADE80' : '#FF5C5C' }}>
+                        {c.lift > 0 ? '+' : ''}{c.lift}
+                      </span>
+                      <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, color: T.textDim }}>נק׳</span>
+                    </div>
+                  </div>
+                )
+              })}
+              <p dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 10, color: T.textFaint, marginTop: 8, lineHeight: 1.4 }}>
+                השינוי בציון הממוצע בימים שעשית הרגל זה
+              </p>
             </div>
           )}
 

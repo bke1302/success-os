@@ -204,6 +204,27 @@ export function getCommanderRank(streak: number): { rank: string; emoji: string;
   return                        { rank: 'טירון',  emoji: '', color: '#ef4444' }
 }
 
+// ─── Daily Challenges ─────────────────────────────────────────────────────────
+export const DAILY_CHALLENGES: string[] = [
+  'כתוב 3 שורות על מה שאתה הכי גאה בו השבוע. לא פחות.',
+  'שלח הודעת תודה אמיתית לאחד שעזר לך. עכשיו.',
+  'הגדר שעה אחת ללא טלפון. שעה שלמה. תמיד יש.',
+  'כתוב את ה-ONE THING שלך ושים אותו מול העיניים כל היום.',
+  'שתה 2 ליטר מים עד הצהריים. גוף חזק = מוח חד.',
+  'קום מהכיסא ותעשה 10 שכיבות סמיכה — עכשיו, לפני שממשיכים.',
+  'בצע 5 דקות של נשימות עמוקות לפני שאתה פותח את הטלפון.',
+  'כתוב יעד אחד קטן שתשיג עד הערב. קטן, ברור, ניתן למדידה.',
+  'אל תפתח מייל לפני שעתיים. ראשון — מה שחשוב, לא מה שדחוף.',
+  'צא לאוויר הפתוח 10 דקות ללא טלפון. פשוט תהיה.',
+  'רשום 3 ניצחונות מהשבוע האחרון. מה עובד? תעשה יותר מזה.',
+  'שוחח עם אחד שכבר עשה מה שאתה רוצה לעשות. שאל שאלה אחת.',
+]
+
+export function getTodayChallenge(): string {
+  const d = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000)
+  return DAILY_CHALLENGES[d % DAILY_CHALLENGES.length]
+}
+
 // ─── Rotation helpers ─────────────────────────────────────────────────────────
 export function getTodayIncantation(): string {
   const dayOfYear = Math.floor(

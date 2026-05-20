@@ -125,6 +125,39 @@ export function generateCoachReport(entries: DayEntry[], streak: number): CoachR
   return { headline, insights: insights.slice(0, 4), challenge, tone }
 }
 
+// ── Habit Correlations ───────────────────────────────────────────────────────
+
+export interface HabitCorrelation {
+  habitId:         string
+  avgScoreWith:    number
+  avgScoreWithout: number
+  lift:            number
+  sampleSize:      number
+}
+
+export function getHabitCorrelations(entries: DayEntry[]): HabitCorrelation[] {
+  const withEvening = entries.filter(e => e.evening && e.habits)
+  if (withEvening.length < 5) return []
+
+  const habitIds = Array.from(new Set(withEvening.flatMap(e => e.habits!)))
+  return habitIds.map(habitId => {
+    const with_    = withEvening.filter(e => e.habits!.includes(habitId))
+    const without_ = withEvening.filter(e => !e.habits!.includes(habitId))
+    const avgWith    = avg(with_.map(e => e.evening!.score))
+    const avgWithout = avg(without_.map(e => e.evening!.score))
+    return {
+      habitId,
+      avgScoreWith:    Math.round(avgWith    * 10) / 10,
+      avgScoreWithout: Math.round(avgWithout * 10) / 10,
+      lift:            Math.round((avgWith - avgWithout) * 10) / 10,
+      sampleSize:      with_.length,
+    }
+  })
+  .filter(c => c.sampleSize >= 3 && Math.abs(c.lift) >= 0.3)
+  .sort((a, b) => b.lift - a.lift)
+  .slice(0, 3)
+}
+
 // ── Daily Brief ──────────────────────────────────────────────────────────────
 
 export interface DailyBrief {

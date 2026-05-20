@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type {
   AppState, DayEntry, MorningEntry, EveningEntry,
-  BurnTheBoats, FearEntry, WeeklyPlan, EnergyCheckin, UserGoal, Task, HabitChallenge,
+  BurnTheBoats, FearEntry, WeeklyPlan, EnergyCheckin, UserGoal, Task, HabitChallenge, UserHabit,
 } from '../types'
 
 const KEY = 'prime_v1'
@@ -33,20 +33,17 @@ function upsertToday(entries: DayEntry[], patch: Partial<Omit<DayEntry, 'date'>>
   return updated
 }
 
-function computeStreak(entries: DayEntry[]): number {
-  const sorted = [...entries]
-    .filter(e => e.evening && e.evening.score >= 6)
-    .map(e => e.date)
-    .sort()
-    .reverse()
-
-  if (sorted.length === 0) return 0
+function computeStreak(entries: DayEntry[], usedFreezeOn: string[] = []): number {
+  const completed = new Set(
+    entries.filter(e => e.evening && e.evening.score >= 6).map(e => e.date)
+  )
+  const frozen = new Set(usedFreezeOn)
 
   let streak = 0
   let expected = todayKey()
 
-  for (const date of sorted) {
-    if (date === expected) {
+  for (let i = 0; i < 1000; i++) {
+    if (completed.has(expected) || frozen.has(expected)) {
       streak++
       const d = new Date(expected)
       d.setDate(d.getDate() - 1)
@@ -86,9 +83,14 @@ export function useAppData() {
 
   const saveEvening = (data: EveningEntry) => {
     const entries   = upsertToday(state.entries, { evening: data })
-    const streak    = computeStreak(entries)
+    const usedFreezeOn = state.usedFreezeOn ?? []
+    const streak    = computeStreak(entries, usedFreezeOn)
     const totalDays = entries.filter(e => e.evening).length
-    persist({ ...state, entries, streak, totalDays })
+    // Award a freeze every 14-day streak milestone
+    const prevStreak = state.streak
+    const streakFreezes = (state.streakFreezes ?? 0) +
+      (streak >= 14 && Math.floor(streak / 14) > Math.floor(prevStreak / 14) ? 1 : 0)
+    persist({ ...state, entries, streak, totalDays, streakFreezes })
   }
 
   const saveHabits = (habitIds: string[]) => {
@@ -170,10 +172,30 @@ export function useAppData() {
     const entries = idx === -1
       ? [...state.entries, { date: yesterday, evening: eveningData }]
       : state.entries.map((e, i) => i === idx ? { ...e, evening: eveningData } : e)
-    const streak    = computeStreak(entries)
+    const usedFreezeOn = state.usedFreezeOn ?? []
+    const streak    = computeStreak(entries, usedFreezeOn)
     const totalDays = entries.filter(e => e.evening).length
     persist({ ...state, entries, streak, totalDays })
   }
+
+  const useStreakFreeze = (date: string) => {
+    if ((state.streakFreezes ?? 0) <= 0) return
+    const usedFreezeOn = [...(state.usedFreezeOn ?? []), date]
+    const streak = computeStreak(state.entries, usedFreezeOn)
+    persist({ ...state, usedFreezeOn, streak, streakFreezes: (state.streakFreezes ?? 1) - 1 })
+  }
+
+  const saveUserHabit = (habit: UserHabit) => {
+    const existing = state.userHabits ?? []
+    const idx = existing.findIndex(h => h.id === habit.id)
+    const userHabits = idx === -1
+      ? [...existing, habit]
+      : existing.map(h => h.id === habit.id ? habit : h)
+    persist({ ...state, userHabits })
+  }
+
+  const deleteUserHabit = (id: string) =>
+    persist({ ...state, userHabits: (state.userHabits ?? []).filter(h => h.id !== id) })
 
   const saveHabitChallenge = (challenge: HabitChallenge) =>
     persist({ ...state, habitChallenge: challenge })
@@ -197,6 +219,8 @@ export function useAppData() {
     saveTask, deleteTask, toggleTask,
     saveRedemption,
     saveHabitChallenge, clearHabitChallenge,
+    useStreakFreeze,
+    saveUserHabit, deleteUserHabit,
     clearAll,
   }
 }

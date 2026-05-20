@@ -1,13 +1,15 @@
 export interface MorningEntry {
-  gratitudes:  [string, string, string]
-  vision:      [string, string, string]
-  identity:    string
-  purpose:     string
-  commitment:  string
-  oneThing?:   string   // The ONE most important action
-  incantation: string
-  energyLevel: number
-  completedAt: string
+  gratitudes:     [string, string, string]
+  vision:         [string, string, string]
+  identity:       string
+  purpose:        string
+  commitment:     string
+  oneThing?:      string   // The ONE most important action
+  oneSignal?:     string   // Yesterday's defining moment
+  dailyChallenge?: string  // Today's 5-min challenge
+  incantation:    string
+  energyLevel:    number
+  completedAt:    string
 }
 
 export interface EveningEntry {
@@ -77,19 +79,30 @@ export interface HabitChallenge {
   startDate: string   // YYYY-MM-DD
 }
 
+export interface UserHabit {
+  id:        string
+  emoji:     string
+  title:     string
+  subtitle?: string
+  category:  'personal'
+}
+
 export interface AppState {
-  entries:         DayEntry[]
-  streak:          number
-  totalDays:       number
-  currentView:     'home' | 'prime' | 'actions' | 'inspire' | 'tasks' | 'wins' | 'fear' | 'weekly' | 'profile' | 'focus' | 'challenge'
-  burnTheBoats?:   BurnTheBoats
-  fearEntries?:    FearEntry[]
-  weeklyPlans?:    WeeklyPlan[]
-  incantationB64?: string
-  userName?:       string
-  userGoals?:      UserGoal[]
-  tasks?:          Task[]
-  habitChallenge?: HabitChallenge
+  entries:          DayEntry[]
+  streak:           number
+  totalDays:        number
+  currentView:      'home' | 'prime' | 'actions' | 'inspire' | 'tasks' | 'wins' | 'fear' | 'weekly' | 'profile' | 'focus' | 'challenge'
+  burnTheBoats?:    BurnTheBoats
+  fearEntries?:     FearEntry[]
+  weeklyPlans?:     WeeklyPlan[]
+  incantationB64?:  string
+  userName?:        string
+  userGoals?:       UserGoal[]
+  tasks?:           Task[]
+  habitChallenge?:  HabitChallenge
+  userHabits?:      UserHabit[]
+  streakFreezes?:   number
+  usedFreezeOn?:    string[]
 }
 
 export type DayPhase = 'morning' | 'day' | 'evening'

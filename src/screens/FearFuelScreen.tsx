@@ -1,22 +1,37 @@
 import { useState } from 'react'
-import { Trash2, ChevronRight } from 'lucide-react'
-import type { FearEntry } from '../types'
+import { Trash2, ChevronRight, ArrowRight } from 'lucide-react'
+import type { FearEntry, Task } from '../types'
 import { playCheck, playComplete } from '../utils/sounds'
 import { useTheme } from '../contexts/ThemeContext'
 import { formatDate } from '../utils/dateUtils'
 
 interface Props {
-  entries:  FearEntry[]
-  onSave:   (e: FearEntry) => void
-  onDelete: (id: string)   => void
+  entries:    FearEntry[]
+  onSave:     (e: FearEntry) => void
+  onDelete:   (id: string)   => void
+  onAddTask?: (t: Task)      => void
 }
 
-export function FearFuelScreen({ entries, onSave, onDelete }: Props) {
+export function FearFuelScreen({ entries, onSave, onDelete, onAddTask }: Props) {
   const T = useTheme()
-  const [fear,    setFear]    = useState('')
-  const [reframe, setReframe] = useState('')
-  const [step,    setStep]    = useState<1|2>(1)
-  const [done,    setDone]    = useState(false)
+  const [fear,         setFear]         = useState('')
+  const [reframe,      setReframe]      = useState('')
+  const [step,         setStep]         = useState<1|2>(1)
+  const [done,         setDone]         = useState(false)
+  const [taskAddedFor, setTaskAddedFor] = useState<string | null>(null)
+
+  const handleFearToTask = (entry: FearEntry) => {
+    if (!onAddTask) return
+    const task: Task = {
+      id: `task_${Date.now()}`,
+      title: entry.reframe || entry.fear,
+      priority: 'high',
+      createdAt: new Date().toISOString(),
+    }
+    onAddTask(task)
+    setTaskAddedFor(entry.id)
+    setTimeout(() => setTaskAddedFor(null), 2000)
+  }
 
   const handleNext = () => { if (fear.trim().length < 3) return; playCheck(); setStep(2) }
   const handleSave = () => {
@@ -85,7 +100,13 @@ export function FearFuelScreen({ entries, onSave, onDelete }: Props) {
                     </button>
                   </div>
                   <p style={{ fontFamily: "'Heebo', sans-serif", fontSize: 12, color: T.textMuted, marginBottom: 6, lineHeight: 1.5 }} dir="rtl">{entry.fear}</p>
-                  <p style={{ fontFamily: "'Frank Ruhl Libre', Georgia, serif", fontSize: 15, fontWeight: 700, color: T.text, lineHeight: 1.5 }} dir="rtl">{entry.reframe}</p>
+                  <p style={{ fontFamily: "'Frank Ruhl Libre', Georgia, serif", fontSize: 15, fontWeight: 700, color: T.text, lineHeight: 1.5, marginBottom: 10 }} dir="rtl">{entry.reframe}</p>
+                  {onAddTask && (
+                    <button onClick={() => handleFearToTask(entry)} dir="rtl"
+                      style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: taskAddedFor === entry.id ? 'rgba(74,222,128,.1)' : 'rgba(191,90,242,.08)', border: `1px solid ${taskAddedFor === entry.id ? 'rgba(74,222,128,.3)' : 'rgba(191,90,242,.2)'}`, borderRadius: 8, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700, color: taskAddedFor === entry.id ? '#4ADE80' : '#BF5AF2', transition: 'all .2s' }}>
+                      {taskAddedFor === entry.id ? '✓ נוסף למשימות' : <><ArrowRight style={{ width: 11, height: 11 }} strokeWidth={2} /> הפוך למשימה</>}
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

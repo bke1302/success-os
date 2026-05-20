@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
-import { Mic, Square, Play, Pause, ChevronRight, ChevronLeft, Target } from 'lucide-react'
-import { HABITS, getTodayPowerWord, getCommanderRank } from '../constants'
+import { Mic, Square, Play, Pause, ChevronRight, ChevronLeft, Target, Volume2, VolumeX } from 'lucide-react'
+import { HABITS, getTodayPowerWord, getCommanderRank, getTodayChallenge } from '../constants'
 import { getCurrentWeekTheme, getTodayRequiredHabitIds, getProgramWeekNumber } from '../data/program'
 import { getCoachMessage } from '../utils/coach'
 import { playComplete, playCheck } from '../utils/sounds'
@@ -87,6 +87,8 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
   const [step,       setStep]       = useState<1|2|3|4>(1)
   const [commitment, setCommitment] = useState('')
   const [oneThing,   setOneThing]   = useState('')
+  const [oneSignal,  setOneSignal]  = useState('')
+  const [speaking,   setSpeaking]   = useState(false)
 
   const theme          = getCurrentWeekTheme(dayCount)
   const weekNum        = getProgramWeekNumber(dayCount)
@@ -96,22 +98,36 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
     .map(id => HABITS.find(h => h.id === id))
     .filter((h): h is typeof HABITS[number] => h !== undefined)
 
-  const coach     = getCoachMessage({ streak, dayCount, yesterdayHabitsPct, currentHour: new Date().getHours() })
-  const powerWord = getTodayPowerWord()
-  const rank      = getCommanderRank(streak)
+  const coach          = getCoachMessage({ streak, dayCount, yesterdayHabitsPct, currentHour: new Date().getHours() })
+  const powerWord      = getTodayPowerWord()
+  const rank           = getCommanderRank(streak)
+  const todayChallenge = getTodayChallenge()
 
   const STEP_LABELS = ['הכנה', 'משימות', 'ONE THING', 'יוצאים']
 
   const next = () => { playCheck(); setStep(s => Math.min(s + 1, 4) as 1|2|3|4) }
   const back = () => setStep(s => Math.max(s - 1, 1) as 1|2|3|4)
 
+  const speakBrief = () => {
+    if (!('speechSynthesis' in window)) return
+    if (speaking) { window.speechSynthesis.cancel(); setSpeaking(false); return }
+    const text = `בוקר טוב! סטריק: ${streak} ימים. האתגר של היום: ${todayChallenge}`
+    const utt = new SpeechSynthesisUtterance(text)
+    utt.lang = 'he-IL'; utt.rate = 0.95
+    utt.onend = () => setSpeaking(false)
+    window.speechSynthesis.speak(utt)
+    setSpeaking(true)
+  }
+
   const handleStart = () => {
     playComplete()
     onComplete({
       gratitudes: ['','',''], vision: ['','',''],
       identity: theme.title, purpose: theme.desc,
-      commitment: commitment.trim() || 'ביצוע תוכנית היום',
-      oneThing:   oneThing.trim() || undefined,
+      commitment:     commitment.trim() || 'ביצוע תוכנית היום',
+      oneThing:       oneThing.trim() || undefined,
+      oneSignal:      oneSignal.trim() || undefined,
+      dailyChallenge: todayChallenge,
       incantation: '', energyLevel: 7,
       completedAt: new Date().toISOString(),
     })
@@ -214,11 +230,44 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
 
             {/* Last win */}
             {lastWin && (
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRight: '3px solid rgba(251,191,36,.4)', borderRadius: 18, padding: '16px 18px', animation: 'cardStagger .38s var(--ease-out) .15s both' }}>
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRight: '3px solid rgba(251,191,36,.4)', borderRadius: 18, padding: '16px 18px', marginBottom: 12, animation: 'cardStagger .38s var(--ease-out) .15s both' }}>
                 <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(251,191,36,.6)', textTransform: 'uppercase', marginBottom: 8 }}>אתמול ניצחת</p>
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: T.textSub, lineHeight: 1.6 }} dir="rtl">{lastWin}</p>
               </div>
             )}
+
+            {/* Daily Challenge */}
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRight: '3px solid rgba(96,165,250,.5)', borderRadius: 18, padding: '16px 18px', marginBottom: 12, animation: 'cardStagger .38s var(--ease-out) .2s both' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(96,165,250,.8)', textTransform: 'uppercase', margin: 0 }}>אתגר היום (5 דקות)</p>
+                <button onClick={speakBrief} aria-label="השמע בריף" title="השמע בריף קולי"
+                  style={{ background: speaking ? 'rgba(96,165,250,.15)' : T.tagBg, border: `1px solid ${speaking ? 'rgba(96,165,250,.4)' : T.border2}`, borderRadius: 8, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+                  {speaking
+                    ? <VolumeX style={{ width: 13, height: 13, color: '#60A5FA' }} strokeWidth={2} />
+                    : <Volume2 style={{ width: 13, height: 13, color: T.textMuted }} strokeWidth={2} />}
+                </button>
+              </div>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 600, color: T.text, lineHeight: 1.55, margin: 0 }} dir="rtl">{todayChallenge}</p>
+            </div>
+
+            {/* One Signal */}
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '16px 18px', animation: 'cardStagger .38s var(--ease-out) .25s both' }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 8 }}>הרגע המגדיר של אתמול</p>
+              <textarea
+                value={oneSignal}
+                onChange={e => setOneSignal(e.target.value)}
+                placeholder="מה היה הרגע שהגדיר את אתמול? (אופציונלי)"
+                dir="rtl" rows={2}
+                style={{
+                  width: '100%', padding: '10px 12px',
+                  background: oneSignal.trim() ? 'rgba(167,139,250,.05)' : T.tagBg,
+                  border: `1.5px solid ${oneSignal.trim() ? 'rgba(167,139,250,.4)' : T.border}`,
+                  color: T.text, fontFamily: 'Inter, sans-serif', fontSize: 13, lineHeight: 1.5,
+                  resize: 'none', outline: 'none', borderRadius: 10, transition: 'border-color .2s',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
           </>
         )}
 

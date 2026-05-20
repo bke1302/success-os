@@ -1,19 +1,25 @@
 import { useState } from 'react'
-import { Plus, Trash2, CheckCircle, Bell, BellOff, CloudOff, Copy, Check } from 'lucide-react'
-import type { UserGoal } from '../types'
+import { Plus, Trash2, CheckCircle, Bell, BellOff, CloudOff, Copy, Check, Share2 } from 'lucide-react'
+import type { UserGoal, UserHabit } from '../types'
 import { playCheck, playComplete } from '../utils/sounds'
 import { useTheme } from '../contexts/ThemeContext'
 import { getReminderTime, setReminderTime, requestAndScheduleReminder } from '../utils/reminder'
 import { SUPABASE_READY, pushData, pullData } from '../utils/supabase'
 
 interface Props {
-  userName:       string
-  goals:          UserGoal[]
-  onSaveGoals:    (goals: UserGoal[]) => void
-  theme?:         'dark' | 'light'
-  onToggleTheme?: () => void
-  appData?:       object
-  onImportData?:  (data: object) => void
+  userName:         string
+  goals:            UserGoal[]
+  onSaveGoals:      (goals: UserGoal[]) => void
+  theme?:           'dark' | 'light'
+  onToggleTheme?:   () => void
+  appData?:         object
+  onImportData?:    (data: object) => void
+  userHabits?:      UserHabit[]
+  onSaveUserHabit?: (h: UserHabit) => void
+  onDeleteUserHabit?: (id: string) => void
+  streak?:          number
+  totalDays?:       number
+  avgScore?:        string
 }
 
 const CATEGORIES: UserGoal['category'][] = ['עסקי', 'כספי', 'בריאות', 'קשרים', 'אישי']
@@ -103,10 +109,47 @@ function GoalRow({ goal, onDelete, onUpdate }: {
   )
 }
 
-export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleTheme, appData, onImportData }: Props) {
+export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleTheme, appData, onImportData, userHabits = [], onSaveUserHabit, onDeleteUserHabit, streak = 0, totalDays = 0, avgScore = '—' }: Props) {
   const T = useTheme()
   const [localGoals, setLocalGoals] = useState<UserGoal[]>(goals)
   const [saved, setSaved] = useState(false)
+
+  // ── Custom Habits ──────────────────────────────────────────────────────────
+  const [newHabitEmoji, setNewHabitEmoji] = useState('')
+  const [newHabitTitle, setNewHabitTitle] = useState('')
+  const [newHabitSub,   setNewHabitSub]   = useState('')
+  const [habitAdded, setHabitAdded] = useState(false)
+
+  const addCustomHabit = () => {
+    const title = newHabitTitle.trim()
+    if (!title) return
+    const habit: UserHabit = {
+      id: `custom_${Date.now()}`,
+      emoji: newHabitEmoji.trim() || '⭐',
+      title,
+      subtitle: newHabitSub.trim() || undefined,
+      category: 'personal',
+    }
+    onSaveUserHabit?.(habit)
+    setNewHabitEmoji('')
+    setNewHabitTitle('')
+    setNewHabitSub('')
+    setHabitAdded(true)
+    setTimeout(() => setHabitAdded(false), 1500)
+  }
+
+  // ── Partner share ──────────────────────────────────────────────────────────
+  const [partnerCopied, setPartnerCopied] = useState(false)
+
+  const sharePartnerLink = () => {
+    const payload = { streak, totalDays, avgScore, date: new Date().toISOString().slice(0, 10) }
+    const encoded = btoa(JSON.stringify(payload))
+    const url = `${window.location.origin}${window.location.pathname}?partner=${encoded}`
+    navigator.clipboard.writeText(url).then(() => {
+      setPartnerCopied(true)
+      setTimeout(() => setPartnerCopied(false), 2000)
+    })
+  }
 
   // ── Notifications ─────────────────────────────────────────────────────────
   const [notifTime,    setNotifTimeState] = useState(getReminderTime)
@@ -262,6 +305,59 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
                   הוסף יעד
                 </button>
               )}
+            </div>
+
+            {/* Custom Habits */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>הרגלים אישיים ({userHabits.length})</p>
+
+              {userHabits.length > 0 && (
+                <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, overflow: 'hidden', marginBottom: 10 }}>
+                  {userHabits.map((h, i) => (
+                    <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderBottom: i < userHabits.length - 1 ? `1px solid ${T.divider}` : 'none', direction: 'rtl' }}>
+                      <span style={{ fontSize: 18 }}>{h.emoji}</span>
+                      <span style={{ flex: 1, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: T.textSub }}>{h.title}</span>
+                      <button onClick={() => onDeleteUserHabit?.(h.id)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'rgba(255,92,92,.3)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#FF5C5C' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,92,92,.3)' }}>
+                        <Trash2 style={{ width: 13, height: 13 }} strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: '12px 14px' }}>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>הוסף הרגל</p>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                  <input value={newHabitEmoji} onChange={e => setNewHabitEmoji(e.target.value)}
+                    placeholder="😀" maxLength={2}
+                    style={{ width: 48, textAlign: 'center', background: T.tagBg, border: `1px solid ${T.border2}`, borderRadius: 9, padding: '8px', fontFamily: 'Inter, sans-serif', fontSize: 18, color: T.text, outline: 'none' }} />
+                  <input value={newHabitTitle} onChange={e => setNewHabitTitle(e.target.value)}
+                    placeholder="שם ההרגל" dir="rtl"
+                    style={{ flex: 1, background: T.tagBg, border: `1px solid ${T.border2}`, borderRadius: 9, padding: '8px 10px', fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: T.text, outline: 'none' }} />
+                </div>
+                <input value={newHabitSub} onChange={e => setNewHabitSub(e.target.value)}
+                  placeholder="תיאור קצר (אופציונלי)" dir="rtl"
+                  style={{ width: '100%', background: T.tagBg, border: `1px solid ${T.border2}`, borderRadius: 9, padding: '8px 10px', fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.text, outline: 'none', marginBottom: 8, boxSizing: 'border-box' }} />
+                <button onClick={addCustomHabit} dir="rtl"
+                  style={{ width: '100%', padding: '9px', background: habitAdded ? 'rgba(74,222,128,.1)' : 'rgba(191,90,242,.08)', border: `1px solid ${habitAdded ? 'rgba(74,222,128,.3)' : 'rgba(191,90,242,.25)'}`, borderRadius: 10, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: habitAdded ? '#4ADE80' : '#BF5AF2', transition: 'all .2s' }}>
+                  {habitAdded ? '✓ נוסף!' : '+ הוסף הרגל'}
+                </button>
+              </div>
+            </div>
+
+            {/* Partner Share */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>שותף אחריות</p>
+              <button onClick={sharePartnerLink} dir="rtl"
+                style={{ width: '100%', padding: '13px 16px', background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all .2s' }}>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: partnerCopied ? '#4ADE80' : T.textSub }}>
+                  {partnerCopied ? '✓ הקישור הועתק!' : 'שתף את הסטטיסטיקות שלך'}
+                </span>
+                <Share2 style={{ width: 14, height: 14, color: partnerCopied ? '#4ADE80' : T.textMuted, flexShrink: 0 }} strokeWidth={2} />
+              </button>
             </div>
 
             {/* Divider */}

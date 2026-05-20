@@ -22,6 +22,7 @@ import { CompletionScreen }      from './screens/CompletionScreen'
 import { FocusScreen }           from './screens/FocusScreen'
 import { MilestoneScreen }       from './screens/MilestoneScreen'
 import { HabitChallengeScreen }  from './screens/HabitChallengeScreen'
+import { ComebackScreen }        from './screens/ComebackScreen'
 import type { EnergyCheckin, AppState }   from './types'
 import { ThemeContext }          from './contexts/ThemeContext'
 import { darkTokens, lightTokens } from './theme'
@@ -39,6 +40,8 @@ export default function App() {
     saveTask, deleteTask, toggleTask,
     saveRedemption,
     saveHabitChallenge, clearHabitChallenge,
+    useStreakFreeze,
+    saveUserHabit, deleteUserHabit,
   } = useAppData()
 
   const [theme,           setTheme]           = useState<'dark'|'light'>(() => (localStorage.getItem('app_theme') as 'dark'|'light') ?? 'dark')
@@ -47,6 +50,9 @@ export default function App() {
   const [checkinPrompt,   setCheckinPrompt]   = useState<EnergyCheckin['label'] | null>(null)
   const [showCompletion,  setShowCompletion]  = useState(false)
   const [completionScore, setCompletionScore] = useState(0)
+  const [completionWin,   setCompletionWin]   = useState('')
+  const [completionCmt,   setCompletionCmt]   = useState('')
+  const [comebackDismissed, setComebackDismissed] = useState(() => !!sessionStorage.getItem('comeback_dismissed'))
 
   const { showMilestone, dismissMilestone }   = useMilestone(state.streak)
   const { showInstallBanner, triggerInstall, dismissInstall } = useInstallPrompt()
@@ -132,6 +138,18 @@ export default function App() {
     return <OnboardingScreen onComplete={name => setUserName(name)} />
   }
 
+  // Comeback flow — show if last evening was 3+ days ago
+  const lastEvening = [...state.entries].reverse().find(e => e.evening)
+  const comebackDays = lastEvening ? Math.floor((Date.now() - new Date(lastEvening.date).getTime()) / 86_400_000) : 0
+  if (comebackDays >= 3 && !comebackDismissed) {
+    return (
+      <ComebackScreen
+        daysMissed={comebackDays}
+        onContinue={() => { sessionStorage.setItem('comeback_dismissed', '1'); setComebackDismissed(true) }}
+      />
+    )
+  }
+
   const tokens = theme === 'dark' ? darkTokens : lightTokens
 
   return (
@@ -168,6 +186,9 @@ export default function App() {
       {showCompletion && (
         <CompletionScreen
           score={completionScore}
+          win={completionWin}
+          commitment={completionCmt}
+          dayCount={dayCount}
           onDone={() => { setShowCompletion(false); setView('home') }}
         />
       )}
@@ -248,6 +269,9 @@ export default function App() {
             onStart={() => setView('prime')}
             onNavigate={(v) => { setView(v as AppState['currentView']); setForceEvening(false) }}
             onRedemption={saveRedemption}
+            streakFreezes={state.streakFreezes ?? 0}
+            onUseFreeze={useStreakFreeze}
+            totalDays={state.totalDays}
           />
         )}
 
@@ -285,6 +309,8 @@ export default function App() {
                   saveEvening(data)
                   setForceEvening(false)
                   setCompletionScore(data.score)
+                  setCompletionWin(data.given || data.win)
+                  setCompletionCmt(today?.morning?.commitment ?? '')
                   setShowCompletion(true)
                 }}
               />
@@ -308,6 +334,9 @@ export default function App() {
             completedHabits={today?.habits ?? []}
             onToggle={saveHabits}
             requiredHabitIds={requiredHabitIds}
+            userHabits={state.userHabits ?? []}
+            userGoals={state.userGoals ?? []}
+            onGoToProfile={() => setView('profile')}
           />
         )}
 
@@ -331,6 +360,7 @@ export default function App() {
             entries={state.fearEntries ?? []}
             onSave={saveFearEntry}
             onDelete={deleteFearEntry}
+            onAddTask={saveTask}
           />
         )}
 
@@ -366,6 +396,17 @@ export default function App() {
                 window.location.reload()
               } catch { /* ignore */ }
             }}
+            userHabits={state.userHabits ?? []}
+            onSaveUserHabit={saveUserHabit}
+            onDeleteUserHabit={deleteUserHabit}
+            streak={state.streak}
+            totalDays={state.totalDays}
+            avgScore={(() => {
+              const withEvening = state.entries.filter(e => e.evening)
+              if (!withEvening.length) return '—'
+              const avg = withEvening.reduce((s, e) => s + e.evening!.score, 0) / withEvening.length
+              return avg.toFixed(1)
+            })()}
           />
         )}
       </div>

@@ -1,4 +1,4 @@
-import { Play, Check, Zap } from 'lucide-react'
+import { Play, Check, Zap, Snowflake } from 'lucide-react'
 import type { DayEntry, Task, HabitChallenge } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 import { getTodayFocusSessions } from './FocusScreen'
@@ -16,6 +16,34 @@ interface Props {
   onStart:         () => void
   onNavigate:      (v: string) => void
   onRedemption?:   () => void
+  streakFreezes?:  number
+  onUseFreeze?:    (date: string) => void
+  totalDays?:      number
+}
+
+const RANKS = [
+  { from: 0,   title: 'טירון',   color: '#9CA3AF', nextAt: 7   },
+  { from: 7,   title: 'לוחם',    color: '#60A5FA', nextAt: 21  },
+  { from: 21,  title: 'מפקד',    color: '#A78BFA', nextAt: 50  },
+  { from: 50,  title: 'אלוף',    color: '#FFD60A', nextAt: 100 },
+  { from: 100, title: 'לג\'נדה',  color: '#FF375F', nextAt: null },
+]
+
+function getRank(totalDays: number) {
+  let rank = RANKS[0]
+  for (const r of RANKS) {
+    if (totalDays >= r.from) rank = r
+  }
+  return rank
+}
+
+function getScoreTrend(entries: DayEntry[]): 'rising' | 'falling' | null {
+  const last3 = entries.filter(e => e.evening).slice(-3)
+  if (last3.length < 3) return null
+  const [a, b, c] = last3.map(e => e.evening!.score)
+  if (c > b && b > a) return 'rising'
+  if (c < b && b < a) return 'falling'
+  return null
 }
 
 function getGreeting(hour: number): { text: string; sub: string } {
@@ -24,7 +52,7 @@ function getGreeting(hour: number): { text: string; sub: string } {
   return               { text: 'ערב טוב',       sub: new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' }) }
 }
 
-export function HomeScreen({ streak, today, userName, entries, tasks, challenge, onStart, onNavigate, onRedemption }: Props) {
+export function HomeScreen({ streak, today, userName, entries, tasks, challenge, onStart, onNavigate, onRedemption, streakFreezes = 0, onUseFreeze, totalDays = 0 }: Props) {
   const T = useTheme()
   const hour = new Date().getHours()
   const { text: greetText, sub: greetSub } = getGreeting(hour)
@@ -33,6 +61,10 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
   const yesterday = (() => { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().slice(0, 10) })()
   const yesterdayEntry = entries.find(e => e.date === yesterday)
   const showRecovery   = !!(yesterdayEntry?.morning && !yesterdayEntry?.evening)
+  const showFreeze     = !yesterdayEntry?.evening && !showRecovery && streakFreezes > 0 && streak > 0
+
+  const rank       = getRank(totalDays)
+  const scoreTrend = getScoreTrend(entries)
 
   // Stats
   const completedHabits = today?.habits ?? []
@@ -80,6 +112,11 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, fontWeight: 900, color: T.text, margin: 0, letterSpacing: '-.8px', lineHeight: 1.1 }}>
               {greetText}, {userName}
             </p>
+          </div>
+          <div style={{ padding: '4px 10px', borderRadius: 999, background: `${rank.color}18`, border: `1px solid ${rank.color}40`, flexShrink: 0 }}>
+            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: rank.color, textTransform: 'uppercase' }}>
+              {rank.title}
+            </span>
           </div>
         </div>
 
@@ -185,6 +222,23 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
           </div>
         </div>
 
+        {/* ── Score Trend Alert ── */}
+        {scoreTrend && (
+          <div style={{ padding: '0 16px 14px' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
+              background: scoreTrend === 'rising' ? 'rgba(74,222,128,.07)' : 'rgba(255,55,95,.07)',
+              border: `1px solid ${scoreTrend === 'rising' ? 'rgba(74,222,128,.25)' : 'rgba(255,55,95,.25)'}`,
+              borderRadius: 14, direction: 'rtl',
+            }}>
+              <span style={{ fontSize: 18, flexShrink: 0 }}>{scoreTrend === 'rising' ? '📈' : '📉'}</span>
+              <p dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 600, color: scoreTrend === 'rising' ? '#4ADE80' : '#FF375F', margin: 0 }}>
+                {scoreTrend === 'rising' ? '3 ימים ברצף עולה — אתה במומנטום. תנצל את זה!' : '3 ימים ברצף יורד — זה הזמן לשנות משהו קטן'}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* ── Streak Recovery Banner ── */}
         {showRecovery && onRedemption && (
           <div style={{ padding: '0 16px 14px' }}>
@@ -201,6 +255,27 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
               <div dir="rtl" style={{ flex: 1 }}>
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 800, color: '#FBBF24', margin: 0, letterSpacing: '-.3px' }}>שחזר את אתמול</p>
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.textMuted, margin: '2px 0 0' }}>שכחת לסיים אתמול? לחץ לשחזור הסטריק</p>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {/* ── Streak Freeze Banner ── */}
+        {showFreeze && onUseFreeze && (
+          <div style={{ padding: '0 16px 14px' }}>
+            <button onClick={() => onUseFreeze(yesterday)} style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+              padding: '16px 18px',
+              background: 'rgba(96,165,250,.07)', border: '1px solid rgba(96,165,250,.25)',
+              borderRadius: 16, cursor: 'pointer', direction: 'rtl',
+              transition: 'background .15s',
+            }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: 'rgba(96,165,250,.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Snowflake style={{ width: 16, height: 16, color: '#60A5FA' }} strokeWidth={2} />
+              </div>
+              <div dir="rtl" style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 800, color: '#60A5FA', margin: 0, letterSpacing: '-.3px' }}>הקפא סטריק — {streakFreezes} נותרו</p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.textMuted, margin: '2px 0 0' }}>השתמש בהקפאה כדי להציל את הסטריק שלך</p>
               </div>
             </button>
           </div>
