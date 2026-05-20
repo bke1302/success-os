@@ -11,7 +11,7 @@ const TABS: { id: View; Icon: typeof Home; label: string }[] = [
   { id: 'tasks',   Icon: ListTodo, label: 'משימות' },
 ]
 
-const ACCENT = '#4F7DFF'
+const ACCENT = '#5B8CFF'
 
 interface Props {
   current:  View
@@ -42,47 +42,50 @@ export function BottomNav({ current, onChange }: Props) {
             style={{
               flex: 1,
               border: 'none',
-              background: 'transparent',
+              background: active ? 'rgba(91,140,255,.08)' : 'transparent',
+              borderRadius: 14,
+              margin: '6px 4px 0',
               cursor: 'pointer',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'flex-start',
-              gap: 5,
-              paddingTop: 12,
+              gap: 4,
+              paddingTop: 10,
               paddingBottom: 8,
               position: 'relative',
-              transition: 'opacity .15s',
+              transition: 'background .2s, opacity .15s',
               outline: 'none',
             }}
             onMouseEnter={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.opacity = '.75' }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
           >
-            {/* Active indicator line at top */}
-            <div style={{
-              position: 'absolute', top: 0, left: '50%',
-              transform: 'translateX(-50%)',
-              width: active ? 32 : 0, height: 2,
-              background: ACCENT,
-              borderRadius: '0 0 4px 4px',
-              transition: 'width .25s cubic-bezier(.16,1,.3,1)',
-            }} />
+            {/* Active top indicator bar */}
+            {active && (
+              <div style={{
+                position: 'absolute', top: 0, left: '50%',
+                transform: 'translateX(-50%)',
+                width: 24, height: 3, borderRadius: '0 0 3px 3px',
+                background: ACCENT,
+                boxShadow: `0 0 10px ${ACCENT}90`,
+              }} />
+            )}
 
             <Icon
               style={{
-                width: active ? 22 : 20,
-                height: active ? 22 : 20,
-                color: active ? ACCENT : 'rgba(255,255,255,.32)',
-                filter: active ? `drop-shadow(0 0 8px ${ACCENT}99)` : 'none',
+                width: 20, height: 20,
+                color: active ? ACCENT : 'rgba(255,255,255,.3)',
+                filter: active ? `drop-shadow(0 0 6px ${ACCENT}80)` : 'none',
                 transition: 'all .2s cubic-bezier(.16,1,.3,1)',
+                marginTop: 4,
               }}
-              strokeWidth={active ? 2.5 : 1.8}
+              strokeWidth={active ? 2.2 : 1.8}
             />
             <span style={{
-              fontSize: 9.5,
+              fontSize: 9,
               fontWeight: 700,
               letterSpacing: '.5px',
-              color: active ? ACCENT : 'rgba(255,255,255,.28)',
+              color: active ? ACCENT : 'rgba(255,255,255,.25)',
               fontFamily: 'Barlow Condensed, sans-serif',
               textTransform: 'uppercase',
               transition: 'color .2s',

@@ -219,17 +219,22 @@ body::before {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes cardStagger {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
 @keyframes pulse-red {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.45; }
 }
 
 /* ─── Animation utilities ────────────────────────────────────────── */
-.animate-slide-up  { animation: slideUp .35s var(--ease-out) both; }
-.animate-fade-in   { animation: fadeIn .3s ease-out both; }
-.animate-panel-in  { animation: panelIn .35s var(--ease-spring) both; }
-.animate-check-pop { animation: checkPop .3s var(--ease-out); }
-.animate-pulse-red { animation: pulse-red 1.5s ease-in-out infinite; }
+.animate-slide-up   { animation: slideUp .35s var(--ease-out) both; }
+.animate-fade-in    { animation: fadeIn .3s ease-out both; }
+.animate-panel-in   { animation: panelIn .35s var(--ease-spring) both; }
+.animate-check-pop  { animation: checkPop .3s var(--ease-out); }
+.animate-pulse-red  { animation: pulse-red 1.5s ease-in-out infinite; }
+.animate-card-stagger { animation: cardStagger .38s var(--ease-out) both; }
 
 .delay-0 { animation-delay: 0ms; }
 .delay-1 { animation-delay: 60ms; }
@@ -237,6 +242,13 @@ body::before {
 .delay-3 { animation-delay: 180ms; }
 .delay-4 { animation-delay: 240ms; }
 .delay-5 { animation-delay: 300ms; }
+
+/* ProFit-style stagger delays */
+.stagger-1 { animation-delay: .04s; }
+.stagger-2 { animation-delay: .09s; }
+.stagger-3 { animation-delay: .14s; }
+.stagger-4 { animation-delay: .19s; }
+.stagger-5 { animation-delay: .24s; }
 
 /* ─── Design tokens ───────────────────────────────────────────────── */
 @layer utilities {
@@ -276,6 +288,31 @@ body::before {
     background-clip: text;
   }
 
+  /* ── Today Hero Card (ProFit style) ── */
+  .today-hero {
+    border-radius: 24px;
+    padding: 22px 22px 20px;
+    min-height: 176px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s var(--ease-out), box-shadow .25s;
+    animation: cardStagger .4s var(--ease-out) both;
+  }
+  .today-hero:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 56px rgba(0,0,0,.7);
+  }
+  /* grain texture overlay */
+  .today-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: .055;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
   /* ── Cards ── */
   .card {
     background: var(--card-bg);
@@ -284,6 +321,7 @@ body::before {
     padding: 20px;
     box-shadow: 0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.2);
     transition: border-color .25s, box-shadow .25s, transform .25s, background .3s;
+    animation: cardStagger .38s var(--ease-out) both;
   }
   .card:hover {
     border-color: var(--border2);
