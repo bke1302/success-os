@@ -11,7 +11,9 @@ interface Props {
 }
 
 function daysLeft(deadline: string): number {
-  return Math.max(0, Math.ceil((new Date(deadline).getTime() - Date.now()) / 86_400_000))
+  const d = new Date(deadline)
+  d.setHours(23, 59, 59, 999) // end of day in local timezone
+  return Math.max(0, Math.ceil((d.getTime() - Date.now()) / 86_400_000))
 }
 
 export function BurnTheBoats({ current, onSave, onClear }: Props) {

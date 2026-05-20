@@ -9,10 +9,11 @@ interface Props {
 }
 
 const COLOR = (v: number) => {
-  if (v <= 3) return { fill: '#ef4444', glow: 'rgba(239,68,68,0.5)' }
-  if (v <= 6) return { fill: '#f97316', glow: 'rgba(249,115,22,0.4)' }
-  if (v <= 8) return { fill: '#e8a020', glow: 'rgba(232,160,32,0.5)' }
-  return           { fill: '#f5c435', glow: 'rgba(245,196,53,0.6)' }
+  if (v <= 2) return { fill: '#ef4444', glow: 'rgba(239,68,68,0.5)' }
+  if (v <= 4) return { fill: '#f97316', glow: 'rgba(249,115,22,0.4)' }
+  if (v <= 6) return { fill: '#e8a020', glow: 'rgba(232,160,32,0.5)' }
+  if (v <= 8) return { fill: '#f5c435', glow: 'rgba(245,196,53,0.6)' }
+  return           { fill: '#30D158', glow: 'rgba(48,209,88,0.6)'   }
 }
 
 const LABEL = (v: number) => {
@@ -20,7 +21,6 @@ const LABEL = (v: number) => {
   if (v <= 4) return 'לא מרגיש הכי טוב'
   if (v <= 6) return 'בסדר, אפשר לעבוד'
   if (v <= 8) return 'חזק ומוכן'
-  if (v === 9) return 'אש! בשיא כמעט'
   return 'אני בשיא המשחק!'
 }
 

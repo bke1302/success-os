@@ -82,6 +82,7 @@ function GoalRow({ goal, onDelete, onUpdate }: {
           <input
             type="date"
             value={goal.deadline ?? ''}
+            min={new Date().toISOString().slice(0, 10)}
             onChange={e => onUpdate({ ...goal, deadline: e.target.value || undefined })}
             style={{
               background: 'transparent', border: 'none', borderBottom: `1px solid ${T.border2}`,

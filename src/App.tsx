@@ -51,6 +51,10 @@ export default function App() {
   const { showMilestone, dismissMilestone }   = useMilestone(state.streak)
   const { showInstallBanner, triggerInstall, dismissInstall } = useInstallPrompt()
 
+  // Keep a ref to entries so energy-checkin timeouts always read the latest value
+  const entriesRef = useRef(state.entries)
+  useEffect(() => { entriesRef.current = state.entries }, [state.entries])
+
   // Schedule notification on app load if already granted
   useEffect(() => {
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
@@ -91,7 +95,7 @@ export default function App() {
       fire.setHours(hour, minute, 0, 0)
       if (fire <= now) return
       const tid = window.setTimeout(() => {
-        const todayCheckins = state.entries
+        const todayCheckins = entriesRef.current
           .find(e => e.date === new Date().toISOString().slice(0, 10))
           ?.energyCheckins ?? []
         if (!todayCheckins.find(c => c.label === label)) setCheckinPrompt(label)

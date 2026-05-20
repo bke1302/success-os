@@ -89,7 +89,7 @@ export function generateCoachReport(entries: DayEntry[], streak: number): CoachR
   if (withHabits.length === 0) {
     insights.push('לא נרשמו פעולות השבוע — הפעולות הן הדלק. בלעדיהן הכוונה מתנפחת אבל לא זז כלום')
   } else {
-    const habitAvg = avg(withHabits.map(e => e.habits!.length))
+    const habitAvg = avg(withHabits.map(e => e.habits?.length ?? 0))
     if (habitAvg >= 4) insights.push(`ממוצע ${habitAvg.toFixed(0)} פעולות ביום השבוע — זה אתה שמממש, לא רק מתכנן`)
   }
 

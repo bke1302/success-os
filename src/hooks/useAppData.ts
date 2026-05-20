@@ -69,7 +69,11 @@ export function useAppData() {
   const [state, setStateRaw] = useState<AppState>(loadState)
 
   const persist = (next: AppState) => {
-    localStorage.setItem(KEY, JSON.stringify(next))
+    try {
+      localStorage.setItem(KEY, JSON.stringify(next))
+    } catch {
+      // localStorage full or unavailable — continue with in-memory state
+    }
     setStateRaw(next)
   }
 

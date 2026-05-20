@@ -39,9 +39,10 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
   const totalHabits     = HABITS.length
   const habitsDone      = completedHabits.length
   const focusSessions   = getTodayFocusSessions()
-  const last7           = entries.filter(e => e.evening).slice(-7)
-  const avg7            = last7.length
-    ? Math.round(last7.reduce((s, e) => s + (e.evening?.score ?? 0), 0) / last7.length * 10) / 10
+  const last7       = entries.filter(e => e.evening).slice(-7)
+  const last7scores = last7.map(e => e.evening!.score).filter(s => typeof s === 'number')
+  const avg7        = last7scores.length
+    ? Math.round(last7scores.reduce((s, n) => s + n, 0) / last7scores.length * 10) / 10
     : null
 
   // Daily quote — stable per day
