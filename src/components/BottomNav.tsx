@@ -35,16 +35,16 @@ export function BottomNav({ current, onChange }: Props) {
       height: 64,
       background: T.isDark
         ? 'rgba(13,14,19,.93)'
-        : 'rgba(248,250,252,.95)',
+        : 'rgba(255,255,255,.98)',
       backdropFilter: 'blur(32px) saturate(180%)',
       WebkitBackdropFilter: 'blur(32px) saturate(180%)',
       borderRadius: 28,
       border: T.isDark
         ? '1px solid rgba(255,255,255,.10)'
-        : '1px solid rgba(0,0,0,.10)',
+        : '1px solid rgba(0,0,0,.13)',
       boxShadow: T.isDark
         ? '0 8px 48px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.06)'
-        : '0 8px 48px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.9)',
+        : '0 -4px 24px rgba(0,0,0,.10), 0 4px 16px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.9)',
       display: 'flex',
       alignItems: 'center',
       padding: '0 8px',

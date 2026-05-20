@@ -3,7 +3,6 @@ import { Mic, Square, Play, Pause, ChevronRight, ChevronLeft, Target } from 'luc
 import { HABITS, getTodayPowerWord, getCommanderRank } from '../constants'
 import { getCurrentWeekTheme, getTodayRequiredHabitIds, getProgramWeekNumber } from '../data/program'
 import { getCoachMessage } from '../utils/coach'
-import { generateDailyBrief } from '../utils/aiCoach'
 import { playComplete, playCheck } from '../utils/sounds'
 import { isRecordingSupported, startRecording, playBase64Audio } from '../utils/recorder'
 import type { MorningEntry, UserGoal, DayEntry } from '../types'
@@ -96,7 +95,7 @@ function IncantationRecorder({ saved, onSave }: { saved?: string; onSave: (b64: 
   )
 }
 
-export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayHabitsPct, incantationB64, onSaveIncantation, userGoals = [], entries = [], onGoToProfile }: Props) {
+export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayHabitsPct, incantationB64, onSaveIncantation, userGoals = [], onGoToProfile }: Props) {
   const T = useTheme()
   const [step,       setStep]       = useState<1|2|3|4>(1)
   const [commitment, setCommitment] = useState('')
@@ -111,7 +110,6 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
     .filter((h): h is typeof HABITS[number] => h !== undefined)
 
   const coach     = getCoachMessage({ streak, dayCount, yesterdayHabitsPct, currentHour: new Date().getHours() })
-  const brief     = generateDailyBrief(entries, streak)
   const powerWord = getTodayPowerWord()
   const rank      = getCommanderRank(streak)
 
@@ -227,18 +225,9 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.textMuted, lineHeight: 1.65 }} dir="rtl">{coach.body}</p>
             </div>
 
-            {/* AI Daily Brief */}
-            {entries.filter(e => e.evening).length >= 2 && (
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRight: `3px solid ${brief.tone === 'green' ? '#4ADE80' : brief.tone === 'fire' ? '#FF5C5C' : '#FBBF24'}`, borderRadius: 18, padding: '16px 18px', marginBottom: 12, animation: 'cardStagger .38s var(--ease-out) .15s both' }}>
-                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: brief.tone === 'green' ? '#4ADE80' : brief.tone === 'fire' ? '#FF5C5C' : '#FBBF24', textTransform: 'uppercase', marginBottom: 8 }}>DAILY BRIEF</p>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, fontWeight: 800, color: T.text, lineHeight: 1.25, marginBottom: 6, letterSpacing: '-.3px' }} dir="rtl">{brief.headline}</p>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.textMuted, lineHeight: 1.6 }} dir="rtl">{brief.body}</p>
-              </div>
-            )}
-
             {/* Last win */}
             {lastWin && (
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRight: '3px solid rgba(251,191,36,.4)', borderRadius: 18, padding: '16px 18px', animation: 'cardStagger .38s var(--ease-out) .2s both' }}>
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRight: '3px solid rgba(251,191,36,.4)', borderRadius: 18, padding: '16px 18px', animation: 'cardStagger .38s var(--ease-out) .15s both' }}>
                 <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: 'rgba(251,191,36,.6)', textTransform: 'uppercase', marginBottom: 8 }}>אתמול ניצחת</p>
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: T.textSub, lineHeight: 1.6 }} dir="rtl">{lastWin}</p>
               </div>

@@ -3,6 +3,7 @@ import type { DayEntry, Task, HabitChallenge } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 import { getTodayFocusSessions } from './FocusScreen'
 import { HABITS, QUOTES } from '../constants'
+import { generateDailyBrief } from '../utils/aiCoach'
 
 interface Props {
   dayCount:        number
@@ -57,6 +58,8 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
   const previewHabits = HABITS.slice(0, 4)
   const showTasks     = incompleteTasks.length > 0
   const habitPct      = totalHabits > 0 ? habitsDone / totalHabits : 0
+  const hasBriefData  = entries.filter(e => e.evening).length >= 2
+  const brief         = hasBriefData ? generateDailyBrief(entries, streak) : null
 
   return (
     <div style={{
@@ -104,15 +107,28 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
               </div>
             </div>
 
-            {/* Bottom row: greeting + streak */}
+            {/* Bottom row: brief / greeting + streak */}
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
-              <div dir="rtl">
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '2.8rem', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-2px', margin: 0, textShadow: '0 2px 12px rgba(0,0,0,.3)' }}>
-                  {greetText}
-                </p>
-                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.42)', margin: '6px 0 0', textTransform: 'uppercase' }}>
-                  {userName}
-                </p>
+              <div dir="rtl" style={{ flex: 1, minWidth: 0, paddingLeft: 12 }}>
+                {brief ? (
+                  <>
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '2rem', fontWeight: 900, color: '#fff', lineHeight: 1.1, letterSpacing: '-1.5px', margin: 0, textShadow: '0 2px 12px rgba(0,0,0,.3)' }}>
+                      {brief.headline}
+                    </p>
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,.58)', margin: '7px 0 0', lineHeight: 1.5 }}>
+                      {brief.body}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '2.8rem', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-2px', margin: 0, textShadow: '0 2px 12px rgba(0,0,0,.3)' }}>
+                      {greetText}
+                    </p>
+                    <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '2px', color: 'rgba(255,255,255,.42)', margin: '6px 0 0', textTransform: 'uppercase' }}>
+                      {userName}
+                    </p>
+                  </>
+                )}
               </div>
               {streak > 0 ? (
                 <div style={{ textAlign: 'center' }}>
