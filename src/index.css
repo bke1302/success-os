@@ -81,47 +81,46 @@
 
 /* ─── Light Mode ─────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg:   #F0EFE9;
-  --bg2:  #E8E7E1;
-  --bg3:  #E0DFD9;
-  --bg4:  #D8D7D1;
-  --bg5:  #D0CFC9;
+  --bg:   #F2EFE9;
+  --bg2:  #EAE7E1;
+  --bg3:  #E2DFD9;
+  --bg4:  #DAD7D1;
+  --bg5:  #D2CFC9;
 
   --text:   #0D0D0D;
-  --muted:  rgba(0,0,0,.48);
-  --muted2: rgba(0,0,0,.65);
+  --muted:  rgba(0,0,0,.50);
+  --muted2: rgba(0,0,0,.62);
 
-  --border:  rgba(0,0,0,.09);
-  --border2: rgba(0,0,0,.18);
+  --border:  rgba(0,0,0,.10);
+  --border2: rgba(0,0,0,.17);
 
-  --glass:   rgba(255,255,255,.70);
-  --glass-b: rgba(255,255,255,.90);
-  --glass-h: rgba(255,255,255,.80);
+  --glass:   rgba(255,255,255,.75);
+  --glass-b: rgba(255,255,255,.92);
+  --glass-h: rgba(255,255,255,.82);
 
-  --shadow-sm: 0 2px 16px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.05);
-  --shadow-md: 0 8px 32px rgba(0,0,0,.13), 0 2px 8px rgba(0,0,0,.07);
-  --shadow-lg: 0 24px 64px rgba(0,0,0,.18);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.09), 0 2px 8px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.07);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,.16);
 
   /* accent */
   --accent:       #3B6FEF;
   --accent-glow:  rgba(59,111,239,.22);
-  --card-bg:      #FFFFFF;
 
   /* surfaces */
-  --app-bg:           #F8FAFC;
+  --app-bg:           #F2EFE9;
   --card-bg:          #FFFFFF;
-  --nav-bg:           rgba(248,250,252,0.96);
-  --bottom-nav-bg:    rgba(248,250,252,.97);
-  --nav-border:       rgba(0,0,0,.07);
-  --surface-elevated: rgba(255,255,255,.97);
+  --nav-bg:           rgba(255,255,255,0.97);
+  --bottom-nav-bg:    rgba(255,255,255,.97);
+  --nav-border:       rgba(0,0,0,.10);
+  --surface-elevated: rgba(255,255,255,.98);
   --surface-bar:      rgba(0,0,0,.04);
   --card-from:        #FFFFFF;
-  --card-to:          #F8FAFC;
-  --card-border:      rgba(0,0,0,.07);
+  --card-to:          #FAFAF7;
+  --card-border:      rgba(0,0,0,.10);
   --card-inset:       transparent;
-  --input-bg:         rgba(0,0,0,.04);
-  --input-border:     rgba(0,0,0,.12);
-  --scroll-thumb:     rgba(59,111,239,.18);
+  --input-bg:         rgba(0,0,0,.05);
+  --input-border:     rgba(0,0,0,.14);
+  --scroll-thumb:     rgba(59,111,239,.20);
   --label-color:      #64748B;
   --gold-text-light:  #92400E;
 }
@@ -189,15 +188,41 @@ body::before {
 [data-theme="light"] body::before {
   opacity: 0;
 }
+
+/* ── Light mode: soften card shadows (dark-mode values are too heavy) ── */
+[data-theme="light"] .card {
+  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+}
+[data-theme="light"] .card:hover {
+  border-color: rgba(0,0,0,.16);
+  box-shadow: 0 4px 24px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.08);
+  transform: translateY(-1px);
+}
+[data-theme="light"] .today-hero:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,.18);
+}
+
+/* ── Light mode: stat-box ── */
+[data-theme="light"] .stat-box {
+  box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+}
+[data-theme="light"] .stat-box:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,.12);
+}
+/* Fix color contrast: vivid hues on white fail WCAG — use darker variants */
+[data-theme="light"] .stat-box.gold .stat-val  { color: #92400E; }
+[data-theme="light"] .stat-box.green .stat-val { color: #15803D; }
+[data-theme="light"] .stat-box.red .stat-val   { color: #DC2626; }
+[data-theme="light"] .stat-box.blue .stat-val  { color: #2563EB; }
+[data-theme="light"] .stat-box.gold  { border-top-color: #D97706; }
+[data-theme="light"] .stat-box.green { border-top-color: #16A34A; }
+[data-theme="light"] .stat-box.red   { border-top-color: #DC2626; }
+[data-theme="light"] .stat-box.blue  { border-top-color: #3B6FEF; }
+
 [data-theme="light"] .btn-ghost:hover {
   border-color: rgba(0,0,0,.28);
   color: #0D0D0D;
   background: rgba(0,0,0,.05);
-}
-[data-theme="light"] .card:hover {
-  border-color: rgba(0,0,0,.18);
-  box-shadow: 0 6px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.07);
-  transform: translateY(-1px);
 }
 #root { position: relative; z-index: 1; }
 

@@ -42,20 +42,20 @@ export const darkTokens: ThemeTokens = {
 
 export const lightTokens: ThemeTokens = {
   isDark:      false,
-  bg:          '#F8FAFC',
-  bgRaised:    '#FFFFFF',
-  card:        '#FFFFFF',
+  bg:          '#F2EFE9',           // warm off-white — less cold than #F8FAFC
+  bgRaised:    '#FAFAF7',           // slightly warmer white for bars/footers
+  card:        '#FFFFFF',           // pure white cards — clear lift off bg
   text:        '#0F172A',
-  textSub:     '#334155',
+  textSub:     '#1E293B',           // slightly darker for better contrast
   textMuted:   '#64748B',
   textDim:     '#94A3B8',
   textFaint:   '#CBD5E1',
-  border:      'rgba(0,0,0,.07)',
-  border2:     'rgba(0,0,0,.13)',
-  divider:     'rgba(0,0,0,.05)',
-  tagBg:       'rgba(0,0,0,.04)',
-  inputBorder: 'rgba(0,0,0,.14)',
-  surface:     'rgba(255,255,255,.97)',
-  cardShadow:  '0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06)',
+  border:      'rgba(0,0,0,.10)',   // slightly stronger so cards have edges
+  border2:     'rgba(0,0,0,.17)',
+  divider:     'rgba(0,0,0,.06)',
+  tagBg:       'rgba(0,0,0,.05)',
+  inputBorder: 'rgba(0,0,0,.15)',
+  surface:     'rgba(255,255,255,.98)',
+  cardShadow:  '0 1px 4px rgba(0,0,0,.08), 0 6px 20px rgba(0,0,0,.07)',
   accent:      '#3B6FEF',
 }
