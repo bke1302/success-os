@@ -72,18 +72,24 @@ export interface Task {
   createdAt:    string
 }
 
+export interface HabitChallenge {
+  habitId:   string
+  startDate: string   // YYYY-MM-DD
+}
+
 export interface AppState {
-  entries:        DayEntry[]
-  streak:         number
-  totalDays:      number
-  currentView:    'home' | 'prime' | 'actions' | 'inspire' | 'tasks' | 'wins' | 'fear' | 'weekly' | 'profile' | 'focus'
-  burnTheBoats?:  BurnTheBoats
-  fearEntries?:   FearEntry[]
-  weeklyPlans?:   WeeklyPlan[]
+  entries:         DayEntry[]
+  streak:          number
+  totalDays:       number
+  currentView:     'home' | 'prime' | 'actions' | 'inspire' | 'tasks' | 'wins' | 'fear' | 'weekly' | 'profile' | 'focus' | 'challenge'
+  burnTheBoats?:   BurnTheBoats
+  fearEntries?:    FearEntry[]
+  weeklyPlans?:    WeeklyPlan[]
   incantationB64?: string
-  userName?:      string
-  userGoals?:     UserGoal[]
-  tasks?:         Task[]
+  userName?:       string
+  userGoals?:      UserGoal[]
+  tasks?:          Task[]
+  habitChallenge?: HabitChallenge
 }
 
 export type DayPhase = 'morning' | 'day' | 'evening'

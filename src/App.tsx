@@ -16,11 +16,12 @@ import { BottomNav }            from './components/BottomNav'
 import { BurnTheBoats }         from './components/BurnTheBoats'
 import { EnergyCheckinOverlay } from './components/EnergyCheckinOverlay'
 import { OnboardingScreen }     from './screens/OnboardingScreen'
-import { ProfileScreen }        from './screens/ProfileScreen'
-import { SplashScreen }         from './screens/SplashScreen'
-import { CompletionScreen }     from './screens/CompletionScreen'
-import { FocusScreen }          from './screens/FocusScreen'
-import { MilestoneScreen }      from './screens/MilestoneScreen'
+import { ProfileScreen }         from './screens/ProfileScreen'
+import { SplashScreen }          from './screens/SplashScreen'
+import { CompletionScreen }      from './screens/CompletionScreen'
+import { FocusScreen }           from './screens/FocusScreen'
+import { MilestoneScreen }       from './screens/MilestoneScreen'
+import { HabitChallengeScreen }  from './screens/HabitChallengeScreen'
 import type { EnergyCheckin, AppState }   from './types'
 import { ThemeContext }          from './contexts/ThemeContext'
 import { darkTokens, lightTokens } from './theme'
@@ -36,6 +37,8 @@ export default function App() {
     saveWeeklyPlan, saveIncantation,
     setView, setUserName, saveUserGoals,
     saveTask, deleteTask, toggleTask,
+    saveRedemption,
+    saveHabitChallenge, clearHabitChallenge,
   } = useAppData()
 
   const [theme,           setTheme]           = useState<'dark'|'light'>(() => (localStorage.getItem('app_theme') as 'dark'|'light') ?? 'dark')
@@ -208,6 +211,7 @@ export default function App() {
             {state.currentView === 'fear' && 'פחד'}
             {state.currentView === 'weekly' && 'חדר מלחמה'}
             {state.currentView === 'profile' && 'פרופיל'}
+            {state.currentView === 'challenge' && 'אתגר הרגל'}
           </span>
         </div>
         </div>
@@ -224,8 +228,10 @@ export default function App() {
             userName={state.userName ?? ''}
             entries={state.entries}
             tasks={state.tasks ?? []}
+            challenge={state.habitChallenge}
             onStart={() => setView('prime')}
             onNavigate={(v) => { setView(v as AppState['currentView']); setForceEvening(false) }}
+            onRedemption={saveRedemption}
           />
         )}
 
@@ -241,6 +247,7 @@ export default function App() {
                 incantationB64={state.incantationB64}
                 onSaveIncantation={saveIncantation}
                 userGoals={state.userGoals ?? []}
+                entries={state.entries}
                 onGoToProfile={() => setView('profile')}
               />
             )}
@@ -316,6 +323,15 @@ export default function App() {
             entries={state.entries}
             plans={state.weeklyPlans ?? []}
             onSave={saveWeeklyPlan}
+          />
+        )}
+
+        {state.currentView === 'challenge' && (
+          <HabitChallengeScreen
+            challenge={state.habitChallenge}
+            entries={state.entries}
+            onSave={saveHabitChallenge}
+            onClear={clearHabitChallenge}
           />
         )}
 

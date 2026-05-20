@@ -125,6 +125,44 @@ export function generateCoachReport(entries: DayEntry[], streak: number): CoachR
   return { headline, insights: insights.slice(0, 4), challenge, tone }
 }
 
+// ── Daily Brief ──────────────────────────────────────────────────────────────
+
+export interface DailyBrief {
+  headline: string
+  body:     string
+  tone:     'fire' | 'gold' | 'green'
+}
+
+export function generateDailyBrief(entries: DayEntry[], streak: number): DailyBrief {
+  const withEvening = entries.filter(e => e.evening)
+  const last7 = withEvening.slice(-7)
+
+  if (withEvening.length < 2) {
+    return {
+      headline: 'מוכן ליום חדש',
+      body: 'כל יום שאתה מתחיל בכוונה — אתה מרחיק את הממוצע. יאללה.',
+      tone: 'gold',
+    }
+  }
+
+  const recentAvg = avg(last7.map(e => e.evening!.score))
+  const tone: 'fire' | 'gold' | 'green' = recentAvg >= 8 ? 'green' : recentAvg <= 5 ? 'fire' : 'gold'
+  const avgHabits = last7.length ? Math.round(avg(last7.map(e => (e.habits?.length ?? 0)))) : 0
+
+  const headlines = {
+    fire:  ['היום שובר את הדפוס', 'הזמן לשנות כיוון', 'אתה חזק יותר מהתוצאה'],
+    gold:  ['אתה על המסלול', 'הממוצע שלך עולה', 'עוד יום, עוד צעד קדימה'],
+    green: ['אתה בשיא — אל תפסיק', 'MOMENTUM בנוי', 'אלוף בפעולה'],
+  }
+  const headline = headlines[tone][Math.floor(Date.now() / 86_400_000) % 3]
+
+  const parts: string[] = [`ממוצע 7 ימים: ${recentAvg.toFixed(1)}/10`]
+  if (avgHabits > 0) parts.push(`${avgHabits} פעולות ממוצע ביום`)
+  if (streak >= 3)   parts.push(`${streak} ימים ברצף — שמור על זה`)
+
+  return { headline, body: parts.join(' · '), tone }
+}
+
 export function getLastMondayDate(): string {
   const d = new Date()
   const day = d.getDay() // 0=Sun

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type {
   AppState, DayEntry, MorningEntry, EveningEntry,
-  BurnTheBoats, FearEntry, WeeklyPlan, EnergyCheckin, UserGoal, Task,
+  BurnTheBoats, FearEntry, WeeklyPlan, EnergyCheckin, UserGoal, Task, HabitChallenge,
 } from '../types'
 
 const KEY = 'prime_v1'
@@ -154,6 +154,29 @@ export function useAppData() {
     persist({ ...state, tasks })
   }
 
+  const saveRedemption = () => {
+    const d = new Date(); d.setDate(d.getDate() - 1)
+    const yesterday = d.toISOString().slice(0, 10)
+    const eveningData: EveningEntry = {
+      given: 'שחזור יום', win: 'סיימתי את היום', lesson: '',
+      commitmentDone: true, score: 7,
+      completedAt: new Date().toISOString(),
+    }
+    const idx = state.entries.findIndex(e => e.date === yesterday)
+    const entries = idx === -1
+      ? [...state.entries, { date: yesterday, evening: eveningData }]
+      : state.entries.map((e, i) => i === idx ? { ...e, evening: eveningData } : e)
+    const streak    = computeStreak(entries)
+    const totalDays = entries.filter(e => e.evening).length
+    persist({ ...state, entries, streak, totalDays })
+  }
+
+  const saveHabitChallenge = (challenge: HabitChallenge) =>
+    persist({ ...state, habitChallenge: challenge })
+
+  const clearHabitChallenge = () =>
+    persist({ ...state, habitChallenge: undefined })
+
   const clearAll = () => {
     localStorage.removeItem(KEY)
     persist(initialState())
@@ -168,6 +191,8 @@ export function useAppData() {
     saveIncantation,
     setView, setUserName, saveUserGoals,
     saveTask, deleteTask, toggleTask,
+    saveRedemption,
+    saveHabitChallenge, clearHabitChallenge,
     clearAll,
   }
 }

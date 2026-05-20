@@ -1,18 +1,20 @@
-import { Play, Check } from 'lucide-react'
-import type { DayEntry, Task } from '../types'
+import { Play, Check, Zap } from 'lucide-react'
+import type { DayEntry, Task, HabitChallenge } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 import { getTodayFocusSessions } from './FocusScreen'
 import { HABITS, QUOTES } from '../constants'
 
 interface Props {
-  dayCount:   number
-  streak:     number
-  today?:     DayEntry
-  userName:   string
-  entries:    DayEntry[]
-  tasks:      Task[]
-  onStart:    () => void
-  onNavigate: (v: string) => void
+  dayCount:        number
+  streak:          number
+  today?:          DayEntry
+  userName:        string
+  entries:         DayEntry[]
+  tasks:           Task[]
+  challenge?:      HabitChallenge
+  onStart:         () => void
+  onNavigate:      (v: string) => void
+  onRedemption?:   () => void
 }
 
 function getGreeting(hour: number): { text: string; sub: string } {
@@ -21,10 +23,15 @@ function getGreeting(hour: number): { text: string; sub: string } {
   return               { text: 'ערב טוב',       sub: new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' }) }
 }
 
-export function HomeScreen({ streak, today, userName, entries, tasks, onStart, onNavigate }: Props) {
+export function HomeScreen({ streak, today, userName, entries, tasks, challenge, onStart, onNavigate, onRedemption }: Props) {
   const T = useTheme()
   const hour = new Date().getHours()
   const { text: greetText, sub: greetSub } = getGreeting(hour)
+
+  // Streak recovery: yesterday had morning but no evening
+  const yesterday = (() => { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().slice(0, 10) })()
+  const yesterdayEntry = entries.find(e => e.date === yesterday)
+  const showRecovery   = !!(yesterdayEntry?.morning && !yesterdayEntry?.evening)
 
   // Stats
   const completedHabits = today?.habits ?? []
@@ -161,6 +168,50 @@ export function HomeScreen({ streak, today, userName, entries, tasks, onStart, o
           </div>
         </div>
 
+        {/* ── Streak Recovery Banner ── */}
+        {showRecovery && onRedemption && (
+          <div style={{ padding: '0 16px 14px' }}>
+            <button onClick={onRedemption} style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+              padding: '16px 18px', textAlign: 'right',
+              background: 'rgba(251,191,36,.07)', border: '1px solid rgba(251,191,36,.25)',
+              borderRadius: 16, cursor: 'pointer', direction: 'rtl',
+              transition: 'background .15s',
+            }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: 'rgba(251,191,36,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Zap style={{ width: 16, height: 16, color: '#FBBF24' }} fill="#FBBF24" strokeWidth={0} />
+              </div>
+              <div dir="rtl" style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 800, color: '#FBBF24', margin: 0, letterSpacing: '-.3px' }}>שחזר את אתמול</p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.textMuted, margin: '2px 0 0' }}>שכחת לסיים אתמול? לחץ לשחזור הסטריק</p>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {/* ── Habit Challenge Card ── */}
+        {challenge && (
+          <div style={{ padding: '0 16px 14px' }}>
+            <button onClick={() => onNavigate('challenge')} style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+              padding: '16px 18px', textAlign: 'right',
+              background: 'rgba(74,222,128,.06)', border: '1px solid rgba(74,222,128,.2)',
+              borderRadius: 16, cursor: 'pointer', direction: 'rtl',
+              transition: 'background .15s',
+            }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: 'rgba(74,222,128,.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 16 }}>🏆</span>
+              </div>
+              <div dir="rtl" style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 800, color: '#4ADE80', margin: 0, letterSpacing: '-.3px' }}>אתגר 30 יום</p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.textMuted, margin: '2px 0 0' }}>
+                  {HABITS.find(h => h.id === challenge.habitId)?.title} · {entries.filter(e => e.date >= challenge.startDate && e.habits?.includes(challenge.habitId)).length}/30 ימים
+                </p>
+              </div>
+            </button>
+          </div>
+        )}
+
         {/* ── Task / Habit preview ── */}
         <div style={{ padding: '0 16px 14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, direction: 'rtl' }}>
@@ -253,6 +304,27 @@ export function HomeScreen({ streak, today, userName, entries, tasks, onStart, o
             </div>
           </button>
         </div>
+
+        {/* ── Habit Challenge entry (if no active challenge) ── */}
+        {!challenge && (
+          <div style={{ padding: '0 16px 14px' }}>
+            <button onClick={() => onNavigate('challenge')} style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+              padding: '14px 18px',
+              background: 'rgba(74,222,128,.05)', border: '1px dashed rgba(74,222,128,.2)',
+              borderRadius: 16, cursor: 'pointer', direction: 'rtl',
+              transition: 'background .15s',
+            }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: 'rgba(74,222,128,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 16 }}>🎯</span>
+              </div>
+              <div dir="rtl">
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700, color: T.text, margin: 0 }}>התחל אתגר 30 יום</p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: T.textMuted, margin: '2px 0 0' }}>בחר הרגל ובנה זהות חדשה</p>
+              </div>
+            </button>
+          </div>
+        )}
 
         {/* ── Daily Quote ── */}
         <div style={{ padding: '4px 24px 8px' }}>
