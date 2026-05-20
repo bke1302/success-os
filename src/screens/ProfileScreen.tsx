@@ -1,15 +1,19 @@
 import { useState } from 'react'
-import { Plus, Trash2, CheckCircle } from 'lucide-react'
+import { Plus, Trash2, CheckCircle, Bell, BellOff, CloudOff, Copy, Check } from 'lucide-react'
 import type { UserGoal } from '../types'
 import { playCheck, playComplete } from '../utils/sounds'
 import { useTheme } from '../contexts/ThemeContext'
+import { getReminderTime, setReminderTime, requestAndScheduleReminder } from '../utils/reminder'
+import { SUPABASE_READY, pushData, pullData } from '../utils/supabase'
 
 interface Props {
-  userName:      string
-  goals:         UserGoal[]
-  onSaveGoals:   (goals: UserGoal[]) => void
-  theme?:        'dark' | 'light'
+  userName:       string
+  goals:          UserGoal[]
+  onSaveGoals:    (goals: UserGoal[]) => void
+  theme?:         'dark' | 'light'
   onToggleTheme?: () => void
+  appData?:       object
+  onImportData?:  (data: object) => void
 }
 
 const CATEGORIES: UserGoal['category'][] = ['עסקי', 'כספי', 'בריאות', 'קשרים', 'אישי']
@@ -98,10 +102,62 @@ function GoalRow({ goal, onDelete, onUpdate }: {
   )
 }
 
-export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleTheme }: Props) {
+export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleTheme, appData, onImportData }: Props) {
   const T = useTheme()
   const [localGoals, setLocalGoals] = useState<UserGoal[]>(goals)
   const [saved, setSaved] = useState(false)
+
+  // ── Notifications ─────────────────────────────────────────────────────────
+  const [notifTime,    setNotifTimeState] = useState(getReminderTime)
+  const [notifStatus,  setNotifStatus]    = useState<'idle'|'scheduled'|'denied'|'unsupported'>('idle')
+  const notifGranted = typeof Notification !== 'undefined' && Notification.permission === 'granted'
+
+  const handleScheduleNotif = async () => {
+    const result = await requestAndScheduleReminder()
+    setNotifStatus(result)
+  }
+
+  // ── Supabase Sync ─────────────────────────────────────────────────────────
+  const SYNC_KEY_STORE = 'success_sync_code'
+  const [syncCode,    setSyncCode]    = useState(() => {
+    const existing = localStorage.getItem(SYNC_KEY_STORE)
+    if (existing) return existing
+    const code = Math.random().toString(36).slice(2, 8).toUpperCase()
+    localStorage.setItem(SYNC_KEY_STORE, code)
+    return code
+  })
+  const [syncStatus,  setSyncStatus]  = useState<'idle'|'pushing'|'pulling'|'ok'|'error'>('idle')
+  const [codeCopied,  setCodeCopied]  = useState(false)
+  const [importCode,  setImportCode]  = useState('')
+
+  const handlePush = async () => {
+    if (!appData) return
+    setSyncStatus('pushing')
+    const ok = await pushData(syncCode, appData)
+    setSyncStatus(ok ? 'ok' : 'error')
+    setTimeout(() => setSyncStatus('idle'), 3000)
+  }
+
+  const handlePull = async () => {
+    const code = importCode.trim().toUpperCase() || syncCode
+    setSyncStatus('pulling')
+    const data = await pullData(code)
+    if (data && onImportData) {
+      onImportData(data)
+      setSyncStatus('ok')
+      localStorage.setItem(SYNC_KEY_STORE, code)
+      setSyncCode(code)
+    } else {
+      setSyncStatus('error')
+    }
+    setTimeout(() => setSyncStatus('idle'), 3000)
+  }
+
+  const copyCode = () => {
+    navigator.clipboard.writeText(syncCode)
+    setCodeCopied(true)
+    setTimeout(() => setCodeCopied(false), 2000)
+  }
 
   const addGoal = () => {
     if (localGoals.length >= 5) return
@@ -215,13 +271,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
               <div style={{ marginBottom: 16 }}>
                 <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>מראה</p>
                 <button onClick={onToggleTheme} dir="rtl"
-                  style={{
-                    width: '100%', padding: '14px 16px',
-                    background: T.card, border: `1px solid ${T.border}`,
-                    borderRadius: 16, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    transition: 'border-color .2s',
-                  }}>
+                  style={{ width: '100%', padding: '14px 16px', background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'border-color .2s' }}>
                   <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 600, color: T.text }}>
                     {theme === 'dark' ? '🌙 מצב כהה' : '☀️ מצב בהיר'}
                   </span>
@@ -229,6 +279,75 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
                     {theme === 'dark' ? 'עבור לבהיר' : 'עבור לכהה'}
                   </span>
                 </button>
+              </div>
+            )}
+
+            {/* Divider */}
+            <div style={{ height: 1, background: T.divider, marginBottom: 20 }} />
+
+            {/* Notifications */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>תזכורת יומית</p>
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '14px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, direction: 'rtl' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {notifGranted || notifStatus === 'scheduled'
+                      ? <Bell style={{ width: 14, height: 14, color: '#4ADE80' }} strokeWidth={2} />
+                      : <BellOff style={{ width: 14, height: 14, color: T.textMuted }} strokeWidth={2} />}
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: T.text }}>
+                      {notifGranted || notifStatus === 'scheduled' ? 'תזכורת פעילה' : 'הפעל תזכורת'}
+                    </span>
+                  </div>
+                  <input type="time" value={notifTime}
+                    onChange={e => { setNotifTimeState(e.target.value); setReminderTime(e.target.value) }}
+                    style={{ background: T.tagBg, border: `1px solid ${T.border2}`, color: T.text, padding: '5px 10px', fontFamily: 'Barlow Condensed, sans-serif', fontSize: 13, fontWeight: 700, outline: 'none', borderRadius: 9, colorScheme: T.isDark ? 'dark' : 'light' }} />
+                </div>
+                <button onClick={handleScheduleNotif}
+                  style={{ width: '100%', padding: '9px', background: notifStatus === 'scheduled' ? 'rgba(74,222,128,.1)' : T.tagBg, border: `1px solid ${notifStatus === 'scheduled' ? 'rgba(74,222,128,.3)' : T.border2}`, borderRadius: 10, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: notifStatus === 'scheduled' ? '#4ADE80' : T.textSub, transition: 'all .2s' }} dir="rtl">
+                  {notifStatus === 'scheduled' ? '✓ נקבעה תזכורת' : notifStatus === 'denied' ? 'הרשאה נדחתה — הפעל בדפדפן' : notifStatus === 'unsupported' ? 'לא נתמך בדפדפן זה' : 'קבע תזכורת'}
+                </button>
+              </div>
+            </div>
+
+            {/* Supabase Sync */}
+            {SUPABASE_READY ? (
+              <div style={{ marginBottom: 16 }}>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>סנכרון בין מכשירים</p>
+                <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '14px 16px' }}>
+                  {/* Sync code display */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, direction: 'rtl' }}>
+                    <div>
+                      <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 4 }}>קוד הסנכרון שלך</p>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, fontWeight: 900, color: '#5B8CFF', letterSpacing: '3px', margin: 0 }}>{syncCode}</p>
+                    </div>
+                    <button onClick={copyCode} style={{ background: T.tagBg, border: `1px solid ${T.border2}`, borderRadius: 9, width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                      {codeCopied ? <Check style={{ width: 13, height: 13, color: '#4ADE80' }} /> : <Copy style={{ width: 13, height: 13, color: T.textMuted }} />}
+                    </button>
+                  </div>
+                  {/* Push */}
+                  <button onClick={handlePush} disabled={syncStatus === 'pushing'}
+                    style={{ width: '100%', padding: '9px', background: 'rgba(91,140,255,.1)', border: '1px solid rgba(91,140,255,.2)', borderRadius: 10, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: '#5B8CFF', marginBottom: 8, transition: 'all .2s' }} dir="rtl">
+                    {syncStatus === 'pushing' ? 'שומר לענן…' : syncStatus === 'ok' ? '✓ נשמר בענן' : syncStatus === 'error' ? 'שגיאה — נסה שוב' : '↑ שמור לענן'}
+                  </button>
+                  {/* Pull */}
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input value={importCode} onChange={e => setImportCode(e.target.value.toUpperCase())}
+                      placeholder="קוד ממכשיר אחר" dir="rtl" maxLength={6}
+                      style={{ flex: 1, background: T.tagBg, border: `1px solid ${T.border2}`, borderRadius: 9, padding: '8px 10px', fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: T.text, outline: 'none', letterSpacing: '2px', textTransform: 'uppercase' }} />
+                    <button onClick={handlePull} disabled={syncStatus === 'pulling'}
+                      style={{ padding: '8px 14px', background: T.tagBg, border: `1px solid ${T.border2}`, borderRadius: 9, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: T.textSub, whiteSpace: 'nowrap' }}>
+                      {syncStatus === 'pulling' ? '…' : '↓ טען'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRight: '3px solid rgba(91,140,255,.3)', borderRadius: 16, padding: '14px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, direction: 'rtl' }}>
+                <CloudOff style={{ width: 16, height: 16, color: T.textMuted, flexShrink: 0 }} strokeWidth={1.5} />
+                <div>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: T.textSub, margin: 0 }}>סנכרון ענן לא מופעל</p>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: T.textMuted, margin: '3px 0 0', lineHeight: 1.5 }}>הוסף VITE_SUPABASE_URL ו-VITE_SUPABASE_ANON_KEY ל-.env להפעלה</p>
+                </div>
               </div>
             )}
 

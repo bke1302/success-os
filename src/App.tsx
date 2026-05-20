@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAppData, getDayPhase } from './hooks/useAppData'
+import { requestAndScheduleReminder } from './utils/reminder'
 import { HABITS } from './constants'
 import { getTodayRequiredHabitIds } from './data/program'
 import { HomeScreen }           from './screens/HomeScreen'
@@ -52,6 +53,13 @@ export default function App() {
       setTimeout(() => setShowMilestone(true), 800)
     }
   }, [state.streak]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Schedule notification on app load if already granted
+  useEffect(() => {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      requestAndScheduleReminder()
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark'
@@ -318,6 +326,14 @@ export default function App() {
             onSaveGoals={saveUserGoals}
             theme={theme}
             onToggleTheme={toggleTheme}
+            appData={state}
+            onImportData={data => {
+              try {
+                const imported = data as AppState
+                localStorage.setItem('prime_v1', JSON.stringify(imported))
+                window.location.reload()
+              } catch { /* ignore */ }
+            }}
           />
         )}
       </div>

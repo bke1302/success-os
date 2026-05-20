@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Settings, Share2, ChevronDown, ChevronUp } from 'lucide-react'
 import { ScoreTrendChart } from '../components/ScoreTrendChart'
 import { HeatmapChart } from '../components/HeatmapChart'
+import { HabitStreakGrid } from '../components/HabitStreakGrid'
 import { EnergySlider } from '../components/EnergySlider'
 import { getReminderTime, setReminderTime } from '../utils/reminder'
 import { generateCoachReport } from '../utils/aiCoach'
@@ -174,6 +175,9 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
               <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '2rem', fontWeight: 900, color: '#FBBF24', lineHeight: 1 }}>{peakDays}</span>
             </div>
           )}
+
+          {/* Habit streak grid */}
+          <HabitStreakGrid entries={entries} />
 
           {/* Charts */}
           {withEvening.length >= 2 && (
