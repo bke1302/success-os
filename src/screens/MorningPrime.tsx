@@ -333,7 +333,8 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
       </div>
 
       {/* ── CTA ── */}
-      <div style={{ flexShrink: 0, padding: '8px 16px', paddingBottom: 'max(8px, env(safe-area-inset-bottom))', background: T.bg, borderTop: `1px solid ${T.border}` }}>
+      <div style={{ flexShrink: 0, paddingBottom: 'max(8px, env(safe-area-inset-bottom))', background: T.bg, borderTop: `1px solid ${T.border}` }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', padding: '8px 16px' }}>
         {step < 4 ? (
           <button onClick={next} dir="rtl" className="btn-gold w-full"
             style={{ padding: '10px 16px', fontSize: 13, fontFamily: 'Inter, sans-serif', fontWeight: 800, letterSpacing: '-.1px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
@@ -347,6 +348,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
             <ChevronRight style={{ width: 14, height: 14 }} strokeWidth={2.5} />
           </button>
         )}
+        </div>
       </div>
     </div>
   )

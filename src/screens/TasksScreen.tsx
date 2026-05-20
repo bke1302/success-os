@@ -132,7 +132,8 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
 
       {/* ── Quick add ── */}
-      <div style={{ flexShrink: 0, padding: '14px 16px 6px', background: T.bg }}>
+      <div style={{ flexShrink: 0, background: T.bg }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', padding: '14px 16px 6px' }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '10px 10px 10px 14px',
@@ -162,6 +163,7 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
           }}>
             <ArrowUp style={{ width: 14, height: 14, color: draft.trim() ? '#fff' : T.textDim }} strokeWidth={2.5} />
           </button>
+        </div>
         </div>
       </div>
 

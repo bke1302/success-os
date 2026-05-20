@@ -170,12 +170,11 @@ export default function App() {
       {canGoBack && (
         <div style={{
           flexShrink: 0,
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '8px 16px',
           background: tokens.bg,
           borderBottom: `1px solid ${tokens.border}`,
           transition: 'background .3s',
         }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px' }}>
           <button
             onClick={() => { setView('home'); setForceEvening(false) }}
             style={{
@@ -202,6 +201,7 @@ export default function App() {
             {state.currentView === 'weekly' && 'חדר מלחמה'}
             {state.currentView === 'profile' && 'פרופיל'}
           </span>
+        </div>
         </div>
       )}
 
