@@ -15,11 +15,11 @@ interface Props {
 const CATEGORIES: UserGoal['category'][] = ['עסקי', 'כספי', 'בריאות', 'קשרים', 'אישי']
 
 const CAT_COLORS: Record<UserGoal['category'], string> = {
-  'עסקי':   '#FFD60A',
-  'כספי':   '#30D158',
-  'בריאות': '#FF375F',
-  'קשרים':  '#BF5AF2',
-  'אישי':   '#FF9F0A',
+  'עסקי':   '#FBBF24',
+  'כספי':   '#4ADE80',
+  'בריאות': '#FF5C5C',
+  'קשרים':  '#A78BFA',
+  'אישי':   '#FB923C',
 }
 
 const GOAL_PLACEHOLDERS = [
@@ -31,9 +31,7 @@ const GOAL_PLACEHOLDERS = [
 ]
 
 function GoalRow({ goal, onDelete, onUpdate }: {
-  goal: UserGoal
-  onDelete: () => void
-  onUpdate: (g: UserGoal) => void
+  goal: UserGoal; onDelete: () => void; onUpdate: (g: UserGoal) => void
 }) {
   const T = useTheme()
   const color = CAT_COLORS[goal.category]
@@ -56,7 +54,7 @@ function GoalRow({ goal, onDelete, onUpdate }: {
           dir="rtl"
           style={{
             width: '100%', background: 'transparent', border: 'none', outline: 'none',
-            fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 15, fontWeight: 700,
+            fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700,
             color: T.text, padding: 0,
           }}
         />
@@ -88,15 +86,12 @@ function GoalRow({ goal, onDelete, onUpdate }: {
               letterSpacing: '1px', padding: '3px 0', colorScheme: 'dark',
             }}
           />
-          {goal.deadline && (
-            <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, color: 'rgba(255,255,255,.25)', marginRight: 8 }}>
-              יעד לתאריך
-            </span>
-          )}
         </div>
       </div>
       <button onClick={onDelete}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'rgba(255,55,95,.4)', flexShrink: 0 }}>
+        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'rgba(255,92,92,.3)', flexShrink: 0, transition: 'color .15s' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#FF5C5C' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,92,92,.3)' }}>
         <Trash2 style={{ width: 14, height: 14 }} strokeWidth={1.5} />
       </button>
     </div>
@@ -111,12 +106,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
   const addGoal = () => {
     if (localGoals.length >= 5) return
     playCheck()
-    setLocalGoals(g => [...g, {
-      id: `goal_${Date.now()}`,
-      title: '',
-      category: 'עסקי',
-      createdAt: new Date().toISOString(),
-    }])
+    setLocalGoals(g => [...g, { id: `goal_${Date.now()}`, title: '', category: 'עסקי', createdAt: new Date().toISOString() }])
     setSaved(false)
   }
 
@@ -138,152 +128,130 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
   }
 
   const filledCount = localGoals.filter(g => g.title.trim().length > 0).length
-  const needsMore   = filledCount < 2
 
   return (
-    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
 
-      {/* Header */}
-      <div className="shrink-0" style={{ padding: '24px 20px 20px', borderBottom: `1px solid ${T.border}` }}>
-        <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.6)' : '#8B6800', textTransform: 'uppercase', marginBottom: 6 }}>פרופיל</p>
-        <h1 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 28, fontWeight: 900, color: T.text }} dir="rtl">
-          {userName}
-        </h1>
-        <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.textMuted, marginTop: 4 }} dir="rtl">
-          הגדר את היעדים שלך — ה-PRIME יעזור לך לרדוף אחריהם כל יום
-        </p>
-      </div>
+      {/* ── Scrollable ── */}
+      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 0 100px' }}>
 
-      <div className="flex-1 overflow-y-auto" style={{ padding: '16px 16px 68px' }}>
-
-        {/* Guidance banner */}
-        {needsMore && (
-          <div className="animate-slide-up" style={{
-            padding: '14px 16px', marginBottom: 20,
-            background: 'rgba(255,214,10,.07)', border: '1px solid rgba(255,214,10,.2)',
-            borderRadius: 14,
-          }}>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#C8A800', textTransform: 'uppercase', marginBottom: 6 }}>
-              {filledCount === 0 ? 'אין יעדים מוגדרים' : 'יעד אחד — תוסיף עוד'}
-            </p>
-            <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.isDark ? 'rgba(255,214,10,.7)' : 'rgba(130,100,0,.85)', lineHeight: 1.6 }} dir="rtl">
-              {filledCount === 0
-                ? 'ללא יעדים ברורים, הפעולות שלך מפוזרות. הגדר לפחות 2 יעדים שמניעים אותך.'
-                : 'יעד אחד זה טוב. שניים זה מערכת. הוסף עוד יעד אחד לפחות.'}
-            </p>
-          </div>
-        )}
-
-        {/* Goals list */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase' }}>
-              היעדים שלי ({filledCount}/5)
-            </p>
-            {filledCount >= 2 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <CheckCircle style={{ width: 12, height: 12, color: '#30D158' }} />
-                <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: '#30D158', letterSpacing: '1px' }}>
-                  מוכן לפריים
-                </span>
+          {/* Hero */}
+          <div style={{ padding: '16px 16px 14px' }}>
+            <div className="today-hero" style={{
+              background: T.isDark
+                ? 'linear-gradient(135deg, rgba(167,139,250,.85) 0%, rgba(91,140,255,.65) 55%, rgba(74,222,128,.15) 100%), linear-gradient(180deg, #111318 0%, #1a1c24 100%)'
+                : 'linear-gradient(135deg, rgba(139,92,246,.8) 0%, rgba(59,111,239,.7) 55%, rgba(16,185,129,.2) 100%), linear-gradient(180deg, #ede9fe 0%, #dde5ff 100%)',
+              border: '1px solid rgba(167,139,250,.22)',
+              boxShadow: '0 8px 32px rgba(167,139,250,.12)',
+            }}>
+              <div style={{ position: 'absolute', right: 14, top: -4, fontSize: '7rem', opacity: .04, lineHeight: 1, color: '#fff', pointerEvents: 'none', userSelect: 'none' }}>⚙</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, position: 'relative', zIndex: 1 }}>
+                <div dir="rtl">
+                  <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '3px', color: 'rgba(255,255,255,.42)', textTransform: 'uppercase', margin: 0, marginBottom: 2 }}>SETTINGS</p>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,.6)', margin: 0 }}>פרופיל ויעדים</p>
+                </div>
+                {filledCount > 0 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 999, background: 'rgba(74,222,128,.15)', border: '1px solid rgba(74,222,128,.3)' }}>
+                    <CheckCircle style={{ width: 10, height: 10, color: '#4ADE80' }} strokeWidth={2.5} />
+                    <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: '#4ADE80', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{filledCount} יעדים</span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-
-          {localGoals.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '32px 0', opacity: 0.4 }}>
-              <p style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 16, fontWeight: 700, color: '#f2f2f7' }} dir="rtl">
-                לחץ + כדי להוסיף יעד ראשון
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '2.8rem', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-2px', margin: 0, position: 'relative', zIndex: 1, textShadow: '0 2px 12px rgba(0,0,0,.3)' }} dir="rtl">
+                {userName}
               </p>
             </div>
-          ) : (
-            localGoals.map((goal) => (
-              <GoalRow
-                key={goal.id}
-                goal={goal}
-                onDelete={() => deleteGoal(goal.id)}
-                onUpdate={updated => updateGoal(goal.id, updated)}
-              />
-            ))
-          )}
+          </div>
 
-          {localGoals.length < 5 && (
-            <button onClick={addGoal}
-              style={{
-                width: '100%', padding: '14px',
-                background: 'transparent', border: `1px dashed ${T.border2}`,
-                borderRadius: 14, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                color: T.textDim,
-                fontFamily: 'Heebo, sans-serif', fontSize: 13, fontWeight: 600,
-                transition: 'border-color .2s, color .2s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,214,10,.4)'; e.currentTarget.style.color = T.isDark ? '#FFD60A' : '#8B6800' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = T.border2; e.currentTarget.style.color = T.textDim }}
-              dir="rtl">
-              <Plus style={{ width: 16, height: 16 }} strokeWidth={2} />
-              הוסף יעד {localGoals.length === 0 ? 'ראשון' : ''}
-            </button>
-          )}
-        </div>
+          <div style={{ padding: '0 16px' }}>
 
-        {/* Theme toggle */}
-        {onToggleTheme && (
-          <div style={{ marginTop: 8, marginBottom: 20 }}>
+            {/* Goals section */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase' }}>היעדים שלי ({filledCount}/5)</p>
+                {filledCount >= 2 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <CheckCircle style={{ width: 11, height: 11, color: '#4ADE80' }} />
+                    <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: '#4ADE80', letterSpacing: '1px' }}>מוכן לפריים</span>
+                  </div>
+                )}
+              </div>
+
+              {localGoals.length === 0 && (
+                <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRight: '3px solid rgba(251,191,36,.35)', borderRadius: 18, padding: '16px 18px', marginBottom: 12 }}>
+                  <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#FBBF24', textTransform: 'uppercase', marginBottom: 10 }}>דוגמאות ליעדים</p>
+                  {GOAL_PLACEHOLDERS.map((p, i) => (
+                    <p key={i} style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginBottom: 4 }} dir="rtl">· {p}</p>
+                  ))}
+                </div>
+              )}
+
+              {localGoals.map(goal => (
+                <GoalRow key={goal.id} goal={goal} onDelete={() => deleteGoal(goal.id)} onUpdate={u => updateGoal(goal.id, u)} />
+              ))}
+
+              {localGoals.length < 5 && (
+                <button onClick={addGoal} dir="rtl"
+                  style={{
+                    width: '100%', padding: '13px',
+                    background: 'transparent', border: `1px dashed ${T.border2}`,
+                    borderRadius: 14, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    color: T.textDim, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600,
+                    transition: 'all .2s',
+                  }}>
+                  <Plus style={{ width: 15, height: 15 }} strokeWidth={2} />
+                  הוסף יעד
+                </button>
+              )}
+            </div>
+
+            {/* Divider */}
             <div style={{ height: 1, background: T.divider, marginBottom: 20 }} />
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 12 }}>מראה</p>
-            <button onClick={onToggleTheme}
-              style={{
-                width: '100%', padding: '14px 18px',
-                background: T.card, border: `1px solid ${T.border}`,
-                borderRadius: 16, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                transition: 'border-color .2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,214,10,.35)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = T.border2}
-              dir="rtl">
-              <span style={{ fontFamily: 'Heebo, sans-serif', fontSize: 14, fontWeight: 600, color: T.text }}>
-                {theme === 'dark' ? 'מצב כהה 🌙' : 'מצב בהיר ☀️'}
-              </span>
-              <span style={{
-                fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700,
-                letterSpacing: '1.5px', color: T.textMuted, textTransform: 'uppercase',
-              }}>
-                {theme === 'dark' ? 'עבור לבהיר' : 'עבור לכהה'}
-              </span>
-            </button>
-          </div>
-        )}
 
-        {/* Goal examples hint */}
-        {localGoals.length === 0 && (
-          <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '16px 18px', borderRight: '3px solid rgba(255,214,10,.35)' }}>
-            <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.isDark ? 'rgba(255,214,10,.5)' : '#8B6800', textTransform: 'uppercase', marginBottom: 12 }}>
-              דוגמאות ליעדים
-            </p>
-            {GOAL_PLACEHOLDERS.map((p, i) => (
-              <p key={i} style={{ fontFamily: 'Heebo, sans-serif', fontSize: 13, color: T.textMuted, lineHeight: 1.5, marginBottom: 6 }} dir="rtl">· {p}</p>
-            ))}
+            {/* Theme toggle */}
+            {onToggleTheme && (
+              <div style={{ marginBottom: 16 }}>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>מראה</p>
+                <button onClick={onToggleTheme} dir="rtl"
+                  style={{
+                    width: '100%', padding: '14px 16px',
+                    background: T.card, border: `1px solid ${T.border}`,
+                    borderRadius: 16, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    transition: 'border-color .2s',
+                  }}>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 600, color: T.text }}>
+                    {theme === 'dark' ? '🌙 מצב כהה' : '☀️ מצב בהיר'}
+                  </span>
+                  <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', color: T.textMuted, textTransform: 'uppercase' }}>
+                    {theme === 'dark' ? 'עבור לבהיר' : 'עבור לכהה'}
+                  </span>
+                </button>
+              </div>
+            )}
+
           </div>
-        )}
+        </div>
       </div>
 
       {/* Save CTA */}
-      <div className="shrink-0" style={{ padding: '16px 20px', paddingBottom: 'max(84px, calc(68px + env(safe-area-inset-bottom)))', borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s' }}>
-        {saved ? (
-          <div style={{ padding: '18px', textAlign: 'center', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 700, fontSize: 16, color: '#30D158', background: 'rgba(48,209,88,.06)', border: '1px solid rgba(48,209,88,.2)', borderRadius: 12 }} dir="rtl">
-            היעדים נשמרו
-          </div>
-        ) : (
-          <button onClick={save} disabled={filledCount === 0}
-            className="btn-gold w-full"
-            style={{ padding: '18px', fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 16, fontWeight: 900 }}
-            dir="rtl">
-            שמור יעדים
-          </button>
-        )}
+      <div style={{ flexShrink: 0, paddingBottom: 'max(8px, env(safe-area-inset-bottom))', background: T.bg, borderTop: `1px solid ${T.border}` }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', padding: '8px 16px' }}>
+          {saved ? (
+            <div style={{ padding: '10px', textAlign: 'center', fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 13, color: '#4ADE80', background: 'rgba(74,222,128,.07)', border: '1px solid rgba(74,222,128,.2)', borderRadius: 12 }} dir="rtl">
+              ✓ היעדים נשמרו
+            </div>
+          ) : (
+            <button onClick={save} disabled={filledCount === 0} className="btn-gold w-full" dir="rtl"
+              style={{ padding: '10px 16px', fontSize: 13, fontFamily: 'Inter, sans-serif', fontWeight: 800 }}>
+              שמור יעדים
+            </button>
+          )}
+        </div>
       </div>
+
     </div>
   )
 }
