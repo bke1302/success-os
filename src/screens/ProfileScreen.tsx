@@ -309,6 +309,41 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
               </div>
             </div>
 
+            {/* JSON Export */}
+            {appData && (
+              <div style={{ marginBottom: 20 }}>
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>גיבוי מקומי</p>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={() => {
+                      const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' })
+                      const url = URL.createObjectURL(blob)
+                      const a = document.createElement('a')
+                      a.href = url
+                      a.download = `success-os-backup-${new Date().toISOString().slice(0, 10)}.json`
+                      a.click()
+                      URL.revokeObjectURL(url)
+                    }}
+                    dir="rtl"
+                    style={{ flex: 1, padding: '10px', background: T.card, border: `1px solid ${T.border2}`, borderRadius: 12, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: T.textSub, transition: 'all .15s' }}>
+                    ↓ ייצא JSON
+                  </button>
+                  <label style={{ flex: 1, padding: '10px', background: T.card, border: `1px solid ${T.border2}`, borderRadius: 12, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: T.textSub, textAlign: 'center', transition: 'all .15s' }} dir="rtl">
+                    ↑ ייבא JSON
+                    <input type="file" accept=".json" style={{ display: 'none' }} onChange={e => {
+                      const file = e.target.files?.[0]
+                      if (!file || !onImportData) return
+                      const reader = new FileReader()
+                      reader.onload = ev => {
+                        try { onImportData(JSON.parse(ev.target!.result as string)) } catch { /* ignore */ }
+                      }
+                      reader.readAsText(file)
+                    }} />
+                  </label>
+                </div>
+              </div>
+            )}
+
             {/* Supabase Sync */}
             {SUPABASE_READY ? (
               <div style={{ marginBottom: 16 }}>

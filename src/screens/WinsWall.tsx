@@ -68,15 +68,23 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
   const [showSettings, setShowSettings] = useState(false)
   const [reminderTime, setRT]           = useState(getReminderTime)
   const [sharingEntry, setSharingEntry] = useState<string | null>(null)
+  const [search,       setSearch]       = useState('')
+  const [minScore,     setMinScore]     = useState(0)
 
-  const withEvening = entries.filter(e => e.evening).sort((a,b) => b.date.localeCompare(a.date))
-  const avgScore    = withEvening.length > 0
-    ? Math.round(withEvening.reduce((s,e) => s + e.evening!.score, 0) / withEvening.length * 10) / 10
+  const allWithEvening = entries.filter(e => e.evening).sort((a,b) => b.date.localeCompare(a.date))
+  const withEvening = allWithEvening.filter(e => {
+    const text = (e.evening!.given ?? e.evening!.win ?? '') + ' ' + (e.evening!.lesson ?? '')
+    const matchSearch = !search || text.includes(search) || formatDate(e.date).includes(search)
+    const matchScore  = e.evening!.score >= minScore
+    return matchSearch && matchScore
+  })
+  const avgScore    = allWithEvening.length > 0
+    ? Math.round(allWithEvening.reduce((s,e) => s + e.evening!.score, 0) / allWithEvening.length * 10) / 10
     : 0
-  const commitRate  = withEvening.length > 0
-    ? Math.round(withEvening.filter(e => e.evening!.commitmentDone).length / withEvening.length * 100)
+  const commitRate  = allWithEvening.length > 0
+    ? Math.round(allWithEvening.filter(e => e.evening!.commitmentDone).length / allWithEvening.length * 100)
     : 0
-  const peakDays    = withEvening.filter(e => e.evening!.score >= 9).length
+  const peakDays    = allWithEvening.filter(e => e.evening!.score >= 9).length
 
   const handleShare = async (entry: DayEntry) => {
     setSharingEntry(entry.date)
@@ -187,16 +195,46 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
             </div>
           )}
 
+          {/* Search + score filter */}
+          {allWithEvening.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <input
+                value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="חפש ניצחון..." dir="rtl"
+                style={{ width: '100%', boxSizing: 'border-box', background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: '9px 14px', fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text, outline: 'none', marginBottom: 8 }}
+              />
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', direction: 'rtl' }}>
+                {[0, 5, 7, 9].map(s => (
+                  <button key={s} onClick={() => setMinScore(s)} style={{
+                    padding: '4px 12px', borderRadius: 999,
+                    border: `1px solid ${minScore === s ? T.accent : T.border2}`,
+                    background: minScore === s ? `${T.accent}1F` : 'transparent',
+                    color: minScore === s ? T.accent : T.textMuted,
+                    fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700,
+                    cursor: 'pointer', transition: 'all .15s',
+                  }}>
+                    {s === 0 ? 'הכל' : `${s}+`}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Win entries */}
-          {withEvening.length === 0 ? (
+          {allWithEvening.length === 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 24px', textAlign: 'center' }}>
               <div style={{ fontSize: 52, marginBottom: 20 }}>🏆</div>
               <h2 dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, fontWeight: 900, color: T.text, marginBottom: 12, lineHeight: 1.1, letterSpacing: '-.5px' }}>הניצחון הראשון ממתין לך</h2>
               <p dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: T.textMuted, lineHeight: 1.7 }}>סיים את היום הראשון שלך ותראה כאן את כל ההתקדמות שלך.</p>
             </div>
+          ) : withEvening.length === 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 24px', textAlign: 'center' }}>
+              <p dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, fontWeight: 700, color: T.textSub, marginBottom: 6 }}>אין תוצאות</p>
+              <p dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.textDim }}>שנה את הסינון או החיפוש</p>
+            </div>
           ) : (
             <>
-              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>— היסטוריה</p>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>— היסטוריה {(search || minScore > 0) ? `(${withEvening.length})` : ''}</p>
               <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, overflow: 'hidden' }}>
                 {withEvening.map((entry, idx) => {
                   const ev = entry.evening!

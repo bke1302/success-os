@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Check, Trash2, ArrowUp, RotateCcw } from 'lucide-react'
+import { Check, Trash2, ArrowUp, RotateCcw, ChevronDown } from 'lucide-react'
 import type { Task } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 import { playCheck, playComplete } from '../utils/sounds'
@@ -89,9 +89,12 @@ function TaskRow({ task, onToggle, onDelete, isLast }: {
 
 export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
   const T = useTheme()
-  const [filter,   setFilter]   = useState<Filter>('all')
-  const [draft,    setDraft]    = useState('')
-  const [highPrio, setHighPrio] = useState(false)
+  const [filter,      setFilter]      = useState<Filter>('all')
+  const [draft,       setDraft]       = useState('')
+  const [highPrio,    setHighPrio]    = useState(false)
+  const [showOptions, setShowOptions] = useState(false)
+  const [dueDate,     setDueDate]     = useState('')
+  const [recurring,   setRecurring]   = useState<Task['recurring']>(undefined)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const today = todayStr()
@@ -116,9 +119,19 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
     const title = draft.trim()
     if (!title) return
     playCheck()
-    onSave({ id: `task_${Date.now()}`, title, priority: highPrio ? 'high' : 'normal', createdAt: new Date().toISOString() })
+    onSave({
+      id: `task_${Date.now()}`,
+      title,
+      priority: highPrio ? 'high' : 'normal',
+      createdAt: new Date().toISOString(),
+      ...(dueDate ? { dueDate } : {}),
+      ...(recurring ? { recurring } : {}),
+    })
     setDraft('')
     setHighPrio(false)
+    setDueDate('')
+    setRecurring(undefined)
+    setShowOptions(false)
     inputRef.current?.focus()
   }
 
@@ -163,7 +176,40 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
           }}>
             <ArrowUp style={{ width: 14, height: 14, color: draft.trim() ? '#fff' : T.textDim }} strokeWidth={2.5} />
           </button>
+          <button onClick={() => setShowOptions(v => !v)} style={{
+            width: 32, height: 32, borderRadius: 10, flexShrink: 0, border: `1px solid ${T.border2}`,
+            background: showOptions ? T.tagBg : 'transparent',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', transition: 'all .2s',
+          }}>
+            <ChevronDown style={{ width: 13, height: 13, color: T.textDim, transform: showOptions ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }} strokeWidth={2} />
+          </button>
         </div>
+
+        {showOptions && (
+          <div style={{ marginTop: 8, padding: '10px 12px', background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }} className="animate-slide-up">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: T.textMuted, textTransform: 'uppercase' }}>תאריך</span>
+              <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)}
+                style={{ background: T.tagBg, border: `1px solid ${T.border2}`, borderRadius: 8, padding: '4px 8px', fontFamily: 'Barlow Condensed, sans-serif', fontSize: 11, fontWeight: 700, color: T.text, outline: 'none', colorScheme: T.isDark ? 'dark' : 'light' }} />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: T.textMuted, textTransform: 'uppercase' }}>חזרה</span>
+              {([undefined, 'daily', 'weekly'] as const).map(r => (
+                <button key={String(r)} onClick={() => setRecurring(r)} style={{
+                  padding: '3px 10px', borderRadius: 999,
+                  border: `1px solid ${recurring === r ? T.accent : T.border2}`,
+                  background: recurring === r ? `${T.accent}1F` : 'transparent',
+                  color: recurring === r ? T.accent : T.textDim,
+                  fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700,
+                  cursor: 'pointer', transition: 'all .15s',
+                }}>
+                  {r === undefined ? 'אף' : r === 'daily' ? 'יומי' : 'שבועי'}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         </div>
       </div>
 
