@@ -79,6 +79,8 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <button onClick={() => { setCommitmentDone(true); playCheck() }}
+                aria-label="כן, עמדתי בהתחייבות"
+                aria-pressed={commitmentDone === true}
                 style={{
                   padding: '20px 16px',
                   fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 700, fontSize: 16,
@@ -92,6 +94,8 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
                 <Check className="w-5 h-5" strokeWidth={2.5} /> עשיתי
               </button>
               <button onClick={() => { setCommitmentDone(false) }}
+                aria-label="לא, לא הספקתי"
+                aria-pressed={commitmentDone === false}
                 style={{
                   padding: '20px 16px',
                   fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 700, fontSize: 16,
@@ -122,6 +126,7 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
 
             <textarea value={given} onChange={e => setGiven(e.target.value)}
               placeholder="כתוב מה נתת לעולם היום…" dir="rtl" rows={4} autoFocus
+              aria-label="מה נתת לעולם היום"
               style={{
                 width: '100%', padding: '14px 16px', fontFamily: 'Heebo, sans-serif',
                 background: given.trim().length >= 3 ? 'rgba(255,214,10,.05)' : T.tagBg,
@@ -146,6 +151,7 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
             <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 12, color: T.textMuted, marginBottom: 10, lineHeight: 1.5 }} dir="rtl">תובנה, שיעור, טעות שלימדה.</p>
             <textarea value={lesson} onChange={e => setLesson(e.target.value)}
               placeholder="מה שיעור אחד שתיקח מהיום?" dir="rtl" rows={3}
+              aria-label="שיעור שלמדת היום (רשות)"
               style={{
                 width: '100%', padding: '14px 16px', fontFamily: 'Heebo, sans-serif',
                 background: lesson.trim() ? 'rgba(48,209,88,.04)' : T.tagBg,
@@ -196,6 +202,7 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
         {step < 3 ? (
           <button onClick={next}
             disabled={step === 1 ? !canNext1 : !canNext2}
+            aria-label={`המשך לשלב ${step + 1}`}
             className="btn-blue w-full"
             style={{ padding: '18px', fontSize: 17, fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}
             dir="rtl">
@@ -204,6 +211,7 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
           </button>
         ) : (
           <button onClick={submit}
+            aria-label="שמור את סיכום היום וסגור"
             className="btn-blue w-full"
             style={{ padding: '18px', fontSize: 17, fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontWeight: 900 }}
             dir="rtl">

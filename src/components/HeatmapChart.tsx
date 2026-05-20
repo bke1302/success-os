@@ -1,18 +1,11 @@
 import { useRef, useEffect } from 'react'
 import type { DayEntry } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
+import { scoreColor } from '../utils/colorUtils'
 
 interface Props { entries: DayEntry[] }
 
 const HEBREW_DAYS = ['א','ב','ג','ד','ה','ו','ש']
-
-function scoreColor(score: number, isDark: boolean): string {
-  if (score >= 9) return '#FFD60A'
-  if (score >= 7) return '#e8a020'
-  if (score >= 5) return '#FF9F0A'
-  if (score >= 1) return '#FF375F'
-  return isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'
-}
 
 function getDateStr(daysAgo: number): string {
   const d = new Date()
@@ -87,8 +80,8 @@ export function HeatmapChart({ entries }: Props) {
         if (isFuture || daysFromToday > 90) {
           ctx.fillStyle = 'rgba(0,0,0,0)'
         } else if (score !== undefined) {
-          ctx.fillStyle = scoreColor(score, T.isDark)
-          ctx.shadowColor = scoreColor(score, T.isDark)
+          ctx.fillStyle = scoreColor(score)
+          ctx.shadowColor = scoreColor(score)
           ctx.shadowBlur  = score >= 7 ? 6 : 0
         } else {
           ctx.fillStyle = emptyColor

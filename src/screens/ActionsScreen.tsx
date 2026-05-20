@@ -238,11 +238,14 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
                 </div>
                 {habit.timerSec && !done && (
                   <button onClick={() => setTimerHabit(habit)}
+                    aria-label={`התחל טיימר — ${habit.title}`}
                     style={{ width: 30, height: 30, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: T.tagBg, border: `1px solid ${T.border}`, cursor: 'pointer', borderRadius: 9 }}>
                     <Timer className="w-3.5 h-3.5" style={{ color: T.textMuted }} />
                   </button>
                 )}
                 <button onClick={() => toggle(habit.id)}
+                  aria-label={done ? `בטל — ${habit.title}` : `סמן כהושלם — ${habit.title}`}
+                  aria-pressed={done}
                   style={{
                     width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
                     background: done ? '#4F7DFF' : 'transparent',
@@ -292,11 +295,14 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
                       </div>
                       {habit.timerSec && !done && (
                         <button onClick={() => setTimerHabit(habit)}
+                          aria-label={`התחל טיימר — ${habit.title}`}
                           style={{ width: 28, height: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${catColor}12`, border: `1px solid ${catColor}30`, cursor: 'pointer', borderRadius: 8 }}>
                           <Timer className="w-3 h-3" style={{ color: catColor }} />
                         </button>
                       )}
                       <button onClick={() => toggle(habit.id)}
+                        aria-label={done ? `בטל — ${habit.title}` : `סמן כהושלם — ${habit.title}`}
+                        aria-pressed={done}
                         style={{
                           width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
                           background: done ? '#4F7DFF' : 'transparent',

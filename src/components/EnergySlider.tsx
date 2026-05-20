@@ -59,6 +59,8 @@ export function EnergySlider({ value, onChange, label, size = 'lg', readonly = f
               key={n}
               onClick={() => !readonly && onChange(n)}
               disabled={readonly}
+              aria-label={`ציון ${n}`}
+              aria-pressed={n <= value}
               className="transition-all duration-200 font-bold flex items-center justify-center rounded-full"
               style={{
                 width:      size === 'lg' ? '40px' : '22px',

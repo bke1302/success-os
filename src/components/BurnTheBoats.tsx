@@ -32,7 +32,7 @@ export function BurnTheBoats({ current, onSave, onClear }: Props) {
 
   if (!current && !open) {
     return (
-      <button onClick={() => setOpen(true)} className="w-full"
+      <button onClick={() => setOpen(true)} aria-label="פתח טופס Burn The Boats — התחייב" className="w-full"
         style={{ padding: '13px 16px', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: 13,
           letterSpacing: '.5px', textTransform: 'uppercase',
           background: 'rgba(255,55,95,.07)', border: '1px solid rgba(255,55,95,.2)',
@@ -51,20 +51,20 @@ export function BurnTheBoats({ current, onSave, onClear }: Props) {
             <Flame className="w-4 h-4" style={{ color: '#FF375F' }} />
             <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: '2px', color: '#FF375F', textTransform: 'uppercase' }}>BURN THE BOATS</p>
           </div>
-          <button onClick={() => setOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4 }}>
+          <button onClick={() => setOpen(false)} aria-label="סגור טופס" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4 }}>
             <X className="w-4 h-4" style={{ color: T.textMuted }} />
           </button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <input value={commitment} onChange={e => { setCommitment(e.target.value); if(e.target.value.length===1) playCheck() }}
-            placeholder="מה אתה מתחייב להשיג?" dir="rtl"
+            placeholder="מה אתה מתחייב להשיג?" dir="rtl" aria-label="מה אתה מתחייב להשיג"
             style={{ width: '100%', padding: '12px 14px', fontFamily: "'Heebo', sans-serif", fontSize: 14, fontWeight: 500,
               background: T.tagBg, border: '1px solid rgba(255,55,95,.2)', color: T.text, outline: 'none', borderRadius: 10 }} />
           <input value={consequence} onChange={e => setConsequence(e.target.value)}
-            placeholder="מה יקרה אם לא תעמוד?" dir="rtl"
+            placeholder="מה יקרה אם לא תעמוד?" dir="rtl" aria-label="מה יקרה אם לא תעמוד בהתחייבות"
             style={{ width: '100%', padding: '12px 14px', fontFamily: "'Heebo', sans-serif", fontSize: 14, fontWeight: 500,
               background: T.tagBg, border: '1px solid rgba(255,55,95,.2)', color: T.text, outline: 'none', borderRadius: 10 }} />
-          <input type="date" value={deadline} onChange={e => setDeadline(e.target.value)}
+          <input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} aria-label="תאריך דדליין להתחייבות"
             style={{ width: '100%', padding: '12px 14px', fontFamily: "'Heebo', sans-serif", fontSize: 14, fontWeight: 500,
               background: T.tagBg, border: '1px solid rgba(255,55,95,.2)', color: T.text, outline: 'none', borderRadius: 10, colorScheme: T.isDark ? 'dark' : 'light' }} />
         </div>
@@ -88,7 +88,7 @@ export function BurnTheBoats({ current, onSave, onClear }: Props) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 900, color: urgent ? '#FF375F' : T.textMuted }}>{days} ימים</span>
-            <button onClick={onClear} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2 }}>
+            <button onClick={onClear} aria-label="מחק התחייבות Burn The Boats" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2 }}>
               <X className="w-3.5 h-3.5" style={{ color: T.textMuted }} />
             </button>
           </div>

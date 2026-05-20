@@ -235,6 +235,7 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
               {showTasks ? 'משימות פתוחות' : 'הרגלים להיום'}
             </p>
             <button onClick={() => onNavigate(showTasks ? 'tasks' : 'actions')}
+              aria-label={showTasks ? 'ראה את כל המשימות' : 'ראה את כל ההרגלים'}
               style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '1px', color: '#5B8CFF', textTransform: 'uppercase' }}
               dir="rtl">ראה הכל →</button>
           </div>
@@ -301,7 +302,7 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
 
         {/* ── Focus CTA ── */}
         <div style={{ padding: '0 16px 14px' }}>
-          <button onClick={() => onNavigate('focus')} style={{
+          <button onClick={() => onNavigate('focus')} aria-label="התחל סשן פוקוס 25 דקות" style={{
             width: '100%', display: 'flex', alignItems: 'center', gap: 14,
             padding: '16px 18px',
             background: 'rgba(91,140,255,.07)', border: '1px solid rgba(91,140,255,.18)',
@@ -324,7 +325,7 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
         {/* ── Habit Challenge entry (if no active challenge) ── */}
         {!challenge && (
           <div style={{ padding: '0 16px 14px' }}>
-            <button onClick={() => onNavigate('challenge')} style={{
+            <button onClick={() => onNavigate('challenge')} aria-label="התחל אתגר 30 יום" style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: 14,
               padding: '14px 18px',
               background: 'rgba(74,222,128,.05)', border: '1px dashed rgba(74,222,128,.2)',
