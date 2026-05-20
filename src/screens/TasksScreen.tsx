@@ -132,48 +132,51 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
     <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
 
       {/* ── Hero header ── */}
-      <div style={{ flexShrink: 0, padding: '0 16px', paddingTop: 16, marginBottom: 0 }}>
+      <div style={{ flexShrink: 0, padding: '0 16px', paddingTop: 16 }}>
         <div className="today-hero" style={{
           background: T.isDark
             ? 'linear-gradient(135deg, rgba(91,140,255,.85) 0%, rgba(139,92,246,.6) 55%, rgba(16,185,129,.2) 100%), linear-gradient(180deg, #111318 0%, #1a1c24 100%)'
             : 'linear-gradient(135deg, rgba(59,111,239,.9) 0%, rgba(124,58,237,.7) 55%, rgba(16,185,129,.2) 100%), linear-gradient(180deg, #dde5ff 0%, #ede9fe 100%)',
           border: '1px solid rgba(91,140,255,.22)',
           boxShadow: '0 8px 32px rgba(91,140,255,.12)',
-          minHeight: 'auto',
-          padding: '18px 20px',
         }}>
           {/* Watermark */}
           <div style={{ position: 'absolute', right: 14, top: -4, fontSize: '7rem', opacity: .04, lineHeight: 1, color: '#fff', pointerEvents: 'none', userSelect: 'none' }}>✓</div>
 
           {/* Top row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14, position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, position: 'relative', zIndex: 1 }}>
             <div dir="rtl">
               <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '3px', color: 'rgba(255,255,255,.42)', textTransform: 'uppercase', margin: 0, marginBottom: 2 }}>TASKS</p>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 22, fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-1px', lineHeight: 1.1, textShadow: '0 2px 12px rgba(0,0,0,.3)' }}>משימות</p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,.6)', margin: 0 }}>ניהול משימות יומי</p>
             </div>
             {incomplete.length > 0 && (
               <div style={{ textAlign: 'center' }}>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '2.4rem', fontWeight: 900, color: '#FBBF24', lineHeight: 1, letterSpacing: '-1.5px', margin: 0 }}>{incomplete.length}</p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '2.4rem', fontWeight: 900, color: '#FBBF24', lineHeight: 1, letterSpacing: '-1.5px', margin: 0, textShadow: '0 0 24px rgba(251,191,36,.4)' }}>{incomplete.length}</p>
                 <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 8, fontWeight: 700, letterSpacing: '2px', color: 'rgba(251,191,36,.6)', textTransform: 'uppercase', margin: '3px 0 0' }}>נותרו</p>
               </div>
             )}
           </div>
 
-          {/* Filter chips */}
-          <div style={{ display: 'flex', gap: 6, position: 'relative', zIndex: 1 }}>
-            {FILTERS.map(f => (
-              <button key={f.id} onClick={() => setFilter(f.id)} style={{
-                padding: '4px 14px', borderRadius: 999,
-                border: `1px solid ${filter === f.id ? 'rgba(255,255,255,.5)' : 'rgba(255,255,255,.15)'}`,
-                background: filter === f.id ? 'rgba(255,255,255,.2)' : 'rgba(255,255,255,.06)',
-                color: filter === f.id ? '#fff' : 'rgba(255,255,255,.5)',
-                fontFamily: 'Barlow Condensed, sans-serif',
-                fontSize: 10, fontWeight: 700, letterSpacing: '.5px',
-                cursor: 'pointer', transition: 'all .15s',
-              }}>{f.label}</button>
-            ))}
+          {/* Title */}
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '2.8rem', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-2px', margin: 0, textShadow: '0 2px 12px rgba(0,0,0,.3)' }} dir="rtl">משימות</p>
           </div>
         </div>
+      </div>
+
+      {/* ── Filter chips ── */}
+      <div style={{ flexShrink: 0, padding: '10px 16px 0', display: 'flex', gap: 7, direction: 'rtl' }}>
+        {FILTERS.map(f => (
+          <button key={f.id} onClick={() => setFilter(f.id)} style={{
+            padding: '5px 16px', borderRadius: 999,
+            border: `1px solid ${filter === f.id ? T.accent : T.border2}`,
+            background: filter === f.id ? `${T.accent}1F` : 'transparent',
+            color: filter === f.id ? T.accent : T.textMuted,
+            fontFamily: 'Barlow Condensed, sans-serif',
+            fontSize: 11, fontWeight: 700, letterSpacing: '.5px',
+            cursor: 'pointer', transition: 'all .15s',
+          }}>{f.label}</button>
+        ))}
       </div>
 
       {/* ── Quick add ── */}

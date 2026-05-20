@@ -153,8 +153,6 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
           background: T.isDark ? STEP_GRADIENTS[step - 1] : STEP_GRADIENTS[step - 1].replace('180deg, #111318 0%, #1a1c24', '180deg, #f8f9ff 0%, #f0f4ff'),
           border: `1px solid ${STEP_BORDERS[step - 1]}`,
           boxShadow: STEP_SHADOWS[step - 1],
-          minHeight: 'auto',
-          padding: '18px 20px 14px',
           transition: 'background .4s, border-color .4s, box-shadow .4s',
         }}>
           {/* Watermark */}
@@ -179,7 +177,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
           </div>
 
           {/* Step title */}
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.9rem', fontWeight: 900, color: '#fff', lineHeight: 1.1, letterSpacing: '-1px', margin: 0, position: 'relative', zIndex: 1, textShadow: '0 2px 12px rgba(0,0,0,.25)' }} dir="rtl">
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '2.6rem', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-1.5px', margin: 0, position: 'relative', zIndex: 1, textShadow: '0 2px 12px rgba(0,0,0,.25)' }} dir="rtl">
             {step === 1 && powerWord}
             {step === 2 && 'המשימות שלך'}
             {step === 3 && 'הדבר האחד'}

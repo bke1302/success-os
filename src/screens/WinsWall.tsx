@@ -88,6 +88,7 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
 
       {/* ── Scrollable content ── */}
       <div className="flex-1 overflow-y-auto" style={{ padding: '0 0 80px' }}>
+       <div style={{ maxWidth: 480, margin: '0 auto' }}>
 
         {/* ── Hero header ── */}
         <div style={{ padding: '0 16px', paddingTop: 16, marginBottom: 14 }}>
@@ -240,6 +241,7 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
             </>
           )}
         </div>
+       </div>
       </div>
     </div>
   )
