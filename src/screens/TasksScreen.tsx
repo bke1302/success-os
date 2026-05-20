@@ -131,20 +131,17 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
 
-      {/* ── Quick add — floating glass pill ── */}
-      <div style={{ flexShrink: 0, padding: '12px 16px 0' }}>
+      {/* ── Quick add ── */}
+      <div style={{ flexShrink: 0, padding: '14px 16px 6px', background: T.bg }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
-          padding: '8px 8px 8px 14px',
-          background: T.isDark ? 'rgba(20,22,30,.92)' : 'rgba(255,255,255,.92)',
-          backdropFilter: 'blur(24px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-          borderRadius: 20,
-          border: `1px solid ${T.isDark ? 'rgba(255,255,255,.09)' : 'rgba(0,0,0,.09)'}`,
-          boxShadow: T.isDark ? '0 4px 24px rgba(0,0,0,.45)' : '0 4px 24px rgba(0,0,0,.1)',
+          padding: '10px 10px 10px 14px',
+          background: T.card,
+          borderRadius: 16,
+          border: `1px solid ${T.border}`,
         }}>
           <button onClick={() => setHighPrio(h => !h)} style={{
-            width: 30, height: 30, borderRadius: 10, flexShrink: 0,
+            width: 28, height: 28, borderRadius: 9, flexShrink: 0,
             border: `1px solid ${highPrio ? '#5B8CFF' : T.border2}`,
             background: highPrio ? 'rgba(91,140,255,.15)' : 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -157,11 +154,11 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
             placeholder="הוסף משימה…" dir="rtl"
             style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 500, color: T.text }} />
           <button onClick={addTask} disabled={!draft.trim()} style={{
-            width: 34, height: 34, borderRadius: 12, flexShrink: 0, border: 'none',
-            background: draft.trim() ? '#5B8CFF' : T.isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)',
+            width: 32, height: 32, borderRadius: 10, flexShrink: 0, border: 'none',
+            background: draft.trim() ? '#5B8CFF' : T.tagBg,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: draft.trim() ? 'pointer' : 'default', transition: 'all .2s',
-            boxShadow: draft.trim() ? '0 2px 14px rgba(91,140,255,.45)' : 'none',
+            boxShadow: draft.trim() ? '0 2px 12px rgba(91,140,255,.4)' : 'none',
           }}>
             <ArrowUp style={{ width: 14, height: 14, color: draft.trim() ? '#fff' : T.textDim }} strokeWidth={2.5} />
           </button>
