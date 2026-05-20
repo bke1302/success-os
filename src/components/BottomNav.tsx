@@ -1,14 +1,13 @@
-import { Home, Zap, Timer, Trophy, ListTodo } from 'lucide-react'
+import { Home, Zap, Trophy, ListTodo } from 'lucide-react'
 import type { AppState } from '../types'
 
 type View = AppState['currentView']
 
 const TABS: { id: View; Icon: typeof Home; label: string }[] = [
-  { id: 'home',    Icon: Home,     label: 'בית'   },
-  { id: 'prime',   Icon: Zap,      label: 'יומי'  },
-  { id: 'focus',   Icon: Timer,    label: 'פוקוס' },
-  { id: 'wins',    Icon: Trophy,   label: 'גדילה' },
-  { id: 'tasks',   Icon: ListTodo, label: 'משימות' },
+  { id: 'home',  Icon: Home,     label: 'בית'    },
+  { id: 'prime', Icon: Zap,      label: 'יומי'   },
+  { id: 'wins',  Icon: Trophy,   label: 'גדילה'  },
+  { id: 'tasks', Icon: ListTodo, label: 'משימות' },
 ]
 
 const ACCENT = '#5B8CFF'

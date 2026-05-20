@@ -152,8 +152,26 @@ export function FocusScreen() {
         </button>
       </div>
 
+      {/* Phase tabs */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 24, position: 'relative', zIndex: 1 }}>
+        {(['work', 'short-break', 'long-break'] as Phase[]).map(p => (
+          <button key={p} onClick={() => { if (!running) { setPhase(p); setTimeLeft(PHASES[p].duration); setQuoteIdx(0) } }}
+            style={{
+              padding: '5px 14px', borderRadius: 999,
+              fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '.5px',
+              border: `1px solid ${phase === p ? PHASES[p].color : T.border2}`,
+              background: phase === p ? `${PHASES[p].color}20` : 'transparent',
+              color: phase === p ? PHASES[p].color : T.textDim,
+              cursor: running ? 'default' : 'pointer',
+              transition: 'all .2s',
+            }}>
+            {PHASES[p].label}
+          </button>
+        ))}
+      </div>
+
       {/* Session dots */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 32, position: 'relative', zIndex: 1 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 28, position: 'relative', zIndex: 1 }}>
         {Array.from({ length: 4 }, (_, i) => {
           const done   = phase === 'work' ? i < sessionNum - 1 : i < sessionNum - (phase === 'long-break' ? 0 : 1)
           const active = phase === 'work' && i === sessionNum - 1
@@ -250,19 +268,17 @@ export function FocusScreen() {
         }
       </button>
 
-      {/* Today's sessions */}
+      {/* Today's sessions — stat boxes */}
       {todaySessions > 0 && (
-        <div style={{ position: 'absolute', bottom: 84, display: 'flex', alignItems: 'center', gap: 8, background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: '10px 18px' }}>
-          <span style={{
-            fontFamily: '"Frank Ruhl Libre", Georgia, serif',
-            fontSize: 22, fontWeight: 900,
-            color: T.isDark ? '#FFD60A' : '#8B6800', lineHeight: 1,
-          }}>{todaySessions}</span>
-          <span style={{
-            fontFamily: 'Barlow Condensed, sans-serif',
-            fontSize: 10, fontWeight: 700, letterSpacing: '2px',
-            color: T.textMuted, textTransform: 'uppercase',
-          }} dir="rtl">סשנים היום</span>
+        <div style={{ position: 'absolute', bottom: 84, display: 'flex', gap: 10, zIndex: 1 }}>
+          <div className="stat-box sm gold" style={{ minWidth: 88 }}>
+            <div className="stat-val">{todaySessions}</div>
+            <div className="stat-lbl">סשנים</div>
+          </div>
+          <div className="stat-box sm" style={{ minWidth: 88 }}>
+            <div className="stat-val">{todaySessions * 25}</div>
+            <div className="stat-lbl">דקות</div>
+          </div>
         </div>
       )}
     </div>

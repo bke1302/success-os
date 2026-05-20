@@ -113,20 +113,20 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
               style={{ background:'transparent', border:'1px solid rgba(255,214,10,.3)', color:'#FFD60A', padding:'6px 10px', fontFamily:"'Barlow Condensed', sans-serif", fontSize:13, fontWeight:700, outline:'none', borderRadius:8, colorScheme: T.isDark ? 'dark' : 'light' }} />
           </div>
         )}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8 }}>
-          <div className="stat-box sm gold">
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10 }}>
+          <div className="stat-box gold">
             <div className="stat-val">{streak}</div>
             <div className="stat-lbl">STREAK</div>
           </div>
-          <div className="stat-box sm blue">
+          <div className="stat-box blue">
             <div className="stat-val">{totalDays}</div>
             <div className="stat-lbl">ימים</div>
           </div>
-          <div className="stat-box sm green">
-            <div className="stat-val">{avgScore}</div>
+          <div className="stat-box green">
+            <div className="stat-val">{avgScore || '—'}</div>
             <div className="stat-lbl">ממוצע</div>
           </div>
-          <div className="stat-box sm green">
+          <div className="stat-box blue">
             <div className="stat-val">{commitRate}%</div>
             <div className="stat-lbl">עמדתי</div>
           </div>
@@ -164,9 +164,9 @@ export function WinsWall({ entries, streak, totalDays }: Props) {
                       {entry.morning?.identity && <p style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:9, fontWeight:700, color: T.isDark ? 'rgba(255,214,10,.6)' : '#8B6800', letterSpacing:'1px' }} dir="rtl">{entry.morning.identity}</p>}
                     </div>
                     <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                      <div style={{ textAlign:'center' }}>
-                        <div style={{ fontFamily:"'Frank Ruhl Libre', Georgia, serif", fontSize:'2.2rem', lineHeight:1, color:c }}>{ev.score}</div>
-                        <div style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:7, letterSpacing:2, textTransform:'uppercase', color:c, marginTop:2 }}>{scoreLabel(ev.score)}</div>
+                      <div style={{ textAlign:'center', minWidth: 52 }}>
+                        <div style={{ fontFamily:'Inter, sans-serif', fontSize:'2.4rem', fontWeight:900, lineHeight:1, letterSpacing:'-.5px', color:c }}>{ev.score}</div>
+                        <div style={{ fontFamily:"'Barlow Condensed', sans-serif", fontSize:8, letterSpacing:2, textTransform:'uppercase', color:c, marginTop:3, fontWeight:700 }}>{scoreLabel(ev.score)}</div>
                       </div>
                       <button onClick={() => handleShare(entry)} disabled={sharingEntry === entry.date}
                         className="btn-ghost" style={{ padding:'6px 10px', fontFamily:"'Heebo', sans-serif", fontSize:11, display:'flex', alignItems:'center', gap:5, opacity: sharingEntry===entry.date?0.5:1 }}>

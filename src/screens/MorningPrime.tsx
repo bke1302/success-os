@@ -158,6 +158,10 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
           </div>
         </div>
         <StepDots step={step} total={4} />
+        {/* Progress bar */}
+        <div style={{ height: 3, background: T.border, borderRadius: 2, marginTop: 14, overflow: 'hidden' }}>
+          <div style={{ height: '100%', width: `${(step / 4) * 100}%`, background: '#5B8CFF', borderRadius: 2, transition: 'width .4s cubic-bezier(.16,1,.3,1)', boxShadow: '0 0 8px rgba(91,140,255,.4)' }} />
+        </div>
       </div>
 
       {/* ── STEP CONTENT ─────────────────────────────────────────── */}
@@ -206,18 +210,19 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
               <h2 style={{ fontFamily: '"Frank Ruhl Libre", Georgia, serif', fontSize: 'clamp(1.8rem, 7vw, 2.8rem)', fontWeight: 900, color: T.text, lineHeight: 1.1, marginBottom: 4 }} dir="rtl">המשימות שלך היום</h2>
               <p style={{ fontFamily: 'Heebo, sans-serif', fontSize: 12, color: T.textMuted, lineHeight: 1.5 }} dir="rtl">{theme.desc}</p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, overflow: 'hidden' }}>
               {requiredHabits.map((habit, i) => (
                 <div key={habit.id}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 14,
-                    padding: '16px 16px', background: T.tagBg,
-                    border: `1px solid ${T.border}`, borderRadius: 12,
+                    padding: '15px 16px',
+                    borderBottom: i < requiredHabits.length - 1 ? `1px solid ${T.divider}` : 'none',
                     borderRight: `3px solid ${accentColor}`,
                     animation: `sentenceIn .35s cubic-bezier(.16,1,.3,1) ${i * 60}ms both`,
+                    direction: 'rtl',
                   }}>
                   <span style={{ fontSize: 11, fontWeight: 900, color: accentColor, minWidth: 20, textAlign: 'center', fontFamily: 'Barlow Condensed, sans-serif', letterSpacing: '1px' }}>{i + 1}</span>
-                  <div dir="rtl" style={{ flex: 1 }}>
+                  <div style={{ flex: 1 }}>
                     <p style={{ fontSize: 15, fontWeight: 700, color: T.text }}>{habit.title}</p>
                     <p style={{ fontSize: 12, color: T.textMuted, marginTop: 3, lineHeight: 1.4 }}>{habit.subtitle}</p>
                   </div>
