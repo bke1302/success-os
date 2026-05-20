@@ -1,5 +1,6 @@
 import { Home, Zap, Trophy, ListTodo } from 'lucide-react'
 import type { AppState } from '../types'
+import { useTheme } from '../contexts/ThemeContext'
 
 type View = AppState['currentView']
 
@@ -10,7 +11,8 @@ const TABS: { id: View; Icon: typeof Home; label: string }[] = [
   { id: 'tasks', Icon: ListTodo, label: 'משימות' },
 ]
 
-const ACCENT = '#5B8CFF'
+const ACCENT_DARK  = '#5B8CFF'
+const ACCENT_LIGHT = '#3B6FEF'
 
 interface Props {
   current:  View
@@ -18,19 +20,35 @@ interface Props {
 }
 
 export function BottomNav({ current, onChange }: Props) {
+  const T = useTheme()
+  const ACCENT = T.isDark ? ACCENT_DARK : ACCENT_LIGHT
+
   return (
     <nav style={{
-      position: 'fixed', bottom: 0, left: 0, right: 0,
-      height: 'calc(var(--bottom-nav-h, 68px) + env(safe-area-inset-bottom))',
-      background: 'var(--bottom-nav-bg, rgba(13,14,19,.97))',
-      backdropFilter: 'blur(24px) saturate(180%)',
-      WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-      borderTop: '1px solid var(--nav-border, rgba(255,255,255,.07))',
-      display: 'flex', alignItems: 'flex-start',
-      direction: 'ltr',
+      position: 'fixed',
+      bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: 'calc(100% - 32px)',
+      maxWidth: 420,
+      height: 64,
+      background: T.isDark
+        ? 'rgba(13,14,19,.93)'
+        : 'rgba(248,250,252,.95)',
+      backdropFilter: 'blur(32px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+      borderRadius: 28,
+      border: T.isDark
+        ? '1px solid rgba(255,255,255,.10)'
+        : '1px solid rgba(0,0,0,.10)',
+      boxShadow: T.isDark
+        ? '0 8px 48px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.06)'
+        : '0 8px 48px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.9)',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0 8px',
       zIndex: 30,
-      paddingTop: 0,
-      boxShadow: '0 -8px 32px rgba(0,0,0,.25)',
+      direction: 'ltr',
     }}>
       {TABS.map(({ id, Icon, label }) => {
         const active = current === id
@@ -40,43 +58,30 @@ export function BottomNav({ current, onChange }: Props) {
             onClick={() => onChange(id)}
             style={{
               flex: 1,
+              height: 48,
               border: 'none',
-              background: active ? 'rgba(91,140,255,.08)' : 'transparent',
-              borderRadius: 14,
-              margin: '6px 4px 0',
-              cursor: 'pointer',
+              background: active
+                ? T.isDark ? 'rgba(91,140,255,.14)' : 'rgba(59,111,239,.12)'
+                : 'transparent',
+              borderRadius: 20,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'flex-start',
-              gap: 4,
-              paddingTop: 10,
-              paddingBottom: 8,
-              position: 'relative',
-              transition: 'background .2s, opacity .15s',
+              justifyContent: 'center',
+              gap: 3,
+              cursor: 'pointer',
+              transform: active ? 'scale(1.05)' : 'scale(1)',
+              transition: 'all .28s cubic-bezier(.34,1.56,.64,1)',
               outline: 'none',
+              WebkitTapHighlightColor: 'transparent',
             }}
-            onMouseEnter={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.opacity = '.75' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
           >
-            {/* Active top indicator bar */}
-            {active && (
-              <div style={{
-                position: 'absolute', top: 0, left: '50%',
-                transform: 'translateX(-50%)',
-                width: 24, height: 3, borderRadius: '0 0 3px 3px',
-                background: ACCENT,
-                boxShadow: `0 0 10px ${ACCENT}90`,
-              }} />
-            )}
-
             <Icon
               style={{
                 width: 20, height: 20,
-                color: active ? ACCENT : 'rgba(255,255,255,.3)',
-                filter: active ? `drop-shadow(0 0 6px ${ACCENT}80)` : 'none',
-                transition: 'all .2s cubic-bezier(.16,1,.3,1)',
-                marginTop: 4,
+                color: active ? ACCENT : T.isDark ? 'rgba(255,255,255,.28)' : 'rgba(0,0,0,.28)',
+                filter: active ? `drop-shadow(0 0 7px ${ACCENT}90)` : 'none',
+                transition: 'all .22s cubic-bezier(.16,1,.3,1)',
               }}
               strokeWidth={active ? 2.2 : 1.8}
             />
@@ -84,10 +89,10 @@ export function BottomNav({ current, onChange }: Props) {
               fontSize: 9,
               fontWeight: 700,
               letterSpacing: '.5px',
-              color: active ? ACCENT : 'rgba(255,255,255,.25)',
+              color: active ? ACCENT : T.isDark ? 'rgba(255,255,255,.22)' : 'rgba(0,0,0,.3)',
               fontFamily: 'Barlow Condensed, sans-serif',
               textTransform: 'uppercase',
-              transition: 'color .2s',
+              transition: 'color .22s',
               lineHeight: 1,
             }}>{label}</span>
           </button>
