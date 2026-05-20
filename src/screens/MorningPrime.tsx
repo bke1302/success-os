@@ -333,18 +333,18 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
       </div>
 
       {/* ── CTA ── */}
-      <div style={{ flexShrink: 0, padding: '12px 16px', paddingBottom: 'max(12px, env(safe-area-inset-bottom))', background: T.bg, borderTop: `1px solid ${T.border}` }}>
+      <div style={{ flexShrink: 0, padding: '10px 16px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))', background: T.bg, borderTop: `1px solid ${T.border}` }}>
         {step < 4 ? (
           <button onClick={next} dir="rtl" className="btn-gold w-full"
-            style={{ padding: '18px', fontSize: 17, fontFamily: 'Inter, sans-serif', fontWeight: 900, letterSpacing: '-.3px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            style={{ padding: '12px 16px', fontSize: 14, fontFamily: 'Inter, sans-serif', fontWeight: 800, letterSpacing: '-.2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
             המשך
-            <ChevronRight style={{ width: 20, height: 20 }} strokeWidth={2.5} />
+            <ChevronRight style={{ width: 16, height: 16 }} strokeWidth={2.5} />
           </button>
         ) : (
           <button onClick={handleStart} dir="rtl" className="btn-blue w-full"
-            style={{ padding: '18px', fontSize: 17, fontFamily: 'Inter, sans-serif', fontWeight: 900, letterSpacing: '-.3px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            style={{ padding: '12px 16px', fontSize: 14, fontFamily: 'Inter, sans-serif', fontWeight: 800, letterSpacing: '-.2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
             יוצא לדרך
-            <ChevronRight style={{ width: 20, height: 20 }} strokeWidth={2.5} />
+            <ChevronRight style={{ width: 16, height: 16 }} strokeWidth={2.5} />
           </button>
         )}
       </div>
