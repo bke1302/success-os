@@ -333,7 +333,7 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
       </div>
 
       {/* ── CTA ── */}
-      <div style={{ flexShrink: 0, padding: '14px 16px', paddingBottom: 'max(14px, env(safe-area-inset-bottom))', borderTop: `1px solid ${T.border}`, background: T.bgRaised, transition: 'background .3s' }}>
+      <div style={{ flexShrink: 0, padding: '12px 16px', paddingBottom: 'max(12px, env(safe-area-inset-bottom))', background: T.isDark ? 'rgba(13,14,19,.88)' : 'rgba(248,250,252,.92)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderTop: `1px solid ${T.isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)'}` }}>
         {step < 4 ? (
           <button onClick={next} dir="rtl" className="btn-gold w-full"
             style={{ padding: '18px', fontSize: 17, fontFamily: 'Inter, sans-serif', fontWeight: 900, letterSpacing: '-.3px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>

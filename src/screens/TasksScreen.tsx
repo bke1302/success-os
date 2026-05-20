@@ -131,30 +131,41 @@ export function TasksScreen({ tasks, onSave, onDelete, onToggle }: Props) {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: T.bg, transition: 'background .3s' }}>
 
-      {/* ── Quick add — fixed at top ── */}
-      <div style={{ flexShrink: 0, padding: '10px 16px', borderBottom: `1px solid ${T.divider}`, display: 'flex', alignItems: 'center', gap: 8, background: T.bgRaised, transition: 'background .3s' }}>
-        <button onClick={() => setHighPrio(h => !h)} style={{
-          width: 32, height: 32, borderRadius: 10, flexShrink: 0,
-          border: `1px solid ${highPrio ? '#5B8CFF' : T.border2}`,
-          background: highPrio ? 'rgba(91,140,255,.15)' : 'transparent',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', transition: 'all .15s',
+      {/* ── Quick add — floating glass pill ── */}
+      <div style={{ flexShrink: 0, padding: '12px 16px 0' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 8px 8px 14px',
+          background: T.isDark ? 'rgba(20,22,30,.92)' : 'rgba(255,255,255,.92)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          borderRadius: 20,
+          border: `1px solid ${T.isDark ? 'rgba(255,255,255,.09)' : 'rgba(0,0,0,.09)'}`,
+          boxShadow: T.isDark ? '0 4px 24px rgba(0,0,0,.45)' : '0 4px 24px rgba(0,0,0,.1)',
         }}>
-          <ArrowUp style={{ width: 14, height: 14, color: highPrio ? '#5B8CFF' : T.textDim }} strokeWidth={2.5} />
-        </button>
-        <input ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && addTask()}
-          placeholder="הוסף משימה…" dir="rtl"
-          style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 500, color: T.text }} />
-        <button onClick={addTask} disabled={!draft.trim()} style={{
-          width: 32, height: 32, borderRadius: 10, flexShrink: 0, border: 'none',
-          background: draft.trim() ? '#5B8CFF' : T.tagBg,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: draft.trim() ? 'pointer' : 'default', transition: 'all .15s',
-          boxShadow: draft.trim() ? '0 2px 12px rgba(91,140,255,.4)' : 'none',
-        }}>
-          <ArrowUp style={{ width: 14, height: 14, color: draft.trim() ? '#fff' : T.textDim }} strokeWidth={2.5} />
-        </button>
+          <button onClick={() => setHighPrio(h => !h)} style={{
+            width: 30, height: 30, borderRadius: 10, flexShrink: 0,
+            border: `1px solid ${highPrio ? '#5B8CFF' : T.border2}`,
+            background: highPrio ? 'rgba(91,140,255,.15)' : 'transparent',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', transition: 'all .15s',
+          }}>
+            <ArrowUp style={{ width: 13, height: 13, color: highPrio ? '#5B8CFF' : T.textDim }} strokeWidth={2.5} />
+          </button>
+          <input ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addTask()}
+            placeholder="הוסף משימה…" dir="rtl"
+            style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 500, color: T.text }} />
+          <button onClick={addTask} disabled={!draft.trim()} style={{
+            width: 34, height: 34, borderRadius: 12, flexShrink: 0, border: 'none',
+            background: draft.trim() ? '#5B8CFF' : T.isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: draft.trim() ? 'pointer' : 'default', transition: 'all .2s',
+            boxShadow: draft.trim() ? '0 2px 14px rgba(91,140,255,.45)' : 'none',
+          }}>
+            <ArrowUp style={{ width: 14, height: 14, color: draft.trim() ? '#fff' : T.textDim }} strokeWidth={2.5} />
+          </button>
+        </div>
       </div>
 
       {/* ── Scrollable: hero + filter chips + task list (כמו HomeScreen) ── */}
