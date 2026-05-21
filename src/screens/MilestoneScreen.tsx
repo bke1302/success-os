@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { playComplete } from '../utils/sounds'
 
 interface Props {
@@ -20,12 +20,26 @@ export function MilestoneScreen({ streak, onDone }: Props) {
   if (!milestone) return null
 
   const { label, title, sub } = milestone
+  const [shared, setShared] = useState(false)
 
   useEffect(() => {
     playComplete()
-    const t = setTimeout(onDone, 4000)
+    const t = setTimeout(onDone, 5000)
     return () => clearTimeout(t)
   }, [onDone])
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const text = `🔥 ${streak} ימים ברצף ב-SUCCESS OS!\n${title}\n${sub}\nהצטרף אליי: successos.app`
+    if (navigator.share) {
+      navigator.share({ text }).catch(() => {})
+    } else {
+      const msg = encodeURIComponent(text)
+      window.open(`https://wa.me/?text=${msg}`, '_blank')
+    }
+    setShared(true)
+    setTimeout(() => setShared(false), 2000)
+  }
 
   return (
     <div
@@ -88,13 +102,29 @@ export function MilestoneScreen({ streak, onDone }: Props) {
         animation: 'sentenceIn .4s cubic-bezier(.16,1,.3,1) .45s both',
       }}>{sub}</p>
 
+      {/* Share button */}
+      <button onClick={handleShare} dir="rtl"
+        style={{
+          position: 'absolute', bottom: 80,
+          display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px',
+          background: shared ? 'rgba(74,222,128,.12)' : 'rgba(255,255,255,.06)',
+          border: `1px solid ${shared ? 'rgba(74,222,128,.3)' : 'rgba(255,255,255,.12)'}`,
+          borderRadius: 999, cursor: 'pointer',
+          fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700,
+          letterSpacing: '1.5px', color: shared ? '#4ADE80' : 'rgba(255,255,255,.5)',
+          textTransform: 'uppercase', transition: 'all .2s',
+          animation: 'sentenceIn .4s ease .9s both',
+        }}>
+        {shared ? '✓ שותף' : '🔥 שתף את הישג'}
+      </button>
+
       {/* Tap hint */}
       <p style={{
         position: 'absolute', bottom: 48,
         fontFamily: 'Barlow Condensed, sans-serif',
         fontSize: 9, fontWeight: 700, letterSpacing: '2px',
         color: 'rgba(255,255,255,.15)', textTransform: 'uppercase',
-        animation: 'sentenceIn .4s ease .9s both',
+        animation: 'sentenceIn .4s ease 1s both',
       }}>לחץ להמשך</p>
     </div>
   )

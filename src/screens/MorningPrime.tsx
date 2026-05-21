@@ -236,6 +236,20 @@ export function MorningPrime({ onComplete, dayCount, streak, lastWin, yesterdayH
               </div>
             )}
 
+            {/* Quick mode */}
+            <button onClick={handleStart} dir="rtl"
+              style={{
+                width: '100%', marginBottom: 12,
+                padding: '11px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                background: 'transparent', border: `1px dashed ${T.border2}`,
+                borderRadius: 14, cursor: 'pointer',
+                fontFamily: 'Barlow Condensed, sans-serif', fontSize: 11, fontWeight: 700,
+                letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase',
+                animation: 'cardStagger .38s var(--ease-out) .18s both',
+              }}>
+              ⚡ מצב מהיר — 60 שניות בלבד
+            </button>
+
             {/* Daily Challenge */}
             <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRight: '3px solid rgba(96,165,250,.5)', borderRadius: 18, padding: '16px 18px', marginBottom: 12, animation: 'cardStagger .38s var(--ease-out) .2s both' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>

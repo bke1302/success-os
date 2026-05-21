@@ -174,10 +174,24 @@ export function EveningReview({ commitment, identity, onComplete }: Props) {
                 fontFamily: '"Frank Ruhl Libre", Georgia, serif',
                 fontSize: 'clamp(3.5rem, 18vw, 6rem)',
                 fontWeight: 900, lineHeight: 1,
-                color: score >= 7 ? (T.isDark ? '#FFD60A' : '#8B6800') : score >= 5 ? T.text : T.textMuted,
+                color: score >= 9 ? '#FFD60A' : score >= 7 ? (T.isDark ? '#FFD60A' : '#8B6800') : score >= 5 ? T.text : T.textMuted,
                 letterSpacing: '-3px',
                 transition: 'color .3s',
               }}>{score}</span>
+              <p dir="rtl" style={{
+                fontFamily: 'Barlow Condensed, sans-serif', fontSize: 11, fontWeight: 700,
+                letterSpacing: '2px', textTransform: 'uppercase', margin: '6px 0 0',
+                color: score >= 9 ? '#FFD60A'
+                     : score >= 7 ? '#4ADE80'
+                     : score >= 5 ? T.textSub
+                     : 'rgba(255,92,92,.6)',
+                transition: 'color .3s',
+              }}>
+                {score >= 9 ? '🔥 יום שיא — תזכור את התחושה הזאת'
+               : score >= 7 ? '💪 יום חזק — ממשיכים בדיוק כך'
+               : score >= 5 ? '✅ ביצוע בסיסי — חשוב שהיית נוכח'
+               :              '🌱 יום קשה — הנוכחות עצמה היא ניצחון'}
+              </p>
             </div>
 
             <EnergySlider value={score} onChange={setScore} label="" size="lg" />

@@ -5,11 +5,11 @@ import { useTheme } from '../contexts/ThemeContext'
 type View = AppState['currentView']
 
 const TABS: { id: View; Icon: typeof Home; label: string }[] = [
-  { id: 'home',    Icon: Home,     label: 'בית'      },
-  { id: 'prime',   Icon: Zap,      label: 'יומי'     },
-  { id: 'wins',    Icon: Trophy,   label: 'גדילה'    },
-  { id: 'tasks',   Icon: ListTodo, label: 'משימות'   },
-  { id: 'profile', Icon: Settings, label: 'הגדרות'   },
+  { id: 'home',    Icon: Home,     label: 'בית'     },
+  { id: 'prime',   Icon: Zap,      label: 'פריים'   },
+  { id: 'wins',    Icon: Trophy,   label: 'גדילה'   },
+  { id: 'tasks',   Icon: ListTodo, label: 'משימות'  },
+  { id: 'profile', Icon: Settings, label: 'פרופיל'  },
 ]
 
 const ACCENT_DARK  = '#5B8CFF'
