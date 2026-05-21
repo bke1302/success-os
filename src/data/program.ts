@@ -14,7 +14,7 @@ export const WEEK_THEMES: WeekTheme[] = [
     title:    'שבוע ייצור',
     desc:     'תעשה. תיצור. תמכור. ייצור הוא מה שמפריד בין חולמים למצליחנים',
     color:    '#f5c435',
-    habitIds: ['deepwork', 'content', 'revenue'],
+    habitIds: ['deepwork', 'onetask', 'dayplan'],
   },
   {
     title:    'שבוע למידה',
@@ -32,7 +32,7 @@ export const WEEK_THEMES: WeekTheme[] = [
     title:    'שבוע קשרים',
     desc:     'הרשת שלך היא הנכס שלך — אנשים שמגיעים רחוק בונים קשרים כל יום',
     color:    '#22c55e',
-    habitIds: ['outreach', 'give', 'plan'],
+    habitIds: ['connect', 'gratitude', 'meditate'],
   },
 ]
 

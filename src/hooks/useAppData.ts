@@ -39,9 +39,14 @@ function computeStreak(entries: DayEntry[], usedFreezeOn: string[] = []): number
   )
   const frozen = new Set(usedFreezeOn)
 
-  let streak = 0
-  let expected = todayKey()
+  // If today's evening isn't saved yet, start counting from yesterday.
+  // When saveEvening calls this, today is already in `completed`, so it counts.
+  const today = todayKey()
+  const startDate = new Date(today)
+  if (!completed.has(today)) startDate.setDate(startDate.getDate() - 1)
+  let expected = startDate.toISOString().slice(0, 10)
 
+  let streak = 0
   for (let i = 0; i < 1000; i++) {
     if (completed.has(expected) || frozen.has(expected)) {
       streak++
@@ -63,7 +68,14 @@ export function getDayPhase(): 'morning' | 'day' | 'evening' {
 }
 
 export function useAppData() {
-  const [state, setStateRaw] = useState<AppState>(loadState)
+  const [state, setStateRaw] = useState<AppState>(() => {
+    const s = loadState()
+    // Initialise trial start date on first load
+    if (!s.trialStarted) s.trialStarted = new Date().toISOString()
+    // Initialise referral code
+    if (!s.referralCode) s.referralCode = Math.random().toString(36).slice(2, 8).toUpperCase()
+    return s
+  })
 
   const persist = (next: AppState) => {
     try {
@@ -185,6 +197,9 @@ export function useAppData() {
     persist({ ...state, usedFreezeOn, streak, streakFreezes: (state.streakFreezes ?? 1) - 1 })
   }
 
+  const activatePro = () =>
+    persist({ ...state, isPro: true, proSince: new Date().toISOString() })
+
   const saveUserHabit = (habit: UserHabit) => {
     const existing = state.userHabits ?? []
     const idx = existing.findIndex(h => h.id === habit.id)
@@ -221,6 +236,7 @@ export function useAppData() {
     saveHabitChallenge, clearHabitChallenge,
     useStreakFreeze,
     saveUserHabit, deleteUserHabit,
+    activatePro,
     clearAll,
   }
 }
