@@ -23,7 +23,9 @@ import { FocusScreen }           from './screens/FocusScreen'
 import { MilestoneScreen }       from './screens/MilestoneScreen'
 import { HabitChallengeScreen }  from './screens/HabitChallengeScreen'
 import { ComebackScreen }        from './screens/ComebackScreen'
+import { UpgradeScreen }         from './screens/UpgradeScreen'
 import type { EnergyCheckin, AppState }   from './types'
+import { usePro }                from './hooks/usePro'
 import { ThemeContext }          from './contexts/ThemeContext'
 import { darkTokens, lightTokens } from './theme'
 import { useMilestone }          from './hooks/useMilestone'
@@ -42,6 +44,7 @@ export default function App() {
     saveHabitChallenge, clearHabitChallenge,
     useStreakFreeze,
     saveUserHabit, deleteUserHabit,
+    activatePro,
   } = useAppData()
 
   const [theme,           setTheme]           = useState<'dark'|'light'>(() => (localStorage.getItem('app_theme') as 'dark'|'light') ?? 'dark')
@@ -53,6 +56,9 @@ export default function App() {
   const [completionWin,   setCompletionWin]   = useState('')
   const [completionCmt,   setCompletionCmt]   = useState('')
   const [comebackDismissed, setComebackDismissed] = useState(() => !!sessionStorage.getItem('comeback_dismissed'))
+  const [showUpgrade,       setShowUpgrade]       = useState(false)
+
+  const { isPro, trialDaysLeft, isTrialExpired } = usePro(state)
 
   const { showMilestone, dismissMilestone }   = useMilestone(state.streak)
   const { showInstallBanner, triggerInstall, dismissInstall } = useInstallPrompt()
@@ -182,6 +188,16 @@ export default function App() {
         </div>
       )}
 
+      {/* Upgrade overlay */}
+      {showUpgrade && (
+        <UpgradeScreen
+          onClose={() => setShowUpgrade(false)}
+          onActivate={() => { activatePro(); setShowUpgrade(false) }}
+          daysLeft={trialDaysLeft ?? undefined}
+          triggerSrc={isTrialExpired ? 'trial_end' : 'manual'}
+        />
+      )}
+
       {/* Completion overlay */}
       {showCompletion && (
         <CompletionScreen
@@ -272,6 +288,9 @@ export default function App() {
             streakFreezes={state.streakFreezes ?? 0}
             onUseFreeze={useStreakFreeze}
             totalDays={state.totalDays}
+            trialDaysLeft={trialDaysLeft}
+            isPro={isPro}
+            onUpgrade={() => setShowUpgrade(true)}
           />
         )}
 
@@ -407,6 +426,9 @@ export default function App() {
               const avg = withEvening.reduce((s, e) => s + e.evening!.score, 0) / withEvening.length
               return avg.toFixed(1)
             })()}
+            referralCode={state.referralCode}
+            onUpgrade={() => setShowUpgrade(true)}
+            isPro={isPro}
           />
         )}
       </div>

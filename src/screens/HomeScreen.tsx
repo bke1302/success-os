@@ -19,6 +19,9 @@ interface Props {
   streakFreezes?:  number
   onUseFreeze?:    (date: string) => void
   totalDays?:      number
+  trialDaysLeft?:  number | null
+  isPro?:          boolean
+  onUpgrade?:      () => void
 }
 
 const RANKS = [
@@ -52,7 +55,7 @@ function getGreeting(hour: number): { text: string; sub: string } {
   return               { text: 'ערב טוב',       sub: new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' }) }
 }
 
-export function HomeScreen({ streak, today, userName, entries, tasks, challenge, onStart, onNavigate, onRedemption, streakFreezes = 0, onUseFreeze, totalDays = 0 }: Props) {
+export function HomeScreen({ streak, today, userName, entries, tasks, challenge, onStart, onNavigate, onRedemption, streakFreezes = 0, onUseFreeze, totalDays = 0, trialDaysLeft, isPro, onUpgrade }: Props) {
   const T = useTheme()
   const hour = new Date().getHours()
   const { text: greetText, sub: greetSub } = getGreeting(hour)
@@ -221,6 +224,32 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
             <div className="stat-lbl">ממוצע</div>
           </div>
         </div>
+
+        {/* ── Trial / Pro Banner ── */}
+        {!isPro && trialDaysLeft !== null && trialDaysLeft !== undefined && (
+          <div style={{ padding: '0 16px 14px' }}>
+            <button onClick={onUpgrade} style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+              padding: '12px 16px',
+              background: trialDaysLeft <= 3
+                ? 'linear-gradient(135deg, rgba(255,214,10,.12) 0%, rgba(255,159,10,.08) 100%)'
+                : 'rgba(255,214,10,.06)',
+              border: `1px solid ${trialDaysLeft <= 3 ? 'rgba(255,214,10,.4)' : 'rgba(255,214,10,.18)'}`,
+              borderRadius: 14, cursor: 'pointer', direction: 'rtl', transition: 'all .2s',
+            }}>
+              <span style={{ fontSize: 16, flexShrink: 0 }}>👑</span>
+              <div dir="rtl" style={{ flex: 1, textAlign: 'right' }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 800, color: '#FFD60A', margin: 0, letterSpacing: '-.3px' }}>
+                  {trialDaysLeft === 0 ? 'הניסיון הסתיים — שדרג ל-PRO' : `${trialDaysLeft} ימים נותרו בניסיון`}
+                </p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'rgba(255,214,10,.6)', margin: '2px 0 0' }}>
+                  לחץ לשדרוג ₪39/חודש בלבד
+                </p>
+              </div>
+              <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: '#FFD60A', textTransform: 'uppercase', flexShrink: 0 }}>שדרג →</span>
+            </button>
+          </div>
+        )}
 
         {/* ── Score Trend Alert ── */}
         {scoreTrend && (

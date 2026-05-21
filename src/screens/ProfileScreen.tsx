@@ -20,6 +20,9 @@ interface Props {
   streak?:          number
   totalDays?:       number
   avgScore?:        string
+  referralCode?:    string
+  onUpgrade?:       () => void
+  isPro?:           boolean
 }
 
 const CATEGORIES: UserGoal['category'][] = ['עסקי', 'כספי', 'בריאות', 'קשרים', 'אישי']
@@ -109,7 +112,7 @@ function GoalRow({ goal, onDelete, onUpdate }: {
   )
 }
 
-export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleTheme, appData, onImportData, userHabits = [], onSaveUserHabit, onDeleteUserHabit, streak = 0, totalDays = 0, avgScore = '—' }: Props) {
+export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleTheme, appData, onImportData, userHabits = [], onSaveUserHabit, onDeleteUserHabit, streak = 0, totalDays = 0, avgScore = '—', referralCode, onUpgrade, isPro }: Props) {
   const T = useTheme()
   const [localGoals, setLocalGoals] = useState<UserGoal[]>(goals)
   const [saved, setSaved] = useState(false)
@@ -136,6 +139,28 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
     setNewHabitSub('')
     setHabitAdded(true)
     setTimeout(() => setHabitAdded(false), 1500)
+  }
+
+  // ── Referral ───────────────────────────────────────────────────────────────
+  const [referralCopied, setReferralCopied] = useState(false)
+
+  const copyReferral = () => {
+    const url = `${window.location.origin}${window.location.pathname}?ref=${referralCode}`
+    navigator.clipboard.writeText(url).then(() => {
+      setReferralCopied(true)
+      setTimeout(() => setReferralCopied(false), 2000)
+    })
+  }
+
+  const shareWhatsAppSummary = () => {
+    const msg = encodeURIComponent(
+      `🔥 SUCCESS OS — הדוח היומי שלי\n` +
+      `STREAK: ${streak} ימים\n` +
+      `סה"כ ימים: ${totalDays}\n` +
+      `ממוצע ציון: ${avgScore}/10\n` +
+      `הצטרף/י אליי: ${window.location.origin}${window.location.pathname}?ref=${referralCode ?? ''}`
+    )
+    window.open(`https://wa.me/?text=${msg}`, '_blank')
   }
 
   // ── Partner share ──────────────────────────────────────────────────────────
@@ -358,6 +383,50 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
                 </span>
                 <Share2 style={{ width: 14, height: 14, color: partnerCopied ? '#4ADE80' : T.textMuted, flexShrink: 0 }} strokeWidth={2} />
               </button>
+            </div>
+
+            {/* PRO / Upgrade */}
+            {!isPro && onUpgrade && (
+              <div style={{ marginBottom: 20 }}>
+                <button onClick={onUpgrade} dir="rtl"
+                  style={{
+                    width: '100%', padding: '16px',
+                    background: 'linear-gradient(135deg, rgba(255,214,10,.12) 0%, rgba(255,159,10,.08) 100%)',
+                    border: '1px solid rgba(255,214,10,.35)', borderRadius: 16, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 12,
+                  }}>
+                  <span style={{ fontSize: 20, flexShrink: 0 }}>👑</span>
+                  <div dir="rtl" style={{ flex: 1, textAlign: 'right' }}>
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 900, color: '#FFD60A', margin: 0 }}>שדרג ל-PRO</p>
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'rgba(255,214,10,.6)', margin: '3px 0 0' }}>הרגלים ללא הגבלה · AI Coach · ₪39/חודש</p>
+                  </div>
+                  <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, color: '#FFD60A', letterSpacing: '1.5px', textTransform: 'uppercase', flexShrink: 0 }}>שדרג →</span>
+                </button>
+              </div>
+            )}
+
+            {/* Referral + WhatsApp Share */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', marginBottom: 10 }}>שתף והרוויח</p>
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, overflow: 'hidden' }}>
+                {referralCode && (
+                  <div style={{ padding: '12px 14px', borderBottom: `1px solid ${T.divider}`, direction: 'rtl' }}>
+                    <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', margin: '0 0 6px' }}>קוד הפניה שלך</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, fontWeight: 900, color: '#FFD60A', letterSpacing: '3px', margin: 0 }}>{referralCode}</p>
+                      <button onClick={copyReferral}
+                        style={{ background: T.tagBg, border: `1px solid ${T.border2}`, borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: referralCopied ? '#4ADE80' : T.textMuted, textTransform: 'uppercase' }}>
+                        {referralCopied ? '✓ הועתק' : 'העתק קישור'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <button onClick={shareWhatsAppSummary} dir="rtl"
+                  style={{ width: '100%', padding: '12px 14px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, direction: 'rtl' }}>
+                  <span style={{ fontSize: 18, flexShrink: 0 }}>💬</span>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: '#4ADE80' }}>שתף סיכום יומי ב-WhatsApp</span>
+                </button>
+              </div>
             </div>
 
             {/* Divider */}
