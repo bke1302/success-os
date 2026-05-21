@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { X, Timer } from 'lucide-react'
 import { HABITS, CATEGORY_COLORS, type Habit } from '../constants'
 import { playCheck, playUncheck, playComplete, playTimerDone } from '../utils/sounds'
+import { haptic } from '../utils/haptic'
 import type { UserGoal, UserHabit } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 
@@ -131,8 +132,8 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
   const toggle = (id: string) => {
     const already = completedHabits.includes(id)
     const next = already ? completedHabits.filter(h => h !== id) : [...completedHabits, id]
-    if (already) playUncheck(); else playCheck()
-    if (next.length === totalHabits) playComplete()
+    if (already) { haptic('uncheck'); playUncheck() } else { haptic('check'); playCheck() }
+    if (next.length === totalHabits) { haptic('success'); playComplete() }
     onToggle(next)
   }
 

@@ -582,10 +582,59 @@ body::before {
 
 /* ─── Screen transition ─────────────────────────────────────────── */
 @keyframes screenIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateX(22px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-.screen-in { animation: screenIn .28s cubic-bezier(.16,1,.3,1) both; }
+@keyframes screenOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-22px); }
+}
+@keyframes screenInBack {
+  from { opacity: 0; transform: translateX(-22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.screen-in      { animation: screenIn     .3s cubic-bezier(.16,1,.3,1) both; }
+.screen-in-back { animation: screenInBack .3s cubic-bezier(.16,1,.3,1) both; }
+
+/* ─── View Transitions API ─────────────────────────────────────── */
+.screen-content { view-transition-name: screen-content; }
+
+@keyframes vt-slide-in {
+  from { opacity: 0; transform: translateX(28px) scale(.98); }
+  to   { opacity: 1; transform: translateX(0)    scale(1); }
+}
+@keyframes vt-slide-out {
+  from { opacity: 1; transform: translateX(0)     scale(1); }
+  to   { opacity: 0; transform: translateX(-28px) scale(.98); }
+}
+@keyframes vt-slide-in-back {
+  from { opacity: 0; transform: translateX(-28px) scale(.98); }
+  to   { opacity: 1; transform: translateX(0)     scale(1); }
+}
+@keyframes vt-slide-out-back {
+  from { opacity: 1; transform: translateX(0)    scale(1); }
+  to   { opacity: 0; transform: translateX(28px) scale(.98); }
+}
+
+::view-transition-old(screen-content) {
+  animation: 280ms cubic-bezier(.16,1,.3,1) vt-slide-out;
+}
+::view-transition-new(screen-content) {
+  animation: 280ms cubic-bezier(.16,1,.3,1) vt-slide-in;
+}
+.nav-back::view-transition-old(screen-content) {
+  animation: 280ms cubic-bezier(.16,1,.3,1) vt-slide-out-back;
+}
+.nav-back::view-transition-new(screen-content) {
+  animation: 280ms cubic-bezier(.16,1,.3,1) vt-slide-in-back;
+}
+
+/* ─── Onboarding step transition ───────────────────────────────── */
+@keyframes ob-step-in {
+  from { opacity: 0; transform: translateY(24px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+.ob-step { animation: ob-step-in .42s cubic-bezier(.16,1,.3,1) both; }
 
 /* ─── Home sentence stagger ─────────────────────────────────────── */
 @keyframes sentenceIn {

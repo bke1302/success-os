@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAppData, getDayPhase } from './hooks/useAppData'
 import { requestAndScheduleReminder } from './utils/reminder'
 import { HABITS } from './constants'
@@ -31,6 +31,7 @@ import { darkTokens, lightTokens } from './theme'
 import { useMilestone }          from './hooks/useMilestone'
 import { useInstallPrompt }      from './hooks/useInstallPrompt'
 import { ErrorBoundary }         from './components/ErrorBoundary'
+import { haptic }                from './utils/haptic'
 
 export default function App() {
   const {
@@ -58,6 +59,11 @@ export default function App() {
   const [completionCmt,   setCompletionCmt]   = useState('')
   const [comebackDismissed, setComebackDismissed] = useState(() => !!sessionStorage.getItem('comeback_dismissed'))
   const [showUpgrade,       setShowUpgrade]       = useState(false)
+  const [navDir,            setNavDir]            = useState<'forward'|'back'>('forward')
+
+  // ── Touch swipe state ──────────────────────────────────────────────────────
+  const touchStartX = useRef(0)
+  const touchStartY = useRef(0)
 
   const { isPro, trialDaysLeft, isTrialExpired } = usePro(state)
 
@@ -85,6 +91,40 @@ export default function App() {
   if (!splashRef.current) {
     splashRef.current = true
     setTimeout(() => setShowSplash(false), 1500)
+  }
+
+  // ── View Transitions navigate ──────────────────────────────────────────────
+  const NAV_TABS: AppState['currentView'][] = ['home', 'prime', 'wins', 'tasks', 'profile']
+
+  const navigate = useCallback((v: AppState['currentView'], dir: 'forward' | 'back' = 'forward') => {
+    setNavDir(dir)
+    if ('startViewTransition' in document) {
+      (document as Document & { startViewTransition: (cb: () => void) => void })
+        .startViewTransition(() => { setView(v); setForceEvening(false) })
+    } else {
+      setView(v); setForceEvening(false)
+    }
+  }, [setView])
+
+  // ── Swipe between tabs ─────────────────────────────────────────────────────
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchStartX.current
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current)
+    if (Math.abs(dx) < 52 || dy > 60) return          // too short or vertical
+    const tabViews: AppState['currentView'][] = ['home', 'prime', 'wins', 'tasks', 'profile']
+    const idx = tabViews.indexOf(state.currentView)
+    if (idx === -1) return                             // in a sub-view — don't swipe
+    if (dx < 0 && idx < tabViews.length - 1) {
+      haptic('tap'); navigate(tabViews[idx + 1], 'forward')
+    }
+    if (dx > 0 && idx > 0) {
+      haptic('tap'); navigate(tabViews[idx - 1], 'back')
+    }
   }
 
   const phase    = getDayPhase()
@@ -207,7 +247,7 @@ export default function App() {
           win={completionWin}
           commitment={completionCmt}
           dayCount={dayCount}
-          onDone={() => { setShowCompletion(false); setView('home') }}
+          onDone={() => { haptic('success'); setShowCompletion(false); navigate('home', 'back') }}
         />
       )}
 
@@ -215,7 +255,7 @@ export default function App() {
       {showMilestone && (
         <MilestoneScreen
           streak={state.streak}
-          onDone={dismissMilestone}
+          onDone={() => { haptic('milestone'); dismissMilestone() }}
         />
       )}
 
@@ -229,7 +269,10 @@ export default function App() {
       )}
 
       {/* Bottom nav — always visible */}
-      <BottomNav current={state.currentView} onChange={v => { setView(v); setForceEvening(false) }} />
+      <BottomNav current={state.currentView} onChange={v => navigate(
+        v,
+        NAV_TABS.indexOf(v) < NAV_TABS.indexOf(state.currentView) ? 'back' : 'forward'
+      )} />
 
       {/* Back bar — shown on prime + sub-views */}
       {canGoBack && (
@@ -241,7 +284,7 @@ export default function App() {
         }}>
         <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px' }}>
           <button
-            onClick={() => { setView('home'); setForceEvening(false) }}
+            onClick={() => navigate('home', 'back')}
             aria-label="חזור לדף הבית"
             style={{
               background: 'transparent',
@@ -272,8 +315,14 @@ export default function App() {
         </div>
       )}
 
-      {/* Content */}
-      <div key={state.currentView} className="screen-in" style={{ flex: 1, overflow: 'hidden' }}>
+      {/* Content — swipe + view transition target */}
+      <div
+        key={state.currentView}
+        className={`screen-content ${navDir === 'back' ? 'screen-in-back' : 'screen-in'}`}
+        style={{ flex: 1, overflow: 'hidden' }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
 
         {state.currentView === 'home' && (
           <HomeScreen
@@ -284,8 +333,8 @@ export default function App() {
             entries={state.entries}
             tasks={state.tasks ?? []}
             challenge={state.habitChallenge}
-            onStart={() => setView('prime')}
-            onNavigate={(v) => { setView(v as AppState['currentView']); setForceEvening(false) }}
+            onStart={() => navigate('prime')}
+            onNavigate={(v) => navigate(v as AppState['currentView'])}
             onRedemption={saveRedemption}
             streakFreezes={state.streakFreezes ?? 0}
             onUseFreeze={useStreakFreeze}
@@ -309,7 +358,7 @@ export default function App() {
                 onSaveIncantation={saveIncantation}
                 userGoals={state.userGoals ?? []}
                 entries={state.entries}
-                onGoToProfile={() => setView('profile')}
+                onGoToProfile={() => navigate('profile')}
               />
             )}
             {screen === 'day' && (
@@ -357,7 +406,7 @@ export default function App() {
             requiredHabitIds={requiredHabitIds}
             userHabits={state.userHabits ?? []}
             userGoals={state.userGoals ?? []}
-            onGoToProfile={() => setView('profile')}
+            onGoToProfile={() => navigate('profile')}
           />
         )}
 
