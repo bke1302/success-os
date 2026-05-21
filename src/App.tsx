@@ -30,6 +30,7 @@ import { ThemeContext }          from './contexts/ThemeContext'
 import { darkTokens, lightTokens } from './theme'
 import { useMilestone }          from './hooks/useMilestone'
 import { useInstallPrompt }      from './hooks/useInstallPrompt'
+import { ErrorBoundary }         from './components/ErrorBoundary'
 
 export default function App() {
   const {
@@ -159,6 +160,7 @@ export default function App() {
   const tokens = theme === 'dark' ? darkTokens : lightTokens
 
   return (
+    <ErrorBoundary>
     <ThemeContext.Provider value={tokens}>
     <div data-theme={theme} style={{ background: tokens.bg, height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'background .3s' }}>
 
@@ -244,7 +246,7 @@ export default function App() {
             style={{
               background: 'transparent',
               border: `1px solid ${tokens.border}`,
-              borderRadius: 9, width: 28, height: 28,
+              borderRadius: 12, width: 44, height: 44,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', color: tokens.textMuted,
               fontSize: 13, fontWeight: 700,
@@ -448,5 +450,6 @@ export default function App() {
       )}
     </div>
     </ThemeContext.Provider>
+    </ErrorBoundary>
   )
 }

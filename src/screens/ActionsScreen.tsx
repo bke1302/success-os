@@ -250,14 +250,14 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
                   aria-label={done ? `בטל — ${habit.title}` : `סמן כהושלם — ${habit.title}`}
                   aria-pressed={done}
                   style={{
-                    width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
+                    width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
                     background: done ? '#4F7DFF' : 'transparent',
                     border: `2px solid ${done ? '#4F7DFF' : T.border2}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer', transition: 'all 0.18s',
                     boxShadow: done ? '0 0 10px rgba(79,125,255,.45)' : 'none',
                   }}>
-                  {done && <span className="check-bounce" style={{ color: '#fff', fontSize: 10, fontWeight: 900 }}>✓</span>}
+                  {done && <span className="check-bounce" style={{ color: '#fff', fontSize: 12, fontWeight: 900 }}>✓</span>}
                 </button>
               </div>
             )
@@ -307,13 +307,13 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
                         aria-label={done ? `בטל — ${habit.title}` : `סמן כהושלם — ${habit.title}`}
                         aria-pressed={done}
                         style={{
-                          width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                          width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
                           background: done ? '#4F7DFF' : 'transparent',
-                          border: `1.5px solid ${done ? '#4F7DFF' : T.border2}`,
+                          border: `2px solid ${done ? '#4F7DFF' : T.border2}`,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           cursor: 'pointer', transition: 'all .15s',
                         }}>
-                        {done && <span className="check-bounce" style={{ color: '#fff', fontSize: 9, fontWeight: 900 }}>✓</span>}
+                        {done && <span className="check-bounce" style={{ color: '#fff', fontSize: 11, fontWeight: 900 }}>✓</span>}
                       </button>
                     </div>
                   )
@@ -350,13 +350,13 @@ export function ActionsScreen({ completedHabits, onToggle, requiredHabitIds, use
                       aria-label={done ? `בטל — ${habit.title}` : `סמן כהושלם — ${habit.title}`}
                       aria-pressed={done}
                       style={{
-                        width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                        width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
                         background: done ? '#BF5AF2' : 'transparent',
-                        border: `1.5px solid ${done ? '#BF5AF2' : T.border2}`,
+                        border: `2px solid ${done ? '#BF5AF2' : T.border2}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         cursor: 'pointer', transition: 'all .15s',
                       }}>
-                      {done && <span style={{ color: '#fff', fontSize: 9, fontWeight: 900 }}>✓</span>}
+                      {done && <span style={{ color: '#fff', fontSize: 11, fontWeight: 900 }}>✓</span>}
                     </button>
                   </div>
                 )

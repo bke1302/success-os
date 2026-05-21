@@ -103,6 +103,10 @@ export interface AppState {
   userHabits?:      UserHabit[]
   streakFreezes?:   number
   usedFreezeOn?:    string[]
+  isPro?:           boolean
+  proSince?:        string   // ISO date when Pro was activated
+  trialStarted?:    string   // ISO date of first app open
+  referralCode?:    string   // user's unique referral code
 }
 
 export type DayPhase = 'morning' | 'day' | 'evening'

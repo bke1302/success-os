@@ -90,7 +90,9 @@ export async function generateWinCard(data: CardData): Promise<string> {
   ctx.font = 'bold 22px sans-serif'
   ctx.fillStyle = 'rgba(255,255,255,0.2)'
   ctx.textAlign = 'center'
+  ctx.direction = 'rtl'
   ctx.fillText('ציון גדילה יומי', cx, cy + 110)
+  ctx.direction = 'ltr'
 
   // ── Divider ───────────────────────────────────────────────────────
   const grad = ctx.createLinearGradient(120, 0, W - 120, 0)
@@ -104,6 +106,7 @@ export async function generateWinCard(data: CardData): Promise<string> {
   ctx.font = 'bold 22px sans-serif'
   ctx.fillStyle = color
   ctx.textAlign = 'center'
+  ctx.direction = 'rtl'
   ctx.fillText('מה נתתי היום', cx, 600)
 
   ctx.font = '34px sans-serif'
@@ -247,6 +250,9 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 }
 
 function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxW: number, lineH: number) {
+  // Hebrew is RTL — split on spaces and measure each accumulated line
+  const savedDir = ctx.direction
+  ctx.direction = 'rtl'
   const words = text.split(' ')
   let line = ''
   let currentY = y
@@ -261,4 +267,5 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: num
     }
   }
   if (line) ctx.fillText(line, x, currentY)
+  ctx.direction = savedDir
 }

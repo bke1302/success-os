@@ -123,9 +123,15 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
   const [newHabitSub,   setNewHabitSub]   = useState('')
   const [habitAdded, setHabitAdded] = useState(false)
 
+  const FREE_HABIT_LIMIT = 3
+
   const addCustomHabit = () => {
     const title = newHabitTitle.trim()
     if (!title) return
+    if (!isPro && userHabits.length >= FREE_HABIT_LIMIT) {
+      onUpgrade?.()
+      return
+    }
     const habit: UserHabit = {
       id: `custom_${Date.now()}`,
       emoji: newHabitEmoji.trim() || '⭐',
@@ -149,7 +155,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
     navigator.clipboard.writeText(url).then(() => {
       setReferralCopied(true)
       setTimeout(() => setReferralCopied(false), 2000)
-    })
+    }).catch(() => {})
   }
 
   const shareWhatsAppSummary = () => {
@@ -173,7 +179,7 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
     navigator.clipboard.writeText(url).then(() => {
       setPartnerCopied(true)
       setTimeout(() => setPartnerCopied(false), 2000)
-    })
+    }).catch(() => {})
   }
 
   // ── Notifications ─────────────────────────────────────────────────────────
@@ -223,9 +229,10 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
   }
 
   const copyCode = () => {
-    navigator.clipboard.writeText(syncCode)
-    setCodeCopied(true)
-    setTimeout(() => setCodeCopied(false), 2000)
+    navigator.clipboard.writeText(syncCode).then(() => {
+      setCodeCopied(true)
+      setTimeout(() => setCodeCopied(false), 2000)
+    }).catch(() => {})
   }
 
   const addGoal = () => {
