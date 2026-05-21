@@ -1,4 +1,4 @@
-import { Play, Check, Zap, Snowflake } from 'lucide-react'
+import { Play, Zap, Snowflake } from 'lucide-react'
 import type { DayEntry, Task, HabitChallenge } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
 import { getTodayFocusSessions } from './FocusScreen'
@@ -91,9 +91,15 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
     .sort((a, b) => (a.priority === 'high' && b.priority !== 'high' ? -1 : 1))
     .slice(0, 4)
 
-  const previewHabits = HABITS.slice(0, 4)
   const showTasks     = incompleteTasks.length > 0
   const habitPct      = totalHabits > 0 ? habitsDone / totalHabits : 0
+
+  const CATEGORY_META: { key: string; label: string; color: string; emoji: string }[] = [
+    { key: 'production', label: 'ייצור',  color: '#FFD60A', emoji: '🧠' },
+    { key: 'learning',   label: 'למידה',  color: '#60A5FA', emoji: '📚' },
+    { key: 'network',    label: 'קשרים',  color: '#4ADE80', emoji: '🤝' },
+    { key: 'discipline', label: 'משמעת',  color: '#FF5C5C', emoji: '💪' },
+  ]
   const hasBriefData  = entries.filter(e => e.evening).length >= 2
   const brief         = hasBriefData ? generateDailyBrief(entries, streak) : null
 
@@ -333,24 +339,19 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
           </div>
         )}
 
-        {/* ── Task / Habit preview ── */}
-        <div style={{ padding: '0 16px 14px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, direction: 'rtl' }}>
-            <p dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 800, color: T.text, margin: 0, letterSpacing: '-.3px' }}>
-              {showTasks ? 'משימות פתוחות' : 'הרגלים להיום'}
-            </p>
-            <button onClick={() => onNavigate(showTasks ? 'tasks' : 'actions')}
-              aria-label={showTasks ? 'ראה את כל המשימות' : 'ראה את כל ההרגלים'}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '1px', color: '#5B8CFF', textTransform: 'uppercase' }}
-              dir="rtl">ראה הכל →</button>
-          </div>
-
-          <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, overflow: 'hidden', boxShadow: T.cardShadow }}>
-            {showTasks ? (
-              incompleteTasks.map((task, i) => (
+        {/* ── Task preview ── */}
+        {showTasks && (
+          <div style={{ padding: '0 16px 14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, direction: 'rtl' }}>
+              <p dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 800, color: T.text, margin: 0, letterSpacing: '-.3px' }}>משימות פתוחות</p>
+              <button onClick={() => onNavigate('tasks')} aria-label="ראה את כל המשימות"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '1px', color: '#5B8CFF', textTransform: 'uppercase' }}
+                dir="rtl">ראה הכל →</button>
+            </div>
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, overflow: 'hidden', boxShadow: T.cardShadow }}>
+              {incompleteTasks.map((task, i) => (
                 <div key={task.id} onClick={() => onNavigate('tasks')} style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: '13px 16px',
+                  display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px',
                   borderBottom: i < incompleteTasks.length - 1 ? `1px solid ${T.divider}` : 'none',
                   cursor: 'pointer', direction: 'rtl',
                   borderRight: task.priority === 'high' ? '3px solid #5B8CFF' : '3px solid transparent',
@@ -361,48 +362,69 @@ export function HomeScreen({ streak, today, userName, entries, tasks, challenge,
                     <span style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 8.5, fontWeight: 700, letterSpacing: '1px', color: '#5B8CFF', textTransform: 'uppercase' }}>HIGH</span>
                   )}
                 </div>
-              ))
-            ) : (
-              previewHabits.map((habit, i) => {
-                const done = completedHabits.includes(habit.id)
-                return (
-                  <div key={habit.id} onClick={() => onNavigate('actions')} style={{
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '13px 16px',
-                    borderBottom: i < previewHabits.length - 1 ? `1px solid ${T.divider}` : 'none',
-                    cursor: 'pointer', direction: 'rtl',
-                    transition: 'background .15s',
-                  }}>
-                    <div style={{
-                      width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
-                      border: done ? 'none' : `2px solid ${T.border2}`,
-                      background: done ? '#4ADE80' : 'transparent',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: done ? '0 0 6px rgba(74,222,128,.3)' : 'none',
-                      transition: 'all .2s',
-                    }}>
-                      {done && <Check style={{ width: 11, height: 11, color: '#000' }} strokeWidth={3} />}
-                    </div>
-                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: done ? 400 : 600, color: done ? T.textMuted : T.text, textDecoration: done ? 'line-through' : 'none', margin: 0, flex: 1 }}>{habit.title}</p>
-                  </div>
-                )
-              })
-            )}
-
-            {/* Prime CTA if no morning yet */}
-            {!today?.morning && (
-              <div onClick={onStart} style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '13px 16px', borderTop: `1px solid ${T.divider}`,
-                cursor: 'pointer', direction: 'rtl',
-              }}>
-                <div style={{ width: 20, height: 20, borderRadius: '50%', border: '2px dashed rgba(91,140,255,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Play style={{ width: 9, height: 9, color: '#5B8CFF' }} fill="#5B8CFF" strokeWidth={0} />
-                </div>
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: '#5B8CFF' }}>התחל פריים יומי</span>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
+        )}
+
+        {/* ── Habits Category Cards ── */}
+        <div style={{ padding: '0 16px 14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, direction: 'rtl' }}>
+            <p dir="rtl" style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 800, color: T.text, margin: 0, letterSpacing: '-.3px' }}>הרגלים להיום</p>
+            <button onClick={() => onNavigate('actions')} aria-label="ראה את כל ההרגלים"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '1px', color: '#5B8CFF', textTransform: 'uppercase' }}
+              dir="rtl">סמן הרגלים →</button>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {CATEGORY_META.map(cat => {
+              const catHabits = HABITS.filter(h => h.category === cat.key)
+              const catDone   = catHabits.filter(h => completedHabits.includes(h.id)).length
+              const pct       = catHabits.length > 0 ? catDone / catHabits.length : 0
+              const allCatDone = pct === 1
+              return (
+                <button key={cat.key} onClick={() => onNavigate('actions')} style={{
+                  background: allCatDone
+                    ? `${cat.color}12`
+                    : T.card,
+                  border: `1px solid ${allCatDone ? `${cat.color}40` : T.border}`,
+                  borderRadius: 16, padding: '14px 14px 12px',
+                  cursor: 'pointer', textAlign: 'right', direction: 'rtl',
+                  transition: 'all .2s', boxShadow: T.cardShadow,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <span style={{ fontSize: 20 }}>{cat.emoji}</span>
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 900, color: allCatDone ? cat.color : T.text }}>
+                      {catDone}/{catHabits.length}
+                    </span>
+                  </div>
+                  <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', color: allCatDone ? cat.color : T.textMuted, textTransform: 'uppercase', margin: '0 0 8px' }}>
+                    {cat.label}
+                  </p>
+                  <div style={{ height: 3, background: T.isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)', borderRadius: 2, overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%', width: `${pct * 100}%`,
+                      background: cat.color, borderRadius: 2,
+                      transition: 'width .5s cubic-bezier(.16,1,.3,1)',
+                      boxShadow: pct > 0 ? `0 0 6px ${cat.color}60` : 'none',
+                    }} />
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Prime CTA if no morning yet */}
+          {!today?.morning && (
+            <button onClick={onStart} style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+              padding: '12px 16px', marginTop: 10,
+              background: 'rgba(91,140,255,.06)', border: '1px dashed rgba(91,140,255,.3)',
+              borderRadius: 14, cursor: 'pointer', direction: 'rtl',
+            }}>
+              <Play style={{ width: 12, height: 12, color: '#5B8CFF' }} fill="#5B8CFF" strokeWidth={0} />
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: '#5B8CFF' }}>התחל פריים יומי תחילה</span>
+            </button>
+          )}
         </div>
 
         {/* ── Focus CTA ── */}

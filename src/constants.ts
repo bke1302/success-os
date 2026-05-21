@@ -57,24 +57,24 @@ export interface Habit {
 
 export const HABITS: Habit[] = [
   // ── ייצור ────────────────────────────────────────────────────────────────
-  { id: 'deepwork',  emoji: '', title: 'עבודה עמוקה',         subtitle: '2+ שעות ללא הפרעות על הדבר שמקדם אותך הכי הרבה',  category: 'production', timerSec: 7200 },
-  { id: 'content',   emoji: '', title: 'יצירת תוכן',          subtitle: 'כתוב, הקלט, צור — משהו שאחרים יראו ויקבלו ערך',    category: 'production' },
-  { id: 'revenue',   emoji: '', title: 'פעולה להכנסה',        subtitle: 'מכירה, הצעה מחיר, שיווק — פעולה שמכניסה כסף',      category: 'production' },
+  { id: 'deepwork',  emoji: '🧠', title: 'עבודה עמוקה',        subtitle: '90+ דקות ללא הפרעות — טלפון הפוך, הודעות סגורות, רק אתה והמשימה',  category: 'production', timerSec: 5400 },
+  { id: 'onetask',   emoji: '✅', title: 'משימת ה-ONE THING',   subtitle: 'בחר משימה אחת שאם תסיים אותה — היום הצליח. עשה אותה ראשון',       category: 'production' },
+  { id: 'dayplan',   emoji: '📋', title: 'תוכנית יום',          subtitle: '5 דקות בבוקר: כתוב 3 משימות לפי סדר עדיפות — לפני כל פתיחת טלפון', category: 'production', timerSec: 300 },
 
   // ── למידה ────────────────────────────────────────────────────────────────
-  { id: 'read',      emoji: '', title: 'קריאת ספר',           subtitle: '20+ דקות — ספר שמלמד אותך משהו שימושי לחיים שלך',  category: 'learning',   timerSec: 1200 },
-  { id: 'learn',     emoji: '', title: 'למידה פעילה',         subtitle: 'קורס, פודקסט, מנטור — ידע חדש שמשפר אותך',         category: 'learning',   timerSec: 1800 },
-  { id: 'goals',     emoji: '', title: 'סקירת יעדים',         subtitle: 'בדוק את המטרות שלך — האם הפעולות שלך מכוונות אליהן?', category: 'learning', timerSec: 600  },
+  { id: 'read',      emoji: '📚', title: 'קריאת ספר',           subtitle: '20+ דקות — ספר שמלמד משהו שימושי לחיים שלך, לא רק בידור',          category: 'learning',   timerSec: 1200 },
+  { id: 'learn',     emoji: '🎓', title: 'למידה חדשה',          subtitle: 'קורס, פודקאסט, וידאו, מנטור — ידע שמשפר אותך ביום-יום',            category: 'learning',   timerSec: 1800 },
+  { id: 'goals',     emoji: '🎯', title: 'סקירת יעדים',         subtitle: '10 דקות: קרא את היעדים שלך בקול. האם הפעולות של היום מכוונות אליהם?', category: 'learning', timerSec: 600  },
 
   // ── קשרים ────────────────────────────────────────────────────────────────
-  { id: 'outreach',  emoji: '', title: 'נטוורקינג / אאוטריץ׳', subtitle: 'צור קשר עם מישהו שיכול לקדם אותך — שלח, התקשר, פגוש', category: 'network' },
-  { id: 'give',      emoji: '', title: 'נתינה / עזרה',        subtitle: 'עזור לאחד ללא תמורה — האנשים שנותנים מקבלים הכי הרבה', category: 'network' },
+  { id: 'connect',   emoji: '🤝', title: 'קשר אנושי אחד',      subtitle: 'התקשר, שלח הודעה, פגוש — צור קשר אמיתי עם אחד שחשוב לך היום',     category: 'network' },
+  { id: 'gratitude', emoji: '✨', title: 'הכרת תודה',           subtitle: 'כתוב 3 דברים שאתה אסיר תודה עליהם — ואחד שגרם לך חיוך',            category: 'network', timerSec: 300 },
 
   // ── משמעת ────────────────────────────────────────────────────────────────
-  { id: 'workout',   emoji: '', title: 'אימון גופני',          subtitle: 'גוף חזק = מוח חד = ביצועים גבוהים — אין תירוצים',   category: 'discipline' },
-  { id: 'early',     emoji: '', title: 'השכמה לפני 7',        subtitle: 'שעת הבוקר שייכת לך לבד — לפני שהעולם מתעורר',       category: 'discipline' },
-  { id: 'noscroll',  emoji: '', title: 'שעה בלי מסכים',       subtitle: 'ללא סוציאל, ללא חדשות — מיקוד מלא על מה שחשוב',     category: 'discipline', timerSec: 3600 },
-  { id: 'plan',      emoji: '', title: 'תכנון / יומן',         subtitle: '10 דקות — תכנן מחר ורשום מה למדת ומה תשנה',          category: 'discipline', timerSec: 600  },
+  { id: 'workout',   emoji: '💪', title: 'אימון גופני',          subtitle: 'חדר כושר, ריצה, שכיבות, הליכה — גוף חזק = מוח חד = חיים טובים',   category: 'discipline' },
+  { id: 'early',     emoji: '⏰', title: 'השכמה לפני 7',        subtitle: 'שעת הבוקר שייכת לך לבד — לפני שהעולם מתעורר ומבקש את תשומת לבך',  category: 'discipline' },
+  { id: 'noscroll',  emoji: '📵', title: 'ללא מסכים שעה',       subtitle: 'שעה ראשונה או אחרונה ביום — בלי סוציאל, בלי חדשות, רק אתה עם עצמך', category: 'discipline', timerSec: 3600 },
+  { id: 'meditate',  emoji: '🧘', title: 'מדיטציה / נשימות',    subtitle: '5-10 דקות בשקט — נשום עמוק, נקה את המוח, היה נוכח לגמרי',          category: 'discipline', timerSec: 600  },
 ]
 
 // ─── Motivational Video Content ───────────────────────────────────────────────
