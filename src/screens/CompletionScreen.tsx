@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
+import { callAICoach, getAICoachURL, type CoachContext } from '../utils/aiCoachAPI'
 
 interface Props {
-  score:       number
-  onDone:      () => void
-  win?:        string
-  commitment?: string
-  dayCount?:   number
+  score:        number
+  onDone:       () => void
+  win?:         string
+  commitment?:  string
+  dayCount?:    number
+  coachCtx?:    CoachContext
 }
 
 function getMessage(score: number): { label: string; title: string; sub: string } {
@@ -31,19 +33,47 @@ function getMessage(score: number): { label: string; title: string; sub: string 
   }
 }
 
-export function CompletionScreen({ score, onDone, win, commitment, dayCount }: Props) {
+export function CompletionScreen({ score, onDone, win, commitment, dayCount, coachCtx }: Props) {
   const { label, title, sub } = getMessage(score)
   const color = score >= 7 ? '#FFD60A' : score >= 5 ? '#fff' : 'rgba(255,255,255,.5)'
-  const [shared, setShared] = useState(false)
 
+  const [shared,      setShared]      = useState(false)
+  const [aiInsight,   setAiInsight]   = useState<string | null>(null)
+  const [aiLoading,   setAiLoading]   = useState(false)
+
+  const hasAI = !!getAICoachURL() && !!coachCtx
+
+  // Auto-dismiss: wait for AI if configured (up to 8s), else 3.2s
   useEffect(() => {
-    const t = setTimeout(onDone, 3200)
-    return () => clearTimeout(t)
-  }, [onDone])
+    if (!hasAI) {
+      const t = setTimeout(onDone, 3200)
+      return () => clearTimeout(t)
+    }
+    // With AI: dismiss 3s after insight arrives, or 9s max
+    const maxTimer = setTimeout(onDone, 9000)
+    return () => clearTimeout(maxTimer)
+  }, [onDone, hasAI])
+
+  // Fetch AI insight
+  useEffect(() => {
+    if (!hasAI || !coachCtx) return
+    setAiLoading(true)
+    callAICoach(coachCtx).then(insight => {
+      setAiInsight(insight)
+      setAiLoading(false)
+      // Dismiss 3s after insight arrives
+      setTimeout(onDone, 3000)
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleWitness = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    const parts = [`✅ SUCCESS OS — יום ${dayCount ?? ''}`, `ציון: ${score}/10`, win ? `ניצחון: ${win}` : '', commitment ? `התחייבות: ${commitment}` : ''].filter(Boolean)
+    const parts = [
+      `✅ SUCCESS OS — יום ${dayCount ?? ''}`,
+      `ציון: ${score}/10`,
+      win        ? `ניצחון: ${win}`          : '',
+      commitment ? `התחייבות: ${commitment}` : '',
+    ].filter(Boolean)
     const text = parts.join('\n')
     try {
       if (navigator.share) { await navigator.share({ text }); setShared(true) }
@@ -65,7 +95,7 @@ export function CompletionScreen({ score, onDone, win, commitment, dayCount }: P
         cursor: 'pointer',
       }}
     >
-      {/* Ambient glow behind score */}
+      {/* Ambient glow */}
       <div style={{
         position: 'absolute', top: '35%', left: '50%',
         transform: 'translate(-50%, -50%)',
@@ -100,20 +130,68 @@ export function CompletionScreen({ score, onDone, win, commitment, dayCount }: P
         fontSize: 'clamp(2rem, 9vw, 3.5rem)',
         fontWeight: 900, lineHeight: 1.05,
         color: '#fff', textAlign: 'center',
-        marginBottom: 16,
+        marginBottom: 12,
         animation: 'sentenceIn .4s cubic-bezier(.16,1,.3,1) .35s both',
       }}>{title}</h2>
 
-      {/* Sub */}
-      <p dir="rtl" style={{
-        fontFamily: 'Heebo, sans-serif',
-        fontSize: 15, fontWeight: 400,
-        color: 'rgba(255,255,255,.38)',
-        lineHeight: 1.7, textAlign: 'center',
-        animation: 'sentenceIn .4s cubic-bezier(.16,1,.3,1) .45s both',
-      }}>{sub}</p>
+      {/* Sub — hidden when AI insight shows */}
+      {!aiInsight && (
+        <p dir="rtl" style={{
+          fontFamily: 'Heebo, sans-serif',
+          fontSize: 15, fontWeight: 400,
+          color: 'rgba(255,255,255,.38)',
+          lineHeight: 1.7, textAlign: 'center',
+          animation: 'sentenceIn .4s cubic-bezier(.16,1,.3,1) .45s both',
+        }}>{sub}</p>
+      )}
 
-      {/* Witness Mode button */}
+      {/* AI Coach Insight */}
+      {hasAI && (
+        <div style={{
+          marginTop: 20, maxWidth: 340,
+          animation: 'sentenceIn .4s cubic-bezier(.16,1,.3,1) .5s both',
+        }}>
+          {aiLoading && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '12px 18px',
+              background: 'rgba(255,255,255,.04)',
+              border: '1px solid rgba(255,255,255,.08)',
+              borderRadius: 16,
+            }}>
+              <div style={{
+                width: 6, height: 6, borderRadius: '50%',
+                background: '#5B8CFF',
+                animation: 'pulse-red 1.2s ease-in-out infinite',
+              }} />
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '2px', color: 'rgba(91,140,255,.6)', textTransform: 'uppercase', margin: 0 }}>
+                מאמן AI חושב...
+              </p>
+            </div>
+          )}
+          {aiInsight && (
+            <div style={{
+              padding: '16px 20px',
+              background: 'rgba(91,140,255,.07)',
+              border: '1px solid rgba(91,140,255,.2)',
+              borderRadius: 18,
+              animation: 'sentenceIn .5s cubic-bezier(.16,1,.3,1) both',
+            }} onClick={e => e.stopPropagation()}>
+              <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 8, fontWeight: 700, letterSpacing: '2.5px', color: 'rgba(91,140,255,.6)', textTransform: 'uppercase', margin: '0 0 8px' }}>
+                מאמן AI
+              </p>
+              <p dir="rtl" style={{
+                fontFamily: 'Heebo, sans-serif', fontSize: 14, fontWeight: 400,
+                color: 'rgba(255,255,255,.75)', lineHeight: 1.65, margin: 0,
+              }}>
+                {aiInsight}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Witness share button */}
       <button onClick={handleWitness} dir="rtl"
         style={{
           position: 'absolute', bottom: 80,

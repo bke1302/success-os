@@ -26,6 +26,7 @@ import { ComebackScreen }        from './screens/ComebackScreen'
 import { UpgradeScreen }         from './screens/UpgradeScreen'
 import type { EnergyCheckin, AppState }   from './types'
 import { usePro }                from './hooks/usePro'
+import type { CoachContext }     from './utils/aiCoachAPI'
 import { ThemeContext }          from './contexts/ThemeContext'
 import { darkTokens, lightTokens } from './theme'
 import { useMilestone }          from './hooks/useMilestone'
@@ -60,6 +61,7 @@ export default function App() {
   const [comebackDismissed, setComebackDismissed] = useState(() => !!sessionStorage.getItem('comeback_dismissed'))
   const [showUpgrade,       setShowUpgrade]       = useState(false)
   const [navDir,            setNavDir]            = useState<'forward'|'back'>('forward')
+  const [completionCtx,     setCompletionCtx]     = useState<CoachContext | undefined>(undefined)
 
   // ── Touch swipe state ──────────────────────────────────────────────────────
   const touchStartX = useRef(0)
@@ -247,6 +249,7 @@ export default function App() {
           win={completionWin}
           commitment={completionCmt}
           dayCount={dayCount}
+          coachCtx={completionCtx}
           onDone={() => { haptic('success'); setShowCompletion(false); navigate('home', 'back') }}
         />
       )}
@@ -381,6 +384,21 @@ export default function App() {
                   setCompletionScore(data.score)
                   setCompletionWin(data.given || data.win)
                   setCompletionCmt(today?.morning?.commitment ?? '')
+                  // Build AI coach context
+                  const last7 = state.entries.filter(e => e.evening).slice(-7)
+                  const avg7 = last7.length
+                    ? Math.round(last7.reduce((s, e) => s + e.evening!.score, 0) / last7.length * 10) / 10
+                    : null
+                  setCompletionCtx({
+                    name:        state.userName ?? '',
+                    score:       data.score,
+                    win:         data.given || data.win,
+                    lesson:      data.lesson ?? '',
+                    streak:      state.streak,
+                    avg7,
+                    habitsDone:  today?.habits?.length ?? 0,
+                    totalHabits: HABITS.length,
+                  })
                   setShowCompletion(true)
                 }}
               />

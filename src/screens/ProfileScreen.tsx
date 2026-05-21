@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Plus, Trash2, CheckCircle, Bell, BellOff, CloudOff, Copy, Check, Share2 } from 'lucide-react'
+import { Plus, Trash2, CheckCircle, Bell, BellOff, CloudOff, Copy, Check, Share2, Bot } from 'lucide-react'
+import { getAICoachURL, setAICoachURL } from '../utils/aiCoachAPI'
 import type { UserGoal, UserHabit } from '../types'
 import { playCheck, playComplete } from '../utils/sounds'
 import { useTheme } from '../contexts/ThemeContext'
@@ -190,6 +191,16 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
   const handleScheduleNotif = async () => {
     const result = await requestAndScheduleReminder()
     setNotifStatus(result)
+  }
+
+  // ── AI Coach URL ──────────────────────────────────────────────────
+  const [aiUrl,      setAiUrl]      = useState(getAICoachURL)
+  const [aiUrlSaved, setAiUrlSaved] = useState(false)
+
+  const saveAiUrl = () => {
+    setAICoachURL(aiUrl)
+    setAiUrlSaved(true)
+    setTimeout(() => setAiUrlSaved(false), 2000)
   }
 
   // ── Supabase Sync ─────────────────────────────────────────────────────────
@@ -479,6 +490,41 @@ export function ProfileScreen({ userName, goals, onSaveGoals, theme, onToggleThe
                   style={{ width: '100%', padding: '9px', background: notifStatus === 'scheduled' ? 'rgba(74,222,128,.1)' : T.tagBg, border: `1px solid ${notifStatus === 'scheduled' ? 'rgba(74,222,128,.3)' : T.border2}`, borderRadius: 10, cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: notifStatus === 'scheduled' ? '#4ADE80' : T.textSub, transition: 'all .2s' }} dir="rtl">
                   {notifStatus === 'scheduled' ? '✓ נקבעה תזכורת' : notifStatus === 'denied' ? 'הרשאה נדחתה — הפעל בדפדפן' : notifStatus === 'unsupported' ? 'לא נתמך בדפדפן זה' : 'קבע תזכורת'}
                 </button>
+              </div>
+            </div>
+
+            {/* AI Coach URL */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <Bot style={{ width: 13, height: 13, color: '#5B8CFF' }} strokeWidth={2} />
+                <p style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: T.textMuted, textTransform: 'uppercase', margin: 0 }}>מאמן AI (Claude)</p>
+              </div>
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: '12px 14px' }}>
+                <p dir="rtl" style={{ fontFamily: 'Heebo, sans-serif', fontSize: 11, color: T.textMuted, lineHeight: 1.5, margin: '0 0 10px' }}>
+                  הוסף Worker URL לקבלת תגובות AI אישיות אחרי כל סיכום יום. הוראות הגדרה: <span style={{ color: '#5B8CFF' }}>worker/claude-coach.js</span>
+                </p>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    value={aiUrl}
+                    onChange={e => setAiUrl(e.target.value)}
+                    placeholder="https://your-worker.workers.dev"
+                    dir="ltr"
+                    style={{
+                      flex: 1, background: T.tagBg, border: `1px solid ${T.border2}`,
+                      borderRadius: 9, padding: '8px 10px',
+                      fontFamily: 'Inter, sans-serif', fontSize: 12, color: T.text, outline: 'none',
+                    }}
+                  />
+                  <button onClick={saveAiUrl} style={{
+                    padding: '8px 14px', borderRadius: 9,
+                    background: aiUrlSaved ? 'rgba(74,222,128,.1)' : 'rgba(91,140,255,.1)',
+                    border: `1px solid ${aiUrlSaved ? 'rgba(74,222,128,.3)' : 'rgba(91,140,255,.2)'}`,
+                    cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700,
+                    color: aiUrlSaved ? '#4ADE80' : '#5B8CFF', whiteSpace: 'nowrap',
+                  }}>
+                    {aiUrlSaved ? '✓ נשמר' : 'שמור'}
+                  </button>
+                </div>
               </div>
             </div>
 
