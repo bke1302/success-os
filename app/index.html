@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#060608">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Success OS">
+<title>Success OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-0: #060608;
+  --bg-1: #0B0B0E;
+  --surface: rgba(255,255,255,0.03);
+  --surface-hi: rgba(255,255,255,0.06);
+  --stroke: rgba(255,255,255,0.08);
+  --stroke-hi: rgba(255,255,255,0.14);
+  --gold: #FFC53D;
+  --gold-hot: #FF8A3D;
+  --gold-glow: rgba(255,197,61,0.28);
+  --gold-dim: rgba(255,197,61,0.10);
+  --success: #7EF29A;
+  --success-glow: rgba(126,242,154,0.22);
+  --danger: #FF6B5E;
+  --text-1: #F4F4F6;
+  --text-2: #A0A0AC;
+  --text-3: #5C5C68;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --glowS: 0;
+}
+html { height: 100%; }
+body {
+  font-family: "Heebo", sans-serif;
+  color: var(--text-1);
+  min-height: 100%;
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(255,197,61,calc(0.05 + var(--glowS) * 0.07)), transparent 60%),
+    radial-gradient(700px 700px at 110% 110%, rgba(255,138,61,0.04), transparent 55%),
+    var(--bg-0);
+  padding: calc(16px + env(safe-area-inset-top)) 16px calc(84px + env(safe-area-inset-bottom));
+  max-width: 560px;
+  margin: 0 auto;
+  overscroll-behavior-y: contain;
+}
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+  opacity: 0.035; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.hidden { display: none !important; }
+
+/* ---------- header ---------- */
+.top { margin-bottom: 20px; }
+.greeting { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.date-line { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+.insight {
+  margin-top: 12px; font-size: 13px; color: var(--text-2);
+  border-inline-start: 2px solid var(--gold); padding-inline-start: 12px;
+  line-height: 1.6;
+}
+
+/* ---------- cards ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--stroke);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  padding: 20px;
+  margin-bottom: 16px;
+  animation: cardIn 0.5s var(--ease-out) both;
+}
+.card:nth-child(2) { animation-delay: 60ms; }
+.card:nth-child(3) { animation-delay: 120ms; }
+.card:nth-child(4) { animation-delay: 180ms; }
+.card:nth-child(5) { animation-delay: 240ms; }
+@keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.card-label {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-3); font-weight: 500; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-label .dot-ind { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 8px var(--gold-glow); }
+
+/* ---------- hero score ---------- */
+.score-card { position: relative; text-align: center; overflow: hidden; }
+.score-card.shine-once::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
+  animation: shine 0.9s var(--ease-out) 1;
+}
+@keyframes shine { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+.score-num {
+  font-family: "Space Grotesk", sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(84px, 22vw, 120px);
+  font-weight: 700; letter-spacing: -0.04em; line-height: 1;
+  background: linear-gradient(180deg, #FFF 0%, var(--gold) 55%, var(--gold-hot) 110%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 32px var(--gold-glow));
+  direction: ltr; display: inline-block;
+}
+.score-num .pct { font-size: 0.35em; -webkit-text-fill-color: var(--text-3); }
+.score-sub { font-size: 12px; color: var(--text-3); letter-spacing: 0.14em; text-transform: uppercase; margin-top: 6px; }
+.score-tag { font-size: 12px; margin-top: 10px; font-weight: 500; }
+.score-tag.out-day { color: var(--gold); }
+.score-tag.in-day { color: var(--text-2); }
+.bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 18px; overflow: hidden; }
+.bar-fill {
+  height: 100%; background: var(--gold); border-radius: 2px;
+  box-shadow: 0 0 12px var(--gold-glow);
+  transition: width 0.7s var(--ease-out);
+}
+
+/* ---------- streak pills ---------- */
+.streak-row { display: flex; gap: 8px; justify-content: center; margin-top: 18px; }
+.pill {
+  width: 34px; height: 44px; border-radius: var(--r-pill);
+  border: 1px solid var(--stroke);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--text-3); font-weight: 500;
+  transition: all 0.2s var(--ease-out);
+}
+.pill.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(255,197,61,0.12); }
+.pill.frozen { border-color: #6EC6FF; color: #6EC6FF; background: rgba(110,198,255,0.08); }
+.pill.today-ring { outline: 1px solid var(--gold); outline-offset: 3px; }
+.streak-meta { text-align: center; font-size: 12px; color: var(--text-3); margin-top: 12px; }
+.streak-meta b { color: var(--gold); font-weight: 700; }
+
+/* ---------- checklist ---------- */
+.section-title {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  font-weight: 700; margin: 4px 0 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title.out { color: var(--gold); }
+.section-title.inp { color: var(--text-3); }
+.check-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 15px 4px; border-bottom: 1px solid var(--stroke);
+  cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+  min-height: 52px;
+  transition: background 0.2s var(--ease-out);
+}
+.check-row:last-child { border-bottom: none; }
+.check-row:active { background: var(--surface-hi); }
+.cbox {
+  width: 22px; height: 22px; border-radius: 8px; flex-shrink: 0;
+  border: 1.5px solid var(--stroke-hi);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: transparent;
+  transition: all 0.25s var(--ease-spring);
+}
+.check-row.done .cbox {
+  background: var(--success); border-color: var(--success); color: #0B0B0E;
+  box-shadow: 0 0 14px var(--success-glow);
+  transform: scale(1);
+}
+.clabel { font-size: 14px; line-height: 1.5; transition: all 0.25s var(--ease-out); }
+.check-row.done .clabel { color: var(--text-3); opacity: 0.6; }
+
+/* ---------- MIT ---------- */
+.mit-card { border-top: 1px solid rgba(255,197,61,0.25); }
+.mit-input {
+  width: 100%; background: transparent; border: none; outline: none;
+  color: var(--text-1); font-family: "Heebo", sans-serif;
+  font-size: 16px; font-weight: 500; line-height: 1.5;
+  resize: none; height: 52px;
+}
+.mit-input::placeholder { color: var(--text-3); }
+.mit-done-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.mit-card.completed .mit-input { color: var(--text-3); opacity: 0.7; }
+
+/* ---------- buttons ---------- */
+.btn {
+  border: none; cursor: pointer; font-family: "Heebo", sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.02em;
+  border-radius: var(--r-pill); padding: 14px 24px; min-height: 48px;
+  transition: all 0.2s var(--ease-out); width: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary {
+  background: var(--gold); color: #0B0B0E;
+  box-shadow: 0 0 0 1px rgba(255,197,61,0.4), 0 8px 28px var(--gold-glow);
+}
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.4; }
+.btn-ghost {
+  background: transparent; color: var(--text-2);
+  border: 1px solid var(--stroke); font-weight: 500;
+}
+.btn-ghost:active { border-color: var(--stroke-hi); transform: scale(0.98); }
+.btn-danger { background: transparent; color: var(--danger); border: 1px solid rgba(255,107,94,0.3); font-weight: 500; }
+.btn-row { display: flex; gap: 10px; }
+.btn-row .btn { flex: 1; }
+.btn.small { padding: 10px 16px; min-height: 40px; font-size: 13px; width: auto; }
+.btn.preset-on { border-color: var(--gold); color: var(--gold); }
+
+/* ---------- focus ---------- */
+.timer-num {
+  font-family: "Space Grotesk", sans-serif; font-variant-numeric: tabular-nums;
+  font-size: clamp(64px, 18vw, 96px); font-weight: 700; letter-spacing: -0.03em;
+  text-align: center; direction: ltr; line-height: 1.1; margin: 12px 0;
+}
+.timer-num.running { filter: drop-shadow(0 0 24px var(--gold-glow)); color: var(--gold); }
+.focus-sub { text-align: center; font-size: 13px; color: var(--text-3); margin-bottom: 16px; }
+.focus-sub b { color: var(--text-2); }
+
+/* ---------- growth ---------- */
+.bars7 { display: flex; gap: 8px; align-items: flex-end; height: 90px; margin-top: 8px; direction: rtl; }
+.b7 { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.b7 .col { width: 100%; max-width: 30px; border-radius: 4px 4px 0 0; background: var(--gold); opacity: 0.9; min-height: 2px; transition: height 0.7s var(--ease-out); box-shadow: 0 0 8px rgba(255,197,61,0.1); }
+.b7 .col.zero { background: rgba(255,255,255,0.07); box-shadow: none; }
+.b7 .lbl { font-size: 10px; color: var(--text-3); }
+.heatmap { display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 4px; direction: rtl; margin-top: 8px; }
+.hcell { width: 100%; aspect-ratio: 1; border-radius: 3px; background: rgba(255,255,255,0.05); }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-c {
+  background: var(--surface); border: 1px solid var(--stroke); border-radius: var(--r-md);
+  padding: 14px; text-align: center;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.stat-v { font-family: "Space Grotesk", sans-serif; font-size: 26px; font-weight: 700; color: var(--gold); direction: ltr; }
+.stat-l { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+/* ---------- AI coach ---------- */
+.journal {
+  width: 100%; background: var(--surface); border: 1px solid var(--stroke);
+  border-radius: var(--r-sm); padding: 14px; color: var(--text-1);
+  font-family: "Heebo", sans-serif; font-size: 16px; line-height: 1.6;
+  resize: none; height: 100px; outline: none; margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.journal:focus { border-color: rgba(255,197,61,0.35); }
+.journal::placeholder { color: var(--text-3); }
+.ai-resp {
+  margin-top: 14px; padding: 16px; background: var(--surface);
+  border-radius: var(--r-sm);
+  border-inline-start: 2px solid var(--gold);
+  font-size: 14px; line-height: 1.8; white-space: pre-wrap;
+  unicode-bidi: plaintext;
+  animation: cardIn 0.4s var(--ease-out);
+}
+.skeleton { margin-top: 14px; }
+.sk-line {
+  height: 12px; border-radius: 6px; margin-bottom: 10px;
+  background: linear-gradient(105deg, var(--surface) 40%, var(--surface-hi) 50%, var(--surface) 60%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.sk-line:nth-child(1) { width: 90%; } .sk-line:nth-child(2) { width: 70%; } .sk-line:nth-child(3) { width: 80%; }
+
+/* ---------- profile ---------- */
+.field-label { font-size: 12px; color: var(--text-3); margin: 14px 0 6px; }
+.tinput {
+  width: 100%; background: var(--surface); border: 1px solid var(--stroke);
+  border-radius: var(--r-sm); padding: 12px 14px; color: var(--text-1);
+  font-family: "Heebo", sans-serif; font-size: 16px; outline: none;
+}
+.tinput:focus { border-color: rgba(255,197,61,0.35); }
+.tinput.ltr { direction: ltr; }
+.key-status { font-size: 12px; margin-top: 6px; }
+.key-status.ok { color: var(--success); }
+.habit-edit-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.habit-edit-row .tag { font-size: 10px; padding: 3px 8px; border-radius: var(--r-pill); flex-shrink: 0; font-weight: 700; }
+.tag.out { background: var(--gold-dim); color: var(--gold); }
+.tag.inp { background: rgba(255,255,255,0.05); color: var(--text-3); }
+
+/* ---------- nav ---------- */
+nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+  background: rgba(11,11,14,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--stroke);
+  display: flex; justify-content: space-around;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  max-width: 560px; margin: 0 auto;
+}
+.nav-btn {
+  flex: 1; background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 0; min-height: 52px; color: var(--text-3);
+  font-family: "Heebo", sans-serif; font-size: 10px; font-weight: 500;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s;
+}
+.nav-btn.active { color: var(--gold); }
+.nav-btn svg { width: 22px; height: 22px; }
+
+/* day-mode ordering on Home */
+#tab-home { display: flex; flex-direction: column; }
+body.mode-morning #card-mit { order: 1; } body.mode-morning #card-score { order: 2; } body.mode-morning #card-streak { order: 3; }
+body.mode-noon #card-score { order: 1; } body.mode-noon #card-mit { order: 2; } body.mode-noon #card-streak { order: 3; }
+body.mode-evening #card-score { order: 1; } body.mode-evening #card-streak { order: 2; } body.mode-evening #card-mit { order: 3; }
+.evening-note { font-size: 13px; color: var(--text-2); text-align: center; margin-top: 4px; margin-bottom: 16px; line-height: 1.6; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="greeting" id="greeting">שלום</div>
+  <div class="date-line" id="dateLine"></div>
+  <div class="insight" id="insight"></div>
+</div>
+
+<!-- ============ HOME ============ -->
+<section id="tab-home">
+  <div class="card score-card" id="card-score">
+    <div class="score-num"><span id="scoreNum">0</span><span class="pct">%</span></div>
+    <div class="score-sub">הציון של היום</div>
+    <div class="score-tag" id="scoreTag"></div>
+    <div class="bar"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="card mit-card" id="card-mit">
+    <div class="card-label"><span class="dot-ind"></span>המשימה הכי חשובה היום</div>
+    <textarea class="mit-input" id="mitInput" placeholder="מה הדבר האחד שאם תעשה אותו — היום מוצלח?"></textarea>
+    <div class="mit-done-row">
+      <button class="btn btn-primary small" id="mitBtn" onclick="toggleMit()">סיימתי אותה</button>
+    </div>
+  </div>
+
+  <div class="card" id="card-streak">
+    <div class="card-label">רצף שבעת הימים</div>
+    <div class="streak-row" id="streakRow"></div>
+    <div class="streak-meta" id="streakMeta"></div>
+  </div>
+
+  <div class="evening-note hidden" id="eveningNote"></div>
+</section>
+
+<!-- ============ TASKS ============ -->
+<section id="tab-tasks" class="hidden">
+  <div class="card">
+    <div class="card-label"><span class="dot-ind"></span>הצ'קליסט של היום</div>
+    <div class="bar" style="margin:0 0 16px"><div class="bar-fill" id="barFill2" style="width:0%"></div></div>
+    <div class="section-title out">תפוקה — מזיז את המחט</div>
+    <div id="listOut"></div>
+    <div class="section-title inp" style="margin-top:18px">תשומה — בונה יכולת</div>
+    <div id="listIn"></div>
+  </div>
+</section>
+
+<!-- ============ FOCUS ============ -->
+<section id="tab-focus" class="hidden">
+  <div class="card">
+    <div class="card-label">טיימר פוקוס</div>
+    <div class="focus-sub" id="focusTask"></div>
+    <div class="timer-num" id="timerNum">25:00</div>
+    <div class="btn-row" style="margin-bottom:12px">
+      <button class="btn btn-ghost small preset" data-min="25" onclick="setPreset(25,this)">25 דק'</button>
+      <button class="btn btn-ghost small preset" data-min="50" onclick="setPreset(50,this)">50 דק'</button>
+      <button class="btn btn-ghost small preset" data-min="90" onclick="setPreset(90,this)">90 דק'</button>
+    </div>
+    <button class="btn btn-primary" id="timerBtn" onclick="toggleTimer()">התחל</button>
+    <div class="focus-sub" style="margin-top:16px">היום: <b id="focusToday">0</b> דקות פוקוס</div>
+  </div>
+</section>
+
+<!-- ============ GROWTH ============ -->
+<section id="tab-growth" class="hidden">
+  <div class="card">
+    <div class="card-label">שבעת הימים האחרונים</div>
+    <div class="bars7" id="bars7"></div>
+  </div>
+  <div class="card">
+    <div class="card-label">שמונה שבועות אחרונים</div>
+    <div class="heatmap" id="heatmap"></div>
+  </div>
+  <div class="stats-grid card" style="background:transparent;border:none;box-shadow:none;padding:0;backdrop-filter:none">
+    <div class="stat-c"><div class="stat-v" id="stStreak">0</div><div class="stat-l">רצף נוכחי</div></div>
+    <div class="stat-c"><div class="stat-v" id="stBest">0</div><div class="stat-l">שיא אישי</div></div>
+    <div class="stat-c"><div class="stat-v" id="stAvg">0%</div><div class="stat-l">ממוצע השבוע</div></div>
+    <div class="stat-c"><div class="stat-v" id="stFocus">0</div><div class="stat-l">דקות פוקוס השבוע</div></div>
+  </div>
+  <div class="card mit-card">
+    <div class="card-label"><span class="dot-ind"></span>המאמן — ספר לו על היום</div>
+    <textarea class="journal" id="journal" placeholder="מה עשית היום? מה הלך ומה נתקע?"></textarea>
+    <button class="btn btn-primary" id="aiBtn" onclick="analyze()">קבל פידבק</button>
+    <div class="skeleton hidden" id="aiSkeleton"><div class="sk-line"></div><div class="sk-line"></div><div class="sk-line"></div></div>
+    <div class="ai-resp hidden" id="aiResp"></div>
+  </div>
+</section>
+
+<!-- ============ PROFILE ============ -->
+<section id="tab-profile" class="hidden">
+  <div class="card">
+    <div class="card-label">מפתח AI</div>
+    <input class="tinput ltr" id="apiKey" type="password" placeholder="Anthropic API Key">
+    <div class="key-status" id="keyStatus"></div>
+  </div>
+  <div class="card">
+    <div class="card-label">עריכת הצ'קליסט</div>
+    <div id="habitEditor"></div>
+  </div>
+  <div class="card">
+    <div class="card-label">נתונים</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost small" onclick="exportData()">ייצוא גיבוי</button>
+      <button class="btn btn-ghost small" onclick="document.getElementById('importFile').click()">ייבוא</button>
+    </div>
+    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(this)">
+    <div class="field-label" id="totals"></div>
+    <button class="btn btn-danger small" style="margin-top:10px" onclick="fullReset()">איפוס מלא של כל הנתונים</button>
+  </div>
+</section>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <button class="nav-btn active" data-tab="home" onclick="go('home',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10.5 12 3l9 7.5V21h-6v-6h-6v6H3z"/></svg>בית
+  </button>
+  <button class="nav-btn" data-tab="tasks" onclick="go('tasks',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/></svg>משימות
+  </button>
+  <button class="nav-btn" data-tab="focus" onclick="go('focus',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>פוקוס
+  </button>
+  <button class="nav-btn" data-tab="growth" onclick="go('growth',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>צמיחה
+  </button>
+  <button class="nav-btn" data-tab="profile" onclick="go('profile',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>פרופיל
+  </button>
+</nav>
+
+<script>
+"use strict";
+/* ===================== state ===================== */
+const KEY = "sos_v2";
+const DEFAULT_HABITS = [
+  { id: "h1", type: "out", label: "הגשתי מועמדות למשרה / קידמתי תהליך קיים" },
+  { id: "h2", type: "out", label: "שלחתי פעולת FlowOps החוצה: פנייה / הצעה / פולו-אפ / פוסט" },
+  { id: "h3", type: "out", label: "סיימתי בלוק של 90 דק' עבודה עמוקה — בלי טלפון" },
+  { id: "h7", type: "out", label: "בדקתי את תיקי המניות והחלטתי: קנייה / מכירה / להחזיק" },
+  { id: "h4", type: "in",  label: "למדתי 30 דק' + כתבתי שורה: מה למדתי" },
+  { id: "h8", type: "in",  label: "קראתי ספר 10 דק' ומעלה" },
+  { id: "h5", type: "in",  label: "התאמנתי 20 דק' ומעלה" },
+  { id: "h6", type: "in",  label: "כתבתי את 3 המשימות של מחר" }
+];
+const QUOTES = [
+  "אין מוטיבציה בלי פעולה. פעולה יוצרת מוטיבציה.",
+  "כסף הוא תוצאה. פעולות נכונות הן הסיבה.",
+  "60 יום של עקביות = שינוי חיים.",
+  "היום הזה לא יחזור — תשתמש בו.",
+  "הפוקוס שלך הוא הנכס הכי יקר שלך."
+];
+
+let S = load();
+
+function load() {
+  let s = null;
+  try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  if (!s || s.version !== 2) {
+    s = {
+      version: 2,
+      settings: { apiKey: localStorage.getItem("ss_apikey") || "" },
+      habits: DEFAULT_HABITS,
+      days: {},
+      meta: { streak: 0, bestStreak: 0, freezes: 0, lastDate: null, lastFreezeWeek: "" }
+    };
+    ["ss_checks","ss_day","ss_streak","ss_apikey"].forEach(k => localStorage.removeItem(k));
+    persist(s);
+  }
+  // sync new default habits into an existing state (keeps section order)
+  const missing = DEFAULT_HABITS.filter(dh => !s.habits.some(h => h.id === dh.id));
+  if (missing.length) {
+    const merged = [];
+    DEFAULT_HABITS.forEach(dh => merged.push(s.habits.find(h => h.id === dh.id) || dh));
+    s.habits.forEach(h => { if (!merged.some(m => m.id === h.id)) merged.push(h); });
+    s.habits = merged;
+    persist(s);
+  }
+  // one-time wording fixes for habits saved with old default labels
+  s.habits.forEach(h => {
+    if (h.id === "h7" && h.label.includes("git pull")) h.label = "בדקתי את תיקי המניות והחלטתי: קנייה / מכירה / להחזיק";
+    if (h.id === "h8" && h.label.includes("20 דק")) h.label = "קראתי ספר 10 דק' ומעלה";
+  });
+  persist(s);
+  return s;
+}
+function persist(s) { localStorage.setItem(KEY, JSON.stringify(s || S)); }
+
+function todayKey(d) {
+  d = d || new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function keyOffset(offset) {
+  const d = new Date(); d.setDate(d.getDate() + offset); return todayKey(d);
+}
+function blankDay() { return { checks: {}, mit: "", mitDone: false, journal: "", ai: "", focusMin: 0 }; }
+function day(k) {
+  k = k || todayKey();
+  if (!S.days[k]) S.days[k] = blankDay();
+  return S.days[k];
+}
+
+/* ===================== score & streak ===================== */
+function outIds() { return S.habits.filter(h => h.type === "out").map(h => h.id); }
+function inIds()  { return S.habits.filter(h => h.type === "in").map(h => h.id); }
+function computeScore(d) {
+  if (!d) return 0;
+  const o = outIds().filter(id => d.checks[id]).length;
+  const i = inIds().filter(id => d.checks[id]).length;
+  let score = Math.round(o * 60 / Math.max(1, outIds().length)) +
+              Math.round(i * 40 / Math.max(1, inIds().length));
+  if (o === 0) score = Math.min(score, 40);
+  return Math.min(100, score);
+}
+function qualifies(d) { return !!d && outIds().some(id => d.checks[id]); }
+
+function rollover() {
+  const today = todayKey();
+  if (S.meta.lastDate === today) return;
+  if (S.meta.lastDate) {
+    let d = new Date(S.meta.lastDate + "T12:00:00");
+    const end = new Date(today + "T12:00:00");
+    while (todayKey(d) < today) {
+      const k = todayKey(d);
+      const rec = S.days[k];
+      if (qualifies(rec)) {
+        S.meta.streak++;
+      } else if (S.meta.freezes > 0 && S.meta.streak > 0) {
+        S.meta.freezes--;
+        if (rec) rec.frozen = true; else S.days[k] = Object.assign(blankDay(), { frozen: true });
+      } else {
+        S.meta.streak = 0;
+      }
+      S.meta.bestStreak = Math.max(S.meta.bestStreak, S.meta.streak);
+      d.setDate(d.getDate() + 1);
+    }
+  }
+  // freeze earn: on Sunday, if last week avg >= 80
+  const now = new Date();
+  if (now.getDay() === 0 && S.meta.lastFreezeWeek !== today) {
+    let sum = 0, n = 0;
+    for (let i = 1; i <= 7; i++) { const r = S.days[keyOffset(-i)]; if (r) { sum += computeScore(r); n++; } }
+    if (n >= 4 && sum / n >= 80) { S.meta.freezes = Math.min(2, S.meta.freezes + 1); S.meta.lastFreezeWeek = today; }
+  }
+  S.meta.lastDate = today;
+  persist();
+}
+function currentStreak() { return S.meta.streak + (qualifies(day()) ? 1 : 0); }
+
+/* ===================== render ===================== */
+const DAY_LETTERS = ["א","ב","ג","ד","ה","ו","ש"];
+let lastScore = -1, renderedDay = null;
+
+function renderAll() {
+  rollover();
+  renderedDay = todayKey();
+  renderHeader();
+  renderScore();
+  renderStreak();
+  renderChecklist();
+  renderMit();
+  renderGrowth();
+  renderFocusStats();
+  renderProfile();
+}
+
+function renderHeader() {
+  const h = new Date().getHours();
+  let mode = "noon", greet = "צהריים טובים";
+  if (h >= 5 && h < 12) { mode = "morning"; greet = "בוקר טוב"; }
+  else if (h >= 18 || h < 5) { mode = "evening"; greet = "ערב טוב"; }
+  document.body.classList.remove("mode-morning","mode-noon","mode-evening");
+  document.body.classList.add("mode-" + mode);
+  document.getElementById("greeting").textContent = greet;
+  document.getElementById("dateLine").textContent =
+    new Date().toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "long" });
+  document.getElementById("insight").textContent = insight();
+
+  const note = document.getElementById("eveningNote");
+  const d = day();
+  const left = S.habits.filter(hb => !d.checks[hb.id]).length;
+  if (mode === "evening" && left > 0 && left < S.habits.length) {
+    note.classList.remove("hidden");
+    note.textContent = "היום נסגר בקרוב — עוד " + left + " משימות ישלימו את היום. הרצף שלך: " + currentStreak() + " ימים.";
+  } else note.classList.add("hidden");
+}
+
+function insight() {
+  const keys = Object.keys(S.days).filter(k => k !== todayKey() && computeScore(S.days[k]) > 0);
+  const opts = [];
+  if (currentStreak() >= 2) opts.push("אתה על רצף של " + currentStreak() + " ימים. שמור עליו.");
+  if (S.meta.bestStreak >= 3) {
+    const gap = S.meta.bestStreak - currentStreak();
+    if (gap > 0 && gap <= 3) opts.push("עוד " + gap + " ימים ותשבור את השיא האישי שלך (" + S.meta.bestStreak + ").");
+  }
+  if (keys.length >= 5) {
+    const byDow = {};
+    keys.forEach(k => { const dw = new Date(k + "T12:00:00").getDay(); (byDow[dw] = byDow[dw] || []).push(computeScore(S.days[k])); });
+    let best = -1, bestAvg = 0;
+    Object.keys(byDow).forEach(dw => { const a = byDow[dw].reduce((x,y)=>x+y,0)/byDow[dw].length; if (a > bestAvg) { bestAvg = a; best = dw; } });
+    if (best >= 0) opts.push("יום " + DAY_LETTERS[best] + "' הוא היום החזק שלך בשבוע (ממוצע " + Math.round(bestAvg) + "%).");
+    let sumT=0,nT=0,sumP=0,nP=0;
+    for (let i=1;i<=7;i++){const r=S.days[keyOffset(-i)];if(r){sumT+=computeScore(r);nT++;}}
+    for (let i=8;i<=14;i++){const r=S.days[keyOffset(-i)];if(r){sumP+=computeScore(r);nP++;}}
+    if (nT>=3 && nP>=3) {
+      const dlt = Math.round(sumT/nT - sumP/nP);
+      if (dlt > 5) opts.push("השבוע שלך חזק ב-" + dlt + "% מהשבוע שעבר. תמשיך.");
+      if (dlt < -5) opts.push("השבוע חלש ב-" + Math.abs(dlt) + "% מהקודם. היום זה היום להפוך את זה.");
+    }
+  }
+  if (!opts.length) return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  return opts[Math.floor(Math.random() * opts.length)];
+}
+
+function renderScore() {
+  const d = day();
+  const score = computeScore(d);
+  const el = document.getElementById("scoreNum");
+  animateNum(el, lastScore < 0 ? 0 : lastScore, score);
+  lastScore = score;
+  document.getElementById("barFill").style.width = score + "%";
+  document.getElementById("barFill2").style.width = score + "%";
+  document.documentElement.style.setProperty("--glowS", (score / 100).toFixed(2));
+  const tag = document.getElementById("scoreTag");
+  const o = outIds().filter(id => d.checks[id]).length;
+  if (score === 0) { tag.textContent = ""; }
+  else if (o > 0) { tag.textContent = "יום תפוקה — המחט זזה"; tag.className = "score-tag out-day"; }
+  else { tag.textContent = "תשומה בלבד — עדיין לא שלחת כלום החוצה"; tag.className = "score-tag in-day"; }
+  const card = document.getElementById("card-score");
+  if (score === 100 && !card.dataset.shone) { card.classList.add("shine-once"); card.dataset.shone = "1"; }
+  if (score < 100) { card.classList.remove("shine-once"); delete card.dataset.shone; }
+}
+
+function animateNum(el, from, to) {
+  if (from === to) { el.textContent = to; return; }
+  const t0 = performance.now(), dur = 500;
+  function step(t) {
+    const p = Math.min(1, (t - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (to - from) * e);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderStreak() {
+  const row = document.getElementById("streakRow");
+  row.innerHTML = "";
+  for (let i = 6; i >= 0; i--) {
+    const k = keyOffset(-i);
+    const rec = S.days[k];
+    const p = document.createElement("div");
+    p.className = "pill";
+    if (rec && rec.frozen) p.classList.add("frozen");
+    else if (i === 0 ? qualifies(day()) : qualifies(rec)) p.classList.add("on");
+    if (i === 0) p.classList.add("today-ring");
+    p.textContent = DAY_LETTERS[new Date(k + "T12:00:00").getDay()];
+    row.appendChild(p);
+  }
+  const meta = document.getElementById("streakMeta");
+  let txt = "רצף נוכחי: <b>" + currentStreak() + "</b> ימים";
+  if (S.meta.freezes > 0) txt += " · הקפאות במלאי: <b>" + S.meta.freezes + "</b>";
+  if (S.meta.bestStreak > 0 && currentStreak() < S.meta.bestStreak) txt += " · השיא שלך: " + S.meta.bestStreak;
+  meta.innerHTML = txt;
+}
+
+function renderChecklist() {
+  const d = day();
+  const mk = (h) => {
+    const row = document.createElement("div");
+    row.className = "check-row" + (d.checks[h.id] ? " done" : "");
+    row.setAttribute("role","button");
+    row.innerHTML = '<div class="cbox">✓</div><div class="clabel"></div>';
+    row.querySelector(".clabel").textContent = h.label;
+    row.onclick = () => {
+      d.checks[h.id] = !d.checks[h.id];
+      persist();
+      row.classList.toggle("done", !!d.checks[h.id]);
+      renderScore(); renderStreak(); renderGrowth(); renderHeader();
+    };
+    return row;
+  };
+  const lo = document.getElementById("listOut"), li = document.getElementById("listIn");
+  lo.innerHTML = ""; li.innerHTML = "";
+  S.habits.forEach(h => (h.type === "out" ? lo : li).appendChild(mk(h)));
+}
+
+function renderMit() {
+  const d = day();
+  const inp = document.getElementById("mitInput");
+  inp.value = d.mit || "";
+  const card = document.getElementById("card-mit");
+  card.classList.toggle("completed", !!d.mitDone);
+  document.getElementById("mitBtn").textContent = d.mitDone ? "בוצע ✓" : "סיימתי אותה";
+}
+document.getElementById("mitInput").addEventListener("input", e => { day().mit = e.target.value; persist(); });
+function toggleMit() {
+  const d = day(); d.mitDone = !d.mitDone; persist(); renderMit();
+}
+
+function renderGrowth() {
+  // 7-day bars
+  const bars = document.getElementById("bars7"); bars.innerHTML = "";
+  for (let i = 6; i >= 0; i--) {
+    const k = keyOffset(-i);
+    const sc = i === 0 ? computeScore(day()) : computeScore(S.days[k]);
+    const w = document.createElement("div"); w.className = "b7";
+    const col = document.createElement("div"); col.className = "col" + (sc === 0 ? " zero" : "");
+    col.style.height = Math.max(3, sc) + "%";
+    const lbl = document.createElement("div"); lbl.className = "lbl";
+    lbl.textContent = DAY_LETTERS[new Date(k + "T12:00:00").getDay()];
+    w.appendChild(col); w.appendChild(lbl); bars.appendChild(w);
+  }
+  // heatmap 8 weeks
+  const hm = document.getElementById("heatmap"); hm.innerHTML = "";
+  const today = new Date();
+  const start = new Date(); start.setDate(start.getDate() - (7 * 7 + today.getDay()));
+  for (let c = 0; c < 8; c++) for (let r = 0; r < 7; r++) {
+    const d2 = new Date(start); d2.setDate(start.getDate() + c * 7 + r);
+    const cell = document.createElement("div"); cell.className = "hcell";
+    if (d2 <= today) {
+      const sc = computeScore(S.days[todayKey(d2)]);
+      if (sc > 0) cell.style.background = "rgba(255,197,61," + (0.12 + 0.7 * sc / 100).toFixed(2) + ")";
+      cell.title = todayKey(d2) + " — " + sc + "%";
+    } else cell.style.opacity = "0.25";
+    hm.appendChild(cell);
+  }
+  // stats
+  document.getElementById("stStreak").textContent = currentStreak();
+  document.getElementById("stBest").textContent = Math.max(S.meta.bestStreak, currentStreak());
+  let sum = 0, n = 0, fm = 0;
+  for (let i = 0; i < 7; i++) {
+    const r = i === 0 ? day() : S.days[keyOffset(-i)];
+    if (r) { sum += computeScore(r); n++; fm += r.focusMin || 0; }
+  }
+  document.getElementById("stAvg").textContent = (n ? Math.round(sum / n) : 0) + "%";
+  document.getElementById("stFocus").textContent = fm;
+  const j = document.getElementById("journal");
+  if (document.activeElement !== j) j.value = day().journal || "";
+  const resp = document.getElementById("aiResp");
+  if (day().ai) { resp.textContent = day().ai; resp.classList.remove("hidden"); }
+  else resp.classList.add("hidden");
+}
+document.getElementById("journal").addEventListener("input", e => { day().journal = e.target.value; persist(); });
+
+/* ===================== focus timer ===================== */
+let presetMin = 25, remaining = 25 * 60, timerInt = null, sessionStart = null;
+function setPreset(m, btn) {
+  if (timerInt) return;
+  presetMin = m; remaining = m * 60; drawTimer();
+  document.querySelectorAll(".preset").forEach(b => b.classList.remove("preset-on"));
+  btn.classList.add("preset-on");
+}
+function drawTimer() {
+  const mm = String(Math.floor(remaining / 60)).padStart(2,"0");
+  const ss = String(remaining % 60).padStart(2,"0");
+  const t = mm + ":" + ss;
+  document.getElementById("timerNum").textContent = t;
+  document.title = timerInt ? t + " · Success OS" : "Success OS";
+}
+function toggleTimer() {
+  const btn = document.getElementById("timerBtn");
+  const num = document.getElementById("timerNum");
+  if (timerInt) {
+    clearInterval(timerInt); timerInt = null;
+    bankFocus();
+    btn.textContent = "המשך"; num.classList.remove("running");
+    drawTimer();
+  } else {
+    sessionStart = Date.now();
+    timerInt = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(timerInt); timerInt = null;
+        bankFocus(true);
+        remaining = presetMin * 60;
+        document.getElementById("timerBtn").textContent = "התחל";
+        num.classList.remove("running");
+        try { new Notification("Success OS", { body: "הבלוק הסתיים. סמן את זה בצ'קליסט." }); } catch (e) {}
+      }
+      drawTimer();
+    }, 1000);
+    btn.textContent = "עצור"; num.classList.add("running");
+    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
+  }
+}
+function bankFocus(full) {
+  if (!sessionStart) return;
+  const mins = Math.round((Date.now() - sessionStart) / 60000);
+  sessionStart = null;
+  if (mins >= 1) {
+    day().focusMin = (day().focusMin || 0) + mins;
+    if (full && presetMin >= 90) day().checks["h3"] = true;
+    persist(); renderFocusStats(); renderScore(); renderChecklist();
+  }
+}
+function renderFocusStats() {
+  document.getElementById("focusToday").textContent = day().focusMin || 0;
+  const ft = document.getElementById("focusTask");
+  ft.textContent = day().mit ? "מתמקד ב: " + day().mit : "בחר משימה בבית — ותתמקד בה כאן";
+}
+
+/* ===================== AI coach ===================== */
+async function analyze() {
+  const d = day();
+  const text = (d.journal || "").trim();
+  const key = S.settings.apiKey;
+  const score = computeScore(d);
+  const o = outIds().filter(id => d.checks[id]).length;
+  const done = S.habits.filter(h => d.checks[h.id]).length;
+  const resp = document.getElementById("aiResp");
+  const sk = document.getElementById("aiSkeleton");
+  if (!text) { resp.textContent = "כתוב קודם כמה מילים על היום."; resp.classList.remove("hidden"); return; }
+  if (!key) { d.ai = localFeedback(score, o, done); persist(); resp.textContent = d.ai; resp.classList.remove("hidden"); return; }
+
+  const hist = [];
+  for (let i = 1; i <= 7; i++) {
+    const k = keyOffset(-i), r = S.days[k];
+    if (r) hist.push(k + ": ציון " + computeScore(r) + "%" + (r.journal ? " — " + r.journal.slice(0, 120) : ""));
+  }
+  const btn = document.getElementById("aiBtn");
+  btn.disabled = true; resp.classList.add("hidden"); sk.classList.remove("hidden");
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-opus-4-8",
+        max_tokens: 1500,
+        system: "אתה מאמן הצלחה ישיר וקשוח בעברית, שמכיר את המשתמש לאורך זמן. הוא מחפש עבודה כמפתח ובונה עסק אוטומציות AI בשם FlowOps. " +
+          "היום: ציון " + score + "%, " + o + " פעולות תפוקה (מועמדות/פנייה/עבודה עמוקה/ניתוח מניות), " + done + "/" + S.habits.length + " משימות. " +
+          "רצף: " + currentStreak() + " ימים. שבעת הימים האחרונים:\n" + (hist.join("\n") || "אין היסטוריה") +
+          "\nחוק: יום בלי תפוקה החוצה שווה מקסימום 40% — למידה לבד לא מספיקה." +
+          "\nפורמט: מה עבד / איפה ברחת / 3 משימות מדויקות למחר / משפט אמת אחד. קצר, בלי סוכר, בלי אימוג'ים. אם אתמול הבטיח משהו ביומן — תשאל אם עשה.",
+        messages: [{ role: "user", content: "היום שלי: " + text }]
+      })
+    });
+    const data = await res.json();
+    if (data.content && data.content[0]) d.ai = data.content[0].text;
+    else if (data.error) d.ai = "שגיאה: " + (data.error.message || data.error.type);
+    else d.ai = "שגיאה לא צפויה. נסה שוב.";
+  } catch (e) {
+    d.ai = "שגיאת חיבור. בדוק אינטרנט או את המפתח בפרופיל.";
+  }
+  persist();
+  sk.classList.add("hidden");
+  resp.textContent = d.ai; resp.classList.remove("hidden");
+  btn.disabled = false;
+}
+function localFeedback(score, o, done) {
+  if (o === 0) return "ציון " + score + "% — ולא יצאה ממך אף פעולה החוצה היום.\nלמידה זה נחמד, אבל אף אחד לא ישלם לך על זה.\nמחר: מועמדות אחת + פנייה אחת לפני הצהריים. בלי תירוצים.";
+  if (score >= 80) return "ציון " + score + "% — יום אמיתי. " + o + " פעולות תפוקה יצאו לעולם.\nמחר: אותו דבר בדיוק. עקביות מנצחת אינטנסיביות.";
+  return "ציון " + score + "% — בינוני. יש תפוקה (" + o + "), אבל נשארו " + (S.habits.length - done) + " משימות פתוחות.\nמחר: תתחיל מהדבר הכי כבד, לפני הטלפון.";
+}
+
+/* ===================== profile ===================== */
+function renderProfile() {
+  const kEl = document.getElementById("apiKey");
+  const st = document.getElementById("keyStatus");
+  if (S.settings.apiKey) {
+    kEl.placeholder = "•••• " + S.settings.apiKey.slice(-4);
+    st.textContent = "מחובר — המפתח שמור מקומית בלבד ולא נכלל בגיבוי";
+    st.className = "key-status ok";
+  } else { st.textContent = "בלי מפתח המאמן עובד במצב מקומי בסיסי"; st.className = "key-status"; }
+  const ed = document.getElementById("habitEditor"); ed.innerHTML = "";
+  S.habits.forEach(h => {
+    const row = document.createElement("div"); row.className = "habit-edit-row";
+    const tag = document.createElement("span"); tag.className = "tag " + (h.type === "out" ? "out" : "inp");
+    tag.textContent = h.type === "out" ? "תפוקה" : "תשומה";
+    const inp = document.createElement("input"); inp.className = "tinput"; inp.value = h.label;
+    inp.addEventListener("change", () => { h.label = inp.value; persist(); renderChecklist(); });
+    row.appendChild(tag); row.appendChild(inp); ed.appendChild(row);
+  });
+  const nDays = Object.keys(S.days).filter(k => computeScore(S.days[k]) > 0 || k === todayKey()).length;
+  document.getElementById("totals").textContent = "סה\"כ ימים פעילים: " + nDays + " · שיא רצף: " + Math.max(S.meta.bestStreak, currentStreak());
+}
+document.getElementById("apiKey").addEventListener("change", e => {
+  S.settings.apiKey = e.target.value.trim(); persist(); e.target.value = ""; renderProfile();
+});
+function exportData() {
+  const copy = JSON.parse(JSON.stringify(S));
+  copy.settings.apiKey = "";
+  const blob = new Blob([JSON.stringify(copy, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "successos-backup-" + todayKey() + ".json";
+  a.click();
+}
+function importData(inp) {
+  const f = inp.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const data = JSON.parse(rd.result);
+      if (data.version !== 2) throw new Error("bad version");
+      data.settings.apiKey = S.settings.apiKey;
+      S = data; persist(); lastScore = -1; renderAll();
+      alert("הגיבוי נטען בהצלחה");
+    } catch (e) { alert("קובץ לא תקין"); }
+  };
+  rd.readAsText(f);
+}
+function fullReset() {
+  if (!confirm("למחוק את כל ההיסטוריה וההגדרות? אין דרך חזרה.")) return;
+  localStorage.removeItem(KEY);
+  location.reload();
+}
+
+/* ===================== nav & lifecycle ===================== */
+function go(tab, btn) {
+  document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
+  document.getElementById("tab-" + tab).classList.remove("hidden");
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  window.scrollTo(0, 0);
+}
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && renderedDay !== todayKey()) { lastScore = -1; renderAll(); }
+});
+setInterval(() => { if (renderedDay !== todayKey()) { lastScore = -1; renderAll(); } }, 60000);
+
+renderAll();
+</script>
+</body>
+</html>
