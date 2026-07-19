@@ -19,12 +19,12 @@
   --purple-glow: rgba(167,139,250,.20);
   --blue-glow:   rgba(91,140,255,.20);
 
-  /* Base backgrounds */
-  --bg:   #0E0F13;
-  --bg2:  #151821;
-  --bg3:  #1A1C22;
-  --bg4:  #20232C;
-  --bg5:  #262A35;
+  /* Base backgrounds — Higgsfield cinematic black */
+  --bg:   #060608;
+  --bg2:  #0B0B0E;
+  --bg3:  #121216;
+  --bg4:  #17171C;
+  --bg5:  #1D1D24;
 
   /* Text */
   --text:   #F8FAFC;
@@ -53,20 +53,20 @@
   --shadow-md: 0 4px 16px rgba(0,0,0,.4);
   --shadow-lg: 0 16px 48px rgba(0,0,0,.6);
 
-  /* ── Accent ── */
-  --accent:       #5B8CFF;
-  --accent-glow:  rgba(91,140,255,.22);
+  /* ── Accent — Higgsfield gold ── */
+  --accent:       #FFC53D;
+  --accent-glow:  rgba(255,197,61,.24);
 
   /* ── Bottom nav ── */
   --bottom-nav-h:  96px;
-  --bottom-nav-bg: rgba(14,15,19,.97);
+  --bottom-nav-bg: rgba(6,6,8,.92);
 
   /* ── Themeable surfaces ── */
-  --app-bg:           #0E0F13;
-  --card-bg:          #1A1C22;
-  --nav-bg:           rgba(14,15,19,0.97);
+  --app-bg:           #060608;
+  --card-bg:          #121216;
+  --nav-bg:           rgba(6,6,8,0.92);
   --nav-border:       rgba(255,255,255,.06);
-  --surface-elevated: rgba(10,11,16,.97);
+  --surface-elevated: rgba(8,8,10,.97);
   --surface-bar:      rgba(255,255,255,.04);
   --card-from:        rgba(255,255,255,.04);
   --card-to:          rgba(255,255,255,.02);
@@ -74,7 +74,7 @@
   --card-inset:       rgba(255,255,255,.04);
   --input-bg:         rgba(255,255,255,.04);
   --input-border:     rgba(255,255,255,.10);
-  --scroll-thumb:     rgba(91,140,255,.15);
+  --scroll-thumb:     rgba(255,197,61,.15);
   --label-color:      #64748B;
   --gold-text-light:  #92400E;
 }
@@ -502,13 +502,13 @@ body::before {
 
   /* ── Blue CTA button ── */
   .btn-blue {
-    background: #5B8CFF;
-    color: #fff;
+    background: var(--accent);
+    color: #0B0B0E;
     font-weight: 900;
     border: none;
     border-radius: 14px;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(91,140,255,.3), 0 1px 4px rgba(0,0,0,.4);
+    box-shadow: 0 4px 20px var(--accent-glow), 0 1px 4px rgba(0,0,0,.4);
     transition: box-shadow .2s, transform .1s, opacity .15s;
   }
   .btn-blue:hover  { box-shadow: 0 6px 28px rgba(91,140,255,.45), 0 2px 8px rgba(0,0,0,.5); }

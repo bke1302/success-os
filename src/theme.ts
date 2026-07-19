@@ -22,9 +22,9 @@ export interface ThemeTokens {
 
 export const darkTokens: ThemeTokens = {
   isDark:      true,
-  bg:          '#0E0F13',
-  bgRaised:    '#151821',
-  card:        '#1A1C22',
+  bg:          '#060608',
+  bgRaised:    '#0B0B0E',
+  card:        '#121216',
   text:        '#F8FAFC',
   textSub:     '#94A3B8',
   textMuted:   '#64748B',
@@ -35,9 +35,9 @@ export const darkTokens: ThemeTokens = {
   divider:     'rgba(255,255,255,.04)',
   tagBg:       'rgba(255,255,255,.04)',
   inputBorder: 'rgba(255,255,255,.10)',
-  surface:     'rgba(10,11,16,.97)',
+  surface:     'rgba(8,8,10,.97)',
   cardShadow:  '0 1px 3px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.2)',
-  accent:      '#5B8CFF',
+  accent:      '#FFC53D',
 }
 
 export const lightTokens: ThemeTokens = {

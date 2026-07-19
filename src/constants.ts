@@ -60,9 +60,12 @@ export const HABITS: Habit[] = [
   { id: 'deepwork',  emoji: '🧠', title: 'עבודה עמוקה',        subtitle: '90+ דקות ללא הפרעות — טלפון הפוך, הודעות סגורות, רק אתה והמשימה',  category: 'production', timerSec: 5400 },
   { id: 'onetask',   emoji: '✅', title: 'משימת ה-ONE THING',   subtitle: 'בחר משימה אחת שאם תסיים אותה — היום הצליח. עשה אותה ראשון',       category: 'production' },
   { id: 'dayplan',   emoji: '📋', title: 'תוכנית יום',          subtitle: '5 דקות בבוקר: כתוב 3 משימות לפי סדר עדיפות — לפני כל פתיחת טלפון', category: 'production', timerSec: 300 },
+  { id: 'jobapply',  emoji: '💼', title: 'מועמדות למשרה',       subtitle: 'הגש מועמדות אחת או קדם תהליך קיים — מטלה, הכנה לראיון, פולו-אפ',   category: 'production' },
+  { id: 'bizaction', emoji: '💰', title: 'פעולת עסק החוצה',     subtitle: 'פנייה, הצעת מחיר, פולו-אפ או פוסט — משהו שנשלח בפועל לעולם',       category: 'production' },
+  { id: 'stocks',    emoji: '📈', title: 'ניתוח מניות',          subtitle: 'בדוק את התיקים וקבל החלטה: קנייה, מכירה או להחזיק',                category: 'production', timerSec: 900 },
 
   // ── למידה ────────────────────────────────────────────────────────────────
-  { id: 'read',      emoji: '📚', title: 'קריאת ספר',           subtitle: '20+ דקות — ספר שמלמד משהו שימושי לחיים שלך, לא רק בידור',          category: 'learning',   timerSec: 1200 },
+  { id: 'read',      emoji: '📚', title: 'קריאת ספר',           subtitle: '10+ דקות — ספר שמלמד משהו שימושי לחיים שלך, לא רק בידור',          category: 'learning',   timerSec: 600 },
   { id: 'learn',     emoji: '🎓', title: 'למידה חדשה',          subtitle: 'קורס, פודקאסט, וידאו, מנטור — ידע שמשפר אותך ביום-יום',            category: 'learning',   timerSec: 1800 },
   { id: 'goals',     emoji: '🎯', title: 'סקירת יעדים',         subtitle: '10 דקות: קרא את היעדים שלך בקול. האם הפעולות של היום מכוונות אליהם?', category: 'learning', timerSec: 600  },
 
