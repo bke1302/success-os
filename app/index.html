@@ -1,940 +1,1656 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#060608">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Success OS">
 <title>Success OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300..800&family=Space+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg-0: #060608;
-  --bg-1: #0B0B0E;
-  --surface: rgba(255,255,255,0.03);
-  --surface-hi: rgba(255,255,255,0.06);
-  --stroke: rgba(255,255,255,0.08);
-  --stroke-hi: rgba(255,255,255,0.14);
-  --gold: #FFC53D;
-  --gold-hot: #FF8A3D;
-  --gold-glow: rgba(255,197,61,0.28);
-  --gold-dim: rgba(255,197,61,0.10);
-  --success: #7EF29A;
-  --success-glow: rgba(126,242,154,0.22);
-  --danger: #FF6B5E;
-  --text-1: #F4F4F6;
-  --text-2: #A0A0AC;
-  --text-3: #5C5C68;
-  --r-sm: 12px;
-  --r-md: 16px;
-  --r-lg: 20px;
-  --r-pill: 999px;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --glowS: 0;
-}
-html { height: 100%; }
-body {
-  font-family: "Heebo", sans-serif;
-  color: var(--text-1);
-  min-height: 100%;
-  background:
-    radial-gradient(900px 500px at 50% -10%, rgba(255,197,61,calc(0.05 + var(--glowS) * 0.07)), transparent 60%),
-    radial-gradient(700px 700px at 110% 110%, rgba(255,138,61,0.04), transparent 55%),
-    var(--bg-0);
-  padding: calc(16px + env(safe-area-inset-top)) 16px calc(84px + env(safe-area-inset-bottom));
-  max-width: 560px;
-  margin: 0 auto;
-  overscroll-behavior-y: contain;
-}
-body::before {
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
-  opacity: 0.035; mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.hidden { display: none !important; }
+/* Success OS v3 · direction: trading desk at night
+ * The user is the instrument: a personal index (BRK) moves every day with execution.
+ * Depth: hairline rings only, no shadows, no glow. Colour is semantic: bull / bear only. */
+:root{
+  /* black + gold, carried over from the v2 look the user preferred */
+  --night:   #060608;
+  --desk:    rgba(255,255,255,.035);
+  --desk-up: rgba(255,255,255,.065);
+  --well:    rgba(0,0,0,.38);
+  --rule:    rgba(255,255,255,.08);
+  --rule-2:  rgba(255,255,255,.14);
+  --ink:     #F4F4F6;
+  --ink-2:   #B4B4BE;
+  --ink-3:   #84848F;
+  --ink-4:   #5C5C68;
+  --gold:    #FFC53D;
+  --gold-hot:#FF8A3D;
+  --gold-dim:rgba(255,197,61,.12);
+  --gold-glow:rgba(255,197,61,.30);
+  --bull:    #7EF29A;
+  --bull-wash: rgba(126,242,154,.12);
+  --bear:    #FF6B5E;
+  --bear-wash: rgba(255,107,94,.12);
+  --chalk:   #FFC53D;
+  --focus:   #FFC53D;
 
-/* ---------- header ---------- */
-.top { margin-bottom: 20px; }
-.greeting { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
-.date-line { font-size: 13px; color: var(--text-3); margin-top: 2px; }
-.insight {
-  margin-top: 12px; font-size: 13px; color: var(--text-2);
-  border-inline-start: 2px solid var(--gold); padding-inline-start: 12px;
-  line-height: 1.6;
-}
+  --f-he: "Heebo",system-ui,sans-serif;
+  --f-num: "Space Grotesk","Heebo",system-ui,sans-serif;
+  --f-mono: "JetBrains Mono",ui-monospace,monospace;
 
-/* ---------- cards ---------- */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--stroke);
-  border-radius: var(--r-lg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-  padding: 20px;
-  margin-bottom: 16px;
-  animation: cardIn 0.5s var(--ease-out) both;
+  --t-cap: 12px; --t-sm: 13.5px; --t-body: 15px; --t-lg: 17px; --t-h3: 20px; --t-h2: 26px; --t-h1: 32px; --t-hero: 56px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px;
+  --r-card: 20px; --r-in: 14px; --r-ctl: 12px;
+  --ease-out: cubic-bezier(.16,1,.3,1);
+  --ease-io: cubic-bezier(.77,0,.175,1);
+  --nav-h: 64px;
+  color-scheme: dark;
 }
-.card:nth-child(2) { animation-delay: 60ms; }
-.card:nth-child(3) { animation-delay: 120ms; }
-.card:nth-child(4) { animation-delay: 180ms; }
-.card:nth-child(5) { animation-delay: 240ms; }
-@keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-.card-label {
-  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--text-3); font-weight: 500; margin-bottom: 14px;
-  display: flex; align-items: center; gap: 8px;
-}
-.card-label .dot-ind { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 8px var(--gold-glow); }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:clip}
+html{background:var(--night);-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+body{font-family:var(--f-he);font-size:var(--t-body);line-height:1.5;color:var(--ink);background:radial-gradient(900px 520px at 50% -12%,rgba(255,197,61,.08),transparent 60%),radial-gradient(700px 700px at 110% 110%,rgba(255,138,61,.05),transparent 55%),var(--night);background-attachment:fixed;min-height:100dvh;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.up{color:var(--bull)} .down{color:var(--bear)} .flat{color:var(--ink-3)}
+.hidden{display:none!important}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.app{position:relative;z-index:1}
+h1,h2,h3{text-wrap:balance;font-weight:700}
+p{text-wrap:pretty}
 
-/* ---------- hero score ---------- */
-.score-card { position: relative; text-align: center; overflow: hidden; }
-.score-card.shine-once::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
-  animation: shine 0.9s var(--ease-out) 1;
-}
-@keyframes shine { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-.score-num {
-  font-family: "Space Grotesk", sans-serif;
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(84px, 22vw, 120px);
-  font-weight: 700; letter-spacing: -0.04em; line-height: 1;
-  background: linear-gradient(180deg, #FFF 0%, var(--gold) 55%, var(--gold-hot) 110%);
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 32px var(--gold-glow));
-  direction: ltr; display: inline-block;
-}
-.score-num .pct { font-size: 0.35em; -webkit-text-fill-color: var(--text-3); }
-.score-sub { font-size: 12px; color: var(--text-3); letter-spacing: 0.14em; text-transform: uppercase; margin-top: 6px; }
-.score-tag { font-size: 12px; margin-top: 10px; font-weight: 500; }
-.score-tag.out-day { color: var(--gold); }
-.score-tag.in-day { color: var(--text-2); }
-.bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 18px; overflow: hidden; }
-.bar-fill {
-  height: 100%; background: var(--gold); border-radius: 2px;
-  box-shadow: 0 0 12px var(--gold-glow);
-  transition: width 0.7s var(--ease-out);
-}
+/* ---------- shell ---------- */
+.app{max-width:480px;margin:0 auto;padding:calc(env(safe-area-inset-top) + var(--s4)) var(--s4) calc(var(--nav-h) + env(safe-area-inset-bottom) + var(--s10))}
+.topbar{display:flex;justify-content:space-between;align-items:center;height:32px;margin-bottom:var(--s3)}
+.wordmark{font-family:var(--f-num);font-weight:600;font-size:13px;letter-spacing:.02em;color:var(--ink-2);direction:ltr}
+.wordmark b{color:var(--ink);font-weight:700}
+.dateline{font-size:var(--t-sm);color:var(--ink-3)}
+.screen{display:none}
+.screen.on{display:block;animation:enter .32s var(--ease-out) both}
+@keyframes enter{from{opacity:0;transform:translateY(6px)}}
 
-/* ---------- streak pills ---------- */
-.streak-row { display: flex; gap: 8px; justify-content: center; margin-top: 18px; }
-.pill {
-  width: 34px; height: 44px; border-radius: var(--r-pill);
-  border: 1px solid var(--stroke);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; color: var(--text-3); font-weight: 500;
-  transition: all 0.2s var(--ease-out);
-}
-.pill.on { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(255,197,61,0.12); }
-.pill.frozen { border-color: #6EC6FF; color: #6EC6FF; background: rgba(110,198,255,0.08); }
-.pill.today-ring { outline: 1px solid var(--gold); outline-offset: 3px; }
-.streak-meta { text-align: center; font-size: 12px; color: var(--text-3); margin-top: 12px; }
-.streak-meta b { color: var(--gold); font-weight: 700; }
+/* ---------- typographic headings: condensed Hebrew ---------- */
+.h-sec{font-weight:700;font-size:var(--t-h3);line-height:1.15;letter-spacing:-.005em}
+.h-screen{font-weight:800;font-size:var(--t-h1);line-height:1.05;letter-spacing:-.01em}
+.sub{color:var(--ink-3);font-size:var(--t-sm)}
+.sec{margin-top:var(--s10)}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3);margin-bottom:var(--s3)}
+.sec-head .sub{white-space:nowrap}
 
-/* ---------- checklist ---------- */
-.section-title {
-  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-  font-weight: 700; margin: 4px 0 6px;
-  display: flex; align-items: center; gap: 8px;
-}
-.section-title.out { color: var(--gold); }
-.section-title.inp { color: var(--text-3); }
-.check-row {
-  display: flex; align-items: center; gap: 14px;
-  padding: 15px 4px; border-bottom: 1px solid var(--stroke);
-  cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
-  min-height: 52px;
-  transition: background 0.2s var(--ease-out);
-}
-.check-row:last-child { border-bottom: none; }
-.check-row:active { background: var(--surface-hi); }
-.cbox {
-  width: 22px; height: 22px; border-radius: 8px; flex-shrink: 0;
-  border: 1.5px solid var(--stroke-hi);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; color: transparent;
-  transition: all 0.25s var(--ease-spring);
-}
-.check-row.done .cbox {
-  background: var(--success); border-color: var(--success); color: #0B0B0E;
-  box-shadow: 0 0 14px var(--success-glow);
-  transform: scale(1);
-}
-.clabel { font-size: 14px; line-height: 1.5; transition: all 0.25s var(--ease-out); }
-.check-row.done .clabel { color: var(--text-3); opacity: 0.6; }
+/* ---------- surfaces ---------- */
+.panel{background:var(--desk);border-radius:var(--r-card);box-shadow:inset 0 0 0 1px var(--rule),inset 0 1px 0 rgba(255,255,255,.06);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:var(--s4)}
+.panel + .panel{margin-top:var(--s3)}
+.well{background:var(--well);border-radius:var(--r-in);box-shadow:inset 0 0 0 1px var(--rule)}
+.hair{height:1px;background:var(--rule);margin:var(--s4) 0}
 
-/* ---------- MIT ---------- */
-.mit-card { border-top: 1px solid rgba(255,197,61,0.25); }
-.mit-input {
-  width: 100%; background: transparent; border: none; outline: none;
-  color: var(--text-1); font-family: "Heebo", sans-serif;
-  font-size: 16px; font-weight: 500; line-height: 1.5;
-  resize: none; height: 52px;
-}
-.mit-input::placeholder { color: var(--text-3); }
-.mit-done-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-.mit-card.completed .mit-input { color: var(--text-3); opacity: 0.7; }
+/* ---------- controls ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:44px;padding:0 var(--s4);border-radius:var(--r-ctl);font-weight:600;font-size:var(--t-body);transition:transform .14s var(--ease-out),background-color .16s,opacity .16s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn-chalk{background:linear-gradient(180deg,#FFD66B,var(--gold) 60%,#F2AE1C);color:#1A1204;box-shadow:0 6px 22px -6px var(--gold-glow)}
+.btn-line{box-shadow:inset 0 0 0 1px var(--rule-2);color:var(--ink)}
+.btn-line:hover{background:var(--desk-up)}
+.btn-quiet{color:var(--ink-2);padding:0 var(--s2)}
+.btn-quiet:hover{color:var(--ink)}
+.btn-wide{width:100%}
+.btn-bear{color:var(--bear);box-shadow:inset 0 0 0 1px var(--bear-wash)}
+.row-btns{display:flex;gap:var(--s2);flex-wrap:wrap}
+.field{display:grid;gap:6px;font-size:var(--t-sm);color:var(--ink-3)}
+.inp{width:100%;min-height:44px;background:var(--well);border:0;box-shadow:inset 0 0 0 1px var(--rule);border-radius:var(--r-ctl);padding:10px 12px;font-size:16px;color:var(--ink);outline:none;transition:box-shadow .16s}
+.inp:focus{box-shadow:inset 0 0 0 1px var(--ink-3)}
+.inp::placeholder{color:var(--ink-4)}
+textarea.inp{resize:vertical;min-height:88px;line-height:1.55}
+.inp.ltr{direction:ltr;text-align:left}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}
+.seg{display:inline-flex;background:var(--well);border-radius:var(--r-ctl);padding:3px;box-shadow:inset 0 0 0 1px var(--rule)}
+.seg button{min-height:32px;min-width:44px;padding:0 10px;border-radius:7px;font-size:var(--t-sm);color:var(--ink-3);font-weight:600;transition:background-color .16s,color .16s}
+.seg button[aria-pressed="true"]{background:var(--desk-up);color:var(--ink)}
 
-/* ---------- buttons ---------- */
-.btn {
-  border: none; cursor: pointer; font-family: "Heebo", sans-serif;
-  font-size: 14px; font-weight: 700; letter-spacing: 0.02em;
-  border-radius: var(--r-pill); padding: 14px 24px; min-height: 48px;
-  transition: all 0.2s var(--ease-out); width: 100%;
-  -webkit-tap-highlight-color: transparent;
-}
-.btn-primary {
-  background: var(--gold); color: #0B0B0E;
-  box-shadow: 0 0 0 1px rgba(255,197,61,0.4), 0 8px 28px var(--gold-glow);
-}
-.btn-primary:active { transform: scale(0.98); }
-.btn-primary:disabled { opacity: 0.4; }
-.btn-ghost {
-  background: transparent; color: var(--text-2);
-  border: 1px solid var(--stroke); font-weight: 500;
-}
-.btn-ghost:active { border-color: var(--stroke-hi); transform: scale(0.98); }
-.btn-danger { background: transparent; color: var(--danger); border: 1px solid rgba(255,107,94,0.3); font-weight: 500; }
-.btn-row { display: flex; gap: 10px; }
-.btn-row .btn { flex: 1; }
-.btn.small { padding: 10px 16px; min-height: 40px; font-size: 13px; width: auto; }
-.btn.preset-on { border-color: var(--gold); color: var(--gold); }
+/* ---------- TODAY: the BRK index ---------- */
+.ticker{padding-top:var(--s2)}
+.tk-label{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-sm);color:var(--ink-3)}
+.tk-sym{font-family:var(--f-num);font-weight:700;color:var(--gold);letter-spacing:.04em}
+.tk-val{background:linear-gradient(180deg,#FFF 0%,var(--gold) 58%,var(--gold-hot) 112%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 28px rgba(255,197,61,.22));font-family:var(--f-num);font-weight:700;font-size:var(--t-hero);line-height:1.05;letter-spacing:-.035em;font-variant-numeric:tabular-nums;direction:ltr;text-align:right;margin-top:var(--s1)}
+.tk-chg{display:flex;gap:var(--s2);align-items:baseline;font-size:var(--t-body);font-weight:600;margin-top:2px;min-height:24px}
+.tk-chg .when{color:var(--ink-3);font-weight:400;font-size:var(--t-sm)}
+.chart{position:relative;height:168px;margin:var(--s4) calc(var(--s4) * -1) 0;touch-action:pan-y;cursor:crosshair;direction:ltr}
+.chart svg{display:block;width:100%;height:100%;overflow:visible}
+.chart .scrub-line{position:absolute;top:0;bottom:0;width:1px;background:var(--rule-2);pointer-events:none;opacity:0;transition:opacity .12s}
+.chart .scrub-dot{position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 3px var(--night);pointer-events:none;opacity:0;transition:opacity .12s}
+.chart.scrubbing .scrub-line,.chart.scrubbing .scrub-dot{opacity:1}
+.chart-foot{display:flex;justify-content:space-between;align-items:center;margin-top:var(--s3)}
+.quote-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:var(--s5);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.quote-row>div{padding:var(--s3) 0;display:grid;gap:2px}
+.quote-row>div+div{border-inline-start:1px solid var(--rule);padding-inline-start:var(--s3)}
+.q-k{font-size:var(--t-cap);color:var(--ink-3)}
+.q-v{font-family:var(--f-num);font-weight:600;font-size:var(--t-lg);font-variant-numeric:tabular-nums}
 
-/* ---------- focus ---------- */
-.timer-num {
-  font-family: "Space Grotesk", sans-serif; font-variant-numeric: tabular-nums;
-  font-size: clamp(64px, 18vw, 96px); font-weight: 700; letter-spacing: -0.03em;
-  text-align: center; direction: ltr; line-height: 1.1; margin: 12px 0;
-}
-.timer-num.running { filter: drop-shadow(0 0 24px var(--gold-glow)); color: var(--gold); }
-.focus-sub { text-align: center; font-size: 13px; color: var(--text-3); margin-bottom: 16px; }
-.focus-sub b { color: var(--text-2); }
+/* MIT */
+.mit{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s3);align-items:center}
+.mit-k{font-size:var(--t-sm);color:var(--ink-3);margin-bottom:6px}
+.mit-in{width:100%;background:none;border:0;outline:none;font-size:var(--t-lg);font-weight:600;line-height:1.35;color:var(--ink);resize:none;min-height:48px;field-sizing:content}
+.mit-in::placeholder{color:var(--ink-4);font-weight:500}
+.mit.done .mit-in{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--ink-4)}
+.tick{width:44px;height:44px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--ink-4);display:grid;place-items:center;transition:background-color .2s var(--ease-out),box-shadow .2s,transform .14s var(--ease-out)}
+.tick:active{transform:scale(.94)}
+.tick svg{width:18px;height:18px;stroke:#1A1204;stroke-width:2.4;fill:none;opacity:0;transform:scale(.8);transition:opacity .16s,transform .2s var(--ease-out)}
+.tick[aria-pressed="true"]{background:var(--gold);box-shadow:0 0 18px var(--gold-glow)}
+.tick[aria-pressed="true"] svg{opacity:1;transform:none}
 
-/* ---------- growth ---------- */
-.bars7 { display: flex; gap: 8px; align-items: flex-end; height: 90px; margin-top: 8px; direction: rtl; }
-.b7 { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
-.b7 .col { width: 100%; max-width: 30px; border-radius: 4px 4px 0 0; background: var(--gold); opacity: 0.9; min-height: 2px; transition: height 0.7s var(--ease-out); box-shadow: 0 0 8px rgba(255,197,61,0.1); }
-.b7 .col.zero { background: rgba(255,255,255,0.07); box-shadow: none; }
-.b7 .lbl { font-size: 10px; color: var(--text-3); }
-.heatmap { display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 4px; direction: rtl; margin-top: 8px; }
-.hcell { width: 100%; aspect-ratio: 1; border-radius: 3px; background: rgba(255,255,255,0.05); }
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.stat-c {
-  background: var(--surface); border: 1px solid var(--stroke); border-radius: var(--r-md);
-  padding: 14px; text-align: center;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-}
-.stat-v { font-family: "Space Grotesk", sans-serif; font-size: 26px; font-weight: 700; color: var(--gold); direction: ltr; }
-.stat-l { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+/* order ticket: habits */
+.book{border-radius:var(--r-card);background:var(--desk);box-shadow:inset 0 0 0 1px var(--rule),inset 0 1px 0 rgba(255,255,255,.06);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);overflow:hidden}
+.book-grp{display:flex;justify-content:space-between;padding:var(--s3) var(--s4) 6px;font-size:var(--t-cap);color:var(--ink-3)}
+.book-grp:first-child{color:var(--gold)}
+.book-grp+.ord{border-top:0}
+.ord{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:var(--s3);align-items:center;padding:0 var(--s4);min-height:54px;width:100%;text-align:start;border-top:1px solid var(--rule);transition:background-color .16s}
+.ord:hover{background:var(--desk-up)}
+.ord .box{width:22px;height:22px;border-radius:7px;box-shadow:inset 0 0 0 1.5px var(--ink-4);display:grid;place-items:center;transition:background-color .18s var(--ease-out),box-shadow .18s}
+.ord .box svg{width:14px;height:14px;stroke:var(--night);stroke-width:2.6;fill:none;opacity:0;transition:opacity .14s}
+.ord.out .box{box-shadow:inset 0 0 0 1.5px rgba(255,197,61,.55)}
+.ord.on .box{background:var(--ink-2);box-shadow:none}
+.ord.on.out .box{background:var(--gold);box-shadow:0 0 10px var(--gold-glow)}
+.ord.on .box svg{opacity:1}
+.ord .lb{font-size:var(--t-body);line-height:1.35;padding:var(--s3) 0}
+.ord .lb small{display:block;font-size:var(--t-cap);color:var(--ink-3);margin-top:2px}
+.ord.on .lb{color:var(--ink-3)}
+.ord .w{font-family:var(--f-mono);font-size:var(--t-cap);color:var(--ink-4)}
+.ord.on .w{color:var(--ink-3)}
+.book-foot{display:flex;justify-content:space-between;align-items:center;padding:var(--s3) var(--s4);border-top:1px solid var(--rule);font-size:var(--t-sm);color:var(--ink-3)}
 
-/* ---------- AI coach ---------- */
-.journal {
-  width: 100%; background: var(--surface); border: 1px solid var(--stroke);
-  border-radius: var(--r-sm); padding: 14px; color: var(--text-1);
-  font-family: "Heebo", sans-serif; font-size: 16px; line-height: 1.6;
-  resize: none; height: 100px; outline: none; margin-bottom: 12px;
-  transition: border-color 0.2s;
-}
-.journal:focus { border-color: rgba(255,197,61,0.35); }
-.journal::placeholder { color: var(--text-3); }
-.ai-resp {
-  margin-top: 14px; padding: 16px; background: var(--surface);
-  border-radius: var(--r-sm);
-  border-inline-start: 2px solid var(--gold);
-  font-size: 14px; line-height: 1.8; white-space: pre-wrap;
-  unicode-bidi: plaintext;
-  animation: cardIn 0.4s var(--ease-out);
-}
-.skeleton { margin-top: 14px; }
-.sk-line {
-  height: 12px; border-radius: 6px; margin-bottom: 10px;
-  background: linear-gradient(105deg, var(--surface) 40%, var(--surface-hi) 50%, var(--surface) 60%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s linear infinite;
-}
-@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-.sk-line:nth-child(1) { width: 90%; } .sk-line:nth-child(2) { width: 70%; } .sk-line:nth-child(3) { width: 80%; }
+/* desk tiles on Today: deliberately different shapes */
+.desk-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:var(--s3)}
+.tile{background:var(--desk);border-radius:var(--r-card);box-shadow:inset 0 0 0 1px var(--rule),inset 0 1px 0 rgba(255,255,255,.06);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s2);text-align:start;min-width:0;transition:background-color .16s,transform .14s var(--ease-out)}
+.tile:hover{background:var(--desk-up)}
+.tile:active{transform:scale(.985)}
+.tile.wide{grid-column:1/-1}
+.tile-k{font-size:var(--t-sm);color:var(--ink-3);display:flex;justify-content:space-between;gap:var(--s2)}
+.tile-big{font-family:var(--f-num);font-weight:600;font-size:var(--t-h1);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.tile-big small{font-size:var(--t-body);font-weight:500;color:var(--ink-3);letter-spacing:0;margin-inline-start:4px}
+.tile p{font-size:var(--t-sm);color:var(--ink-2);line-height:1.4}
+.countdown{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s4);align-items:end}
+.countdown .tile-big{font-size:64px;font-weight:600;letter-spacing:-.05em}
+.cd-txt{padding-bottom:6px}
+.cd-txt b{display:block;font-size:var(--t-lg);font-weight:700;line-height:1.25}
+.cd-txt span{font-size:var(--t-sm);color:var(--ink-3)}
 
-/* ---------- profile ---------- */
-.field-label { font-size: 12px; color: var(--text-3); margin: 14px 0 6px; }
-.tinput {
-  width: 100%; background: var(--surface); border: 1px solid var(--stroke);
-  border-radius: var(--r-sm); padding: 12px 14px; color: var(--text-1);
-  font-family: "Heebo", sans-serif; font-size: 16px; outline: none;
-}
-.tinput:focus { border-color: rgba(255,197,61,0.35); }
-.tinput.ltr { direction: ltr; }
-.key-status { font-size: 12px; margin-top: 6px; }
-.key-status.ok { color: var(--success); }
-.habit-edit-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.habit-edit-row .tag { font-size: 10px; padding: 3px 8px; border-radius: var(--r-pill); flex-shrink: 0; font-weight: 700; }
-.tag.out { background: var(--gold-dim); color: var(--gold); }
-.tag.inp { background: rgba(255,255,255,0.05); color: var(--text-3); }
+/* focus dock */
+.dock{position:fixed;inset-inline:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 10px);display:flex;justify-content:center;pointer-events:none;z-index:30}
+.dock-in{pointer-events:auto;display:flex;align-items:center;gap:var(--s3);background:var(--gold);color:#1A1204;border-radius:14px;padding:6px 6px 6px 14px;min-height:48px;box-shadow:0 10px 30px -8px var(--gold-glow);animation:enter .3s var(--ease-out) both}
+.dock-in .num{font-weight:600;font-size:var(--t-lg)}
+.dock-in .lbl{font-size:var(--t-sm);font-weight:600}
+.dock-in .btn{min-height:36px;background:var(--night);color:var(--chalk);padding:0 12px;font-size:var(--t-sm)}
+
+/* ---------- MARKET ---------- */
+.ladder{display:grid;gap:0;counter-reset:lv}
+.lv{display:grid;grid-template-columns:36px minmax(0,1fr);gap:var(--s3);padding:var(--s3) 0;position:relative}
+.lv + .lv{border-top:1px solid var(--rule)}
+.lv-n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-num);font-weight:600;font-size:var(--t-sm);box-shadow:inset 0 0 0 1px var(--rule-2);color:var(--ink-3)}
+.lv.done .lv-n{background:var(--gold);color:#1A1204;box-shadow:none}
+.lv.now .lv-n{box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink)}
+.lv-t{font-weight:700;font-size:var(--t-body)}
+.lv.locked .lv-t{color:var(--ink-3)}
+.lv-d{font-size:var(--t-sm);color:var(--ink-3);margin-top:1px}
+.meter{height:4px;border-radius:2px;background:var(--well);margin-top:var(--s2);overflow:hidden;box-shadow:inset 0 0 0 1px var(--rule)}
+.meter i{display:block;height:100%;background:var(--gold);box-shadow:0 0 10px var(--gold-glow);border-radius:2px;transform-origin:right;transition:transform .5s var(--ease-out)}
+.lv.done .meter i{background:var(--gold)}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--rule);border-radius:var(--r-card);overflow:hidden;box-shadow:inset 0 0 0 1px var(--rule)}
+.stat{background:var(--desk);padding:var(--s4);display:grid;gap:2px}
+.stat .k{font-size:var(--t-sm);color:var(--ink-3)}
+.stat .v{font-family:var(--f-num);font-weight:600;font-size:var(--t-h2);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .d{font-size:var(--t-cap);color:var(--ink-3)}
+.rcurve{height:120px;margin-top:var(--s3);direction:ltr}
+.rcurve svg{width:100%;height:100%;display:block;overflow:visible}
+.empty{padding:var(--s5) var(--s4);text-align:center;color:var(--ink-3);font-size:var(--t-sm)}
+.empty b{display:block;color:var(--ink-2);font-size:var(--t-body);margin-bottom:4px}
+
+.wl-row,.tr-row{display:grid;align-items:center;gap:var(--s3);min-height:56px;padding:0 var(--s4);border-top:1px solid var(--rule);width:100%;text-align:start}
+.wl-row{grid-template-columns:72px auto minmax(0,1fr) 36px}
+.tr-row{grid-template-columns:72px minmax(0,1fr) auto}
+.tr-row:hover{background:var(--desk-up)}
+.tkr{font-family:var(--f-num);font-weight:700;font-size:var(--t-body);letter-spacing:.02em;direction:ltr;text-align:right}
+.dots3{display:flex;gap:5px;direction:ltr}
+.dots3 i{width:9px;height:9px;border-radius:50%;background:var(--bull)}
+.dots3 i.x{background:var(--bear)}
+.dots3 i.na{background:none;box-shadow:inset 0 0 0 1.5px var(--ink-4)}
+.verdict{font-size:var(--t-sm);color:var(--ink-2)}
+.verdict.x{color:var(--bear)}
+.verdict.ok{color:var(--bull)}
+.x-btn{width:36px;height:44px;display:grid;place-items:center;color:var(--ink-4)}
+.x-btn:hover{color:var(--bear)}
+.tr-mid{font-size:var(--t-sm);color:var(--ink-3);line-height:1.35}
+.tr-mid b{color:var(--ink-2);font-weight:600}
+.tr-r{font-family:var(--f-num);font-weight:600;font-variant-numeric:tabular-nums;direction:ltr;text-align:left}
+.tag-open{font-size:var(--t-cap);color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--rule-2);border-radius:6px;padding:1px 6px}
+.list-head{display:flex;justify-content:space-between;align-items:center;padding:var(--s3) var(--s4)}
+.rule-chip{display:inline-flex;gap:6px;align-items:center}
+details.method summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;min-height:44px}
+details.method summary::-webkit-details-marker{display:none}
+details.method summary::after{content:"";width:8px;height:8px;border-inline-start:1.5px solid var(--ink-3);border-bottom:1.5px solid var(--ink-3);transform:rotate(-45deg);transition:transform .2s var(--ease-out)}
+details.method[open] summary::after{transform:rotate(135deg)}
+.method ol{padding-inline-start:20px;display:grid;gap:var(--s2);font-size:var(--t-sm);color:var(--ink-2);margin-top:var(--s2)}
+.method a{color:var(--ink);text-underline-offset:3px}
+
+/* ---------- VENTURE ---------- */
+.v-head{display:grid;gap:var(--s2)}
+.partners{display:flex;gap:var(--s2);flex-wrap:wrap;font-size:var(--t-sm);color:var(--ink-3)}
+.partners span{color:var(--ink-2)}
+.runway{margin-top:var(--s3);direction:ltr}
+.runway svg{width:100%;display:block;overflow:visible}
+.rw-legend{display:flex;gap:var(--s4);flex-wrap:wrap;font-size:var(--t-cap);color:var(--ink-3);margin-top:var(--s3)}
+.rw-legend span{display:inline-flex;gap:6px;align-items:center}
+.task{display:grid;grid-template-columns:28px minmax(0,1fr);gap:var(--s3);padding:var(--s3) var(--s4);border-top:1px solid var(--rule);align-items:start}
+.task .box{margin-top:1px}
+.task-t{font-size:var(--t-body);line-height:1.35}
+.task-m{display:flex;gap:var(--s3);flex-wrap:wrap;font-size:var(--t-cap);color:var(--ink-3);margin-top:3px}
+.task-m .late{color:var(--bear)}
+.task-m .mine{color:var(--ink)}
+.task.on .task-t{color:var(--ink-3)}
+.chk{width:22px;height:22px;border-radius:7px;box-shadow:inset 0 0 0 1.5px var(--ink-3);display:grid;place-items:center;position:relative}
+.chk::before{content:"";position:absolute;inset:-11px}
+.chk svg{width:14px;height:14px;stroke:var(--night);stroke-width:2.6;fill:none;opacity:0}
+.chk[aria-pressed="true"]{background:var(--gold);box-shadow:none}
+.chk[aria-pressed="true"] svg{opacity:1}
+.ext{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);min-height:56px;padding:0 var(--s4);color:var(--ink);text-decoration:none;border-top:1px solid var(--rule)}
+.ext:hover{background:var(--desk-up)}
+.book>.task:first-child,.book>.tr-row:first-child,.book>.wl-row:first-child,.book>.log-item:first-child,.book>.ext:first-child{border-top:0}
+.more{width:100%;min-height:48px;border-top:1px solid var(--rule);color:var(--ink-2);font-size:var(--t-sm);font-weight:600}
+.more:hover{color:var(--ink)}
+.rw{display:grid;gap:8px;margin-top:var(--s3)}
+.rw-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:var(--s3);align-items:center}
+.rw-name{font-size:var(--t-cap);color:var(--ink-2);line-height:1.25}
+.rw-name span{display:block;color:var(--ink-3)}
+.rw-track{position:relative;height:22px;direction:ltr}
+.rw-track svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.rw-axis{position:relative;height:14px;direction:ltr}
+.ext span{font-size:var(--t-sm);color:var(--ink-3)}
+
+/* ---------- LEARN ---------- */
+.flash{min-height:220px;display:flex;flex-direction:column;justify-content:space-between;gap:var(--s4)}
+.flash-topic{font-size:var(--t-cap);color:var(--ink-3)}
+.flash-q{font-size:var(--t-h3);font-weight:700;line-height:1.3}
+.flash-a{font-size:var(--t-body);color:var(--ink-2);line-height:1.55;border-top:1px solid var(--rule);padding-top:var(--s3);white-space:pre-wrap}
+.flash-btns{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.log-item{padding:var(--s3) var(--s4);border-top:1px solid var(--rule)}
+.log-item .m{font-size:var(--t-cap);color:var(--ink-3)}
+.log-item p{font-size:var(--t-sm);color:var(--ink-2);margin-top:2px;white-space:pre-wrap}
+.decks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border-radius:var(--r-in);overflow:hidden;margin-top:var(--s3)}
+.decks>div{background:var(--desk);padding:var(--s3);display:grid;gap:2px}
+.decks .k{font-size:var(--t-cap);color:var(--ink-3)}
+.decks .v{font-family:var(--f-num);font-weight:600;font-size:var(--t-lg)}
+
+/* ---------- ME ---------- */
+.ai-out{white-space:pre-wrap;font-size:var(--t-body);line-height:1.65;color:var(--ink-2);margin-top:var(--s4);border-top:1px solid var(--rule);padding-top:var(--s4)}
+.skel{height:12px;border-radius:6px;background:var(--desk-up);margin-top:10px;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+.heat{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;direction:ltr}
+.heat i{aspect-ratio:1;border-radius:4px;background:var(--well);box-shadow:inset 0 0 0 1px var(--rule)}
+.hab-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2);align-items:center;margin-top:var(--s2)}
+.hab-tag{font-size:var(--t-cap);color:var(--ink-3);width:44px}
+.hab-tag.out{color:var(--gold)}
+.note{font-size:var(--t-cap);color:var(--ink-3);margin-top:var(--s2)}
+.note.ok{color:var(--bull)}
+
+/* ---------- sheet ---------- */
+dialog.sheet{border:0;padding:0;margin:auto auto 0;width:100%;max-width:480px;max-height:92dvh;background:#0E0E12;color:var(--ink);border-radius:var(--r-card) var(--r-card) 0 0;box-shadow:inset 0 1px 0 var(--rule-2)}
+dialog.sheet[open]{animation:sheet-in .34s var(--ease-out) both}
+dialog.sheet::backdrop{background:rgba(0,0,0,.6);animation:fade .2s both}
+@keyframes sheet-in{from{transform:translateY(100%)}}
+@keyframes fade{from{opacity:0}}
+.sheet-in{padding:var(--s5) var(--s4) calc(var(--s6) + env(safe-area-inset-bottom));display:grid;gap:var(--s4);overflow:auto;max-height:92dvh}
+.sheet-grab{width:36px;height:4px;border-radius:2px;background:var(--rule-2);margin:0 auto}
+.sheet-head{display:flex;justify-content:space-between;align-items:center}
+.toggle-row{display:flex;gap:var(--s2)}
+.toggle-row button{flex:1;min-height:44px;border-radius:var(--r-ctl);box-shadow:inset 0 0 0 1px var(--rule-2);font-weight:600;font-size:var(--t-sm);color:var(--ink-2)}
+.toggle-row button[aria-pressed="true"].y{background:var(--bull-wash);color:var(--bull);box-shadow:inset 0 0 0 1px var(--bull)}
+.toggle-row button[aria-pressed="true"].n{background:var(--bear-wash);color:var(--bear);box-shadow:inset 0 0 0 1px var(--bear)}
+.calc{font-size:var(--t-sm);color:var(--ink-3)}
+.calc b{color:var(--ink);font-family:var(--f-num)}
 
 /* ---------- nav ---------- */
-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-  background: rgba(11,11,14,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--stroke);
-  display: flex; justify-content: space-around;
-  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
-  max-width: 560px; margin: 0 auto;
-}
-.nav-btn {
-  flex: 1; background: none; border: none; cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 8px 0; min-height: 52px; color: var(--text-3);
-  font-family: "Heebo", sans-serif; font-size: 10px; font-weight: 500;
-  -webkit-tap-highlight-color: transparent;
-  transition: color 0.2s;
-}
-.nav-btn.active { color: var(--gold); }
-.nav-btn svg { width: 22px; height: 22px; }
+nav.tabs{position:fixed;inset-inline:0;bottom:0;z-index:40;background:rgba(6,6,8,.86);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);border-top:1px solid var(--rule);padding-bottom:env(safe-area-inset-bottom)}
+.tabs-in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--nav-h)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;font-weight:600;color:var(--ink-4);position:relative;transition:color .16s}
+.tab svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tab[aria-current="page"]{color:var(--gold)}
+.tab[aria-current="page"]::before{content:"";position:absolute;top:-1px;width:20px;height:2px;border-radius:1px;background:var(--gold);box-shadow:0 0 10px var(--gold-glow)}
+.tab .badge{position:absolute;top:10px;inset-inline-start:calc(50% + 8px);min-width:16px;height:16px;border-radius:8px;background:var(--bear);color:var(--night);font-family:var(--f-num);font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px}
 
-/* day-mode ordering on Home */
-#tab-home { display: flex; flex-direction: column; }
-body.mode-morning #card-mit { order: 1; } body.mode-morning #card-score { order: 2; } body.mode-morning #card-streak { order: 3; }
-body.mode-noon #card-score { order: 1; } body.mode-noon #card-mit { order: 2; } body.mode-noon #card-streak { order: 3; }
-body.mode-evening #card-score { order: 1; } body.mode-evening #card-streak { order: 2; } body.mode-evening #card-mit { order: 3; }
-.evening-note { font-size: 13px; color: var(--text-2); text-align: center; margin-top: 4px; margin-bottom: 16px; line-height: 1.6; }
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition-duration: 0.01ms !important; }
+/* v3.1: hero bars, gate, review, venture blockers */
+.hero{padding-top:var(--s2)}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s4)}
+.hero-verdict{font-size:var(--t-sm);color:var(--ink-2);max-width:190px;text-align:left;line-height:1.4;padding-bottom:10px}
+.hero-verdict b{display:block;color:var(--gold);font-weight:600}
+.bars{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:5px;height:132px;align-items:end;margin-top:var(--s5);direction:ltr}
+.bar{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;padding:0;min-width:0}
+.bar i{display:block;width:100%;border-radius:4px 4px 2px 2px;background:rgba(255,255,255,.16);min-height:3px;transition:height .5s var(--ease-out)}
+.bar.out i{background:linear-gradient(180deg,#FFD66B,var(--gold));box-shadow:0 0 10px rgba(255,197,61,.16)}
+.bar.none i{width:4px;height:4px!important;min-height:4px;border-radius:50%;background:var(--ink-4)}
+.bar.today i{outline:1px solid var(--gold);outline-offset:2px}
+.bar span{font-size:10.5px;color:var(--ink-3);line-height:1}
+.bar.sel span{color:var(--gold);font-weight:700}
+.bars-cap{display:flex;justify-content:space-between;gap:var(--s3);margin-top:var(--s3);font-size:var(--t-cap);color:var(--ink-3);min-height:18px}
+.bars-cap b{color:var(--ink);font-weight:600}
+.legend{display:flex;gap:var(--s4);flex-wrap:wrap;font-size:var(--t-cap);color:var(--ink-3);margin-top:6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-inline-end:5px;vertical-align:-1px}
+.rule-line{display:flex;gap:var(--s2);align-items:baseline;font-size:var(--t-sm);color:var(--ink-2);border-inline-start:2px solid var(--gold);padding-inline-start:var(--s3);margin-top:var(--s4)}
+.rule-line b{color:var(--gold);font-weight:600;white-space:nowrap}
+.plan-row{display:grid;grid-template-columns:28px minmax(0,1fr);gap:var(--s3);align-items:start;padding:var(--s3) var(--s4);border-top:1px solid var(--rule)}
+.plan-row:first-child{border-top:0}
+.plan-row.on .plan-t{color:var(--ink-3);text-decoration:line-through}
+.plan-t{font-size:var(--t-body);line-height:1.4}
+.gate{display:grid;gap:2px;border-radius:var(--r-in);background:var(--well);box-shadow:inset 0 0 0 1px var(--rule);padding:6px var(--s3)}
+.gate-h{display:flex;justify-content:space-between;font-size:var(--t-sm);color:var(--gold);padding:6px 0}
+.gate-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s3);align-items:center;padding:6px 0;border-top:1px solid var(--rule)}
+.gate-row span{font-size:var(--t-sm);color:var(--ink);line-height:1.35}
+.yn{display:flex;gap:4px}
+.yn button{min-width:46px;min-height:36px;border-radius:9px;box-shadow:inset 0 0 0 1px var(--rule-2);font-size:var(--t-sm);font-weight:600;color:var(--ink-3)}
+.yn button[aria-pressed="true"].y{background:var(--gold-dim);color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.yn button[aria-pressed="true"].n{background:var(--bear-wash);color:var(--bear);box-shadow:inset 0 0 0 1px var(--bear)}
+.gate-v{font-size:var(--t-sm);padding:8px 0 4px;color:var(--ink-2)}
+.gate-v.ok{color:var(--gold)} .gate-v.x{color:var(--bear)}
+.form-err{font-size:var(--t-sm);color:var(--bear);min-height:0}
+select.inp{appearance:none;-webkit-appearance:none}
+.toggle-row button[aria-pressed="true"]:not(.y):not(.n){background:var(--gold-dim);color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.toggle-row button[aria-pressed="true"].y{background:var(--gold-dim);color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.wkbars{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;height:110px;align-items:end;margin-top:var(--s3);direction:ltr}
+.wkb{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;height:100%;min-width:0}
+.wkb i{display:block;width:100%;border-radius:4px;background:var(--gold);min-height:3px}
+.wkb i.low{background:var(--bear)}
+.wkb i.none{background:none;height:3px!important;border-top:1px dashed var(--ink-4)}
+.wkb span{font-size:10.5px;color:var(--ink-3)}
+.wkb em{font-style:normal;font-size:10.5px;color:var(--ink-2)}
+.blk{display:grid;grid-template-columns:28px minmax(0,1fr) 36px;gap:var(--s3);align-items:start;padding:var(--s3) var(--s4);border-top:1px solid var(--rule)}
+.blk:first-child{border-top:0}
+.blk-t{font-size:var(--t-body);line-height:1.35}
+.blk-m{font-size:var(--t-cap);color:var(--ink-3);margin-top:3px}
+.blk-m.late{color:var(--bear)}
+.blk.on .blk-t{color:var(--ink-3);text-decoration:line-through}
+.blk-add{display:grid;grid-template-columns:minmax(0,1fr) 128px auto;gap:var(--s2);padding:var(--s3) var(--s4);border-top:1px solid var(--rule)}
+.slack{grid-column:1/-1;border-top:1px solid var(--rule);padding-top:var(--s3);font-size:var(--t-sm);color:var(--ink-2);line-height:1.5}
+.slack b{color:var(--ink)}
+.attempt{margin-top:var(--s3)}
+.attempt-out{font-size:var(--t-sm);color:var(--ink-3);margin-top:var(--s3);white-space:pre-wrap}
+.flash-btns.three{grid-template-columns:repeat(3,1fr)}
+@media (max-width:380px){.blk-add{grid-template-columns:minmax(0,1fr) auto}.blk-add input[type=date]{grid-column:1/-1;grid-row:2}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+@media (min-width:720px){
+  .app{padding-top:var(--s10)}
 }
 </style>
 </head>
 <body>
+<div class="app">
+  <header class="topbar">
+    <span class="wordmark"><b>SUCCESS</b> OS</span>
+    <span class="dateline" id="dateline"></span>
+  </header>
 
-<div class="top">
-  <div class="greeting" id="greeting">שלום</div>
-  <div class="date-line" id="dateLine"></div>
-  <div class="insight" id="insight"></div>
+  <!-- ===================== TODAY ===================== -->
+  <main class="screen on" id="s-today" aria-label="היום">
+    <section class="hero" aria-label="ציון היום">
+      <div class="hero-top">
+        <div>
+          <div class="tk-label"><span class="tk-sym">ציון היום</span><span id="tkMode"></span></div>
+          <div class="tk-val" id="hScore">0</div>
+        </div>
+        <div class="hero-verdict" id="hVerdict"></div>
+      </div>
+      <div class="bars" id="bars" role="group" aria-label="הציון בכל אחד מ-14 הימים האחרונים"></div>
+      <div class="bars-cap"><span id="barsCap">כל עמודה היא יום. לחיצה מראה את הפרטים.</span><span id="barsDate"></span></div>
+      <div class="legend"><span><i style="background:var(--gold)"></i>יצאה פעולת תפוקה</span><span><i style="background:rgba(255,255,255,.2)"></i>רק תשומה</span><span><i style="background:var(--ink-4);border-radius:50%"></i>לא נפתח</span></div>
+      <div class="quote-row">
+        <div><span class="q-k">רצף</span><span class="q-v num" id="qStreak">0</span></div>
+        <div><span class="q-k">ממוצע שבוע</span><span class="q-v num" id="qAvg">0</span></div>
+        <div><span class="q-k">ימי תפוקה</span><span class="q-v num" id="qOut">0</span></div>
+        <div><span class="q-k">דק׳ פוקוס</span><span class="q-v num" id="qFocus">0</span></div>
+      </div>
+      <div class="rule-line hidden" id="ruleToday"><b>הכלל של השבוע</b><span id="ruleTodayT"></span></div>
+    </section>
+
+    <section class="sec">
+      <div class="panel mit" id="mitBox">
+        <div>
+          <div class="mit-k">הדבר האחד של היום</div>
+          <textarea class="mit-in" id="mitIn" rows="1" placeholder="מה הדבר האחד שאם יקרה, היום מוצלח?"></textarea>
+        </div>
+        <button class="tick" id="mitTick" aria-pressed="false" aria-label="סמן כבוצע"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      </div>
+    </section>
+
+    <section class="sec hidden" id="planSec">
+      <div class="sec-head"><h2 class="h-sec">מה המאמן ביקש להיום</h2><span class="sub" id="planMeta"></span></div>
+      <div class="book" id="plan"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">פקודות היום</h2><span class="sub" id="ordMeta"></span></div>
+      <div class="book" id="book"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">הדסק</h2><span class="sub">לחיצה פותחת</span></div>
+      <div class="desk-grid">
+        <button class="tile wide" data-go="venture" id="tVenture"></button>
+        <button class="tile" data-go="market" id="tMarket"></button>
+        <button class="tile" data-go="learn" id="tLearn"></button>
+        <button class="tile wide" id="tFocus"></button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== MARKET ===================== -->
+  <main class="screen" id="s-market" aria-label="שוק">
+    <h1 class="h-screen">שוק ההון</h1>
+    <p class="sub" style="margin-top:6px">המדד שקובע הוא משמעת, לא רווח. הרווח מגיע אחריה.</p>
+    <div class="rule-line hidden" id="ruleMarket"><b>הכלל של השבוע</b><span id="ruleMarketT"></span></div>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">מסלול הסוחר</h2><span class="sub" id="ladderMeta"></span></div>
+      <div class="panel"><div class="ladder" id="ladder"></div></div>
+    </section>
+
+    <section class="sec">
+      <div class="stats" id="mStats"></div>
+      <div class="panel" style="margin-top:var(--s3)">
+        <div class="sec-head" style="margin:0"><span class="sub">משמעת לפי שבוע: אחוז העסקאות שעברו את שער הכניסה</span></div>
+        <div class="wkbars" id="wkbars"></div>
+      </div>
+      <div class="panel" style="margin-top:var(--s3)">
+        <div class="sec-head" style="margin:0"><span class="sub">עקומת R מצטברת</span><span class="sub num" id="rTotal"></span></div>
+        <div class="rcurve" id="rcurve"></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">רשימת מעקב</h2><button class="btn btn-quiet" id="addWatch">הוספה</button></div>
+      <div class="book" id="watch"></div>
+      <p class="note">נקודות משמאל לימין: ריצה היום · קצב נפח · תגובת הדוח האחרון. "עוברת" רק כששלושתן נבדקו היום.</p>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">יומן עסקאות</h2><button class="btn btn-chalk" id="addTrade" style="min-height:40px">עסקה חדשה</button></div>
+      <div class="book" id="trades"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">סקירה שבועית</h2><span class="sub" id="revMeta"></span></div>
+      <div class="panel" style="display:grid;gap:var(--s3)">
+        <p class="calc" id="revData"></p>
+        <div class="field hidden" id="revPrevWrap">הכלל של השבוע שעבר: <b style="color:var(--gold)" id="revPrevRule"></b>
+          <div class="toggle-row" id="revKept"><button type="button" class="y" data-v="yes">עמדתי בו</button><button type="button" data-v="part">חלקית</button><button type="button" class="n" data-v="no">לא</button></div>
+        </div>
+        <label class="field">איזו עסקה השבוע הייתה הכי לפי הכללים?<textarea class="inp" id="rv1" rows="2"></textarea></label>
+        <label class="field">איפה חרגתי מהשיטה, ולמה?<textarea class="inp" id="rv2" rows="2"></textarea></label>
+        <label class="field">כלל אחד לשבוע הבא (יופיע במסך הבית כל השבוע)<input class="inp" id="rv3"></label>
+        <button class="btn btn-line" id="saveRev">שמירת הסקירה</button>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="panel">
+        <details class="method">
+          <summary><span class="h-sec" style="font-size:var(--t-lg)">השיטה: מיכה + 3 בדיקות</span></summary>
+          <ol>
+            <li>סינון ב-<a href="https://finviz.com/screener.ashx?v=211&f=cap_midover,fa_debteq_u1,fa_epsqoq_o10,fa_roe_o15,fa_salesqoq_o10,sh_avgvol_o500,sh_price_o10,ta_sma20_pb,ta_sma200_pa,ta_sma50_pa&ft=4" target="_blank" rel="noopener">סורק הפולבק ב-Finviz</a>: מעל Mid-cap, צמיחת EPS ומכירות מעל 10%, ROE מעל 15%, חוב/הון מתחת 1, פולבק ל-SMA20 מעל SMA50 ו-SMA200.</li>
+            <li>ניתוח שבועי ב-Koyfin בטמפלט Micha: נרות שבועיים, סקאלה לוגריתמית, SMA 30W ו-40W, נפח. נכנסים רק כשהממוצעים עולים, המחיר מעליהם ויש תמיכה ברורה.</li>
+            <li>ריצה היום מעל 3%: רדיפה. לא נכנסים.</li>
+            <li>קצב נפח מתחת ל-0.7 מהצפוי עד עכשיו: אין דלק.</li>
+            <li>נפילה של יותר מ-4% על הדוח האחרון (30 יום): היצע מעל. גם אם הדוח היכה תחזיות.</li>
+            <li>לפני כניסה: סטופ ויעד כתובים ביומן. עסקה בלי סטופ היא חריגה.</li>
+          </ol>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== VENTURE ===================== -->
+  <main class="screen" id="s-venture" aria-label="מיזם">
+    <div class="v-head">
+      <h1 class="h-screen" id="vTitle">המיזם</h1>
+      <div class="partners">שותפים שווים: <span>ברק</span>·<span>דניאל</span>·<span>עידן</span></div>
+    </div>
+
+    <section class="sec">
+      <div class="panel countdown" id="vCount"></div>
+      <div class="panel">
+        <div class="sec-head" style="margin:0"><span class="sub">המסלול עד סבב ה-pre-seed</span><span class="sub" id="vPct"></span></div>
+        <div class="runway" id="runway"></div>
+        <div class="rw-legend"><span><svg width="10" height="10"><rect width="10" height="10" rx="2" fill="currentColor" opacity=".5"/></svg>שלב</span><span><svg width="10" height="10"><rect x="2" y="2" width="6" height="6" transform="rotate(45 5 5)" fill="currentColor"/></svg>אבן דרך</span><span><svg width="10" height="10"><rect x="4" width="2" height="10" fill="var(--bear)"/></svg>היום</span></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">חסמים</h2><span class="sub" id="vBlockMeta"></span></div>
+      <div class="book" id="vBlock"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">התוצר שלי השבוע</h2><span class="sub" id="vCommitMeta"></span></div>
+      <div class="panel">
+        <div class="mit" id="commitBox">
+          <div><div class="mit-k">דבר אחד שהשותפים יראו עד סוף השבוע</div><textarea class="mit-in" id="commitIn" rows="1" placeholder="למשל: הגשת בקשה ל-D-U-N-S"></textarea></div>
+          <button class="tick" id="commitTick" aria-pressed="false" aria-label="סמן שהתוצר נמסר"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+        </div>
+        <button class="btn btn-line btn-wide" id="copySum" style="margin-top:var(--s4)">העתקת סיכום שבועי לקבוצת השותפים</button>
+        <textarea class="inp hidden" id="sumOut" rows="8" readonly style="margin-top:var(--s3)"></textarea>
+        <p class="note" id="sumNote"></p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">השבוע במיזם</h2><span class="sub" id="vWeekMeta"></span></div>
+      <div class="book" id="vWeek"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">באיחור</h2><span class="sub" id="vLateMeta"></span></div>
+      <div class="book" id="vLate"></div>
+    </section>
+
+    <section class="sec">
+      <div class="book">
+        <a class="ext" href="https://claude.ai/artifact/Fj6EV4uyT4fR9rj26c6jwk" target="_blank" rel="noopener"><b>הגאנט המשותף</b><span>שלבי ביצוע, יומן החלטות ועריכה</span></a>
+      </div>
+      <p class="note" id="vSnap"></p>
+    </section>
+  </main>
+
+  <!-- ===================== LEARN ===================== -->
+  <main class="screen" id="s-learn" aria-label="למידה">
+    <h1 class="h-screen">למידה</h1>
+    <p class="sub" style="margin-top:6px">מה שלא חוזרים עליו, נשכח תוך שבוע.</p>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">חזרה של היום</h2><span class="sub" id="dueMeta"></span></div>
+      <div class="panel flash" id="flash"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">מה למדתי היום</h2></div>
+      <div class="panel" style="display:grid;gap:var(--s3)">
+        <div class="seg" id="topicSeg" role="group" aria-label="נושא">
+          <button data-t="market">מסחר</button><button data-t="build">AI ופיתוח</button><button data-t="startup">סטארטאפ</button>
+        </div>
+        <textarea class="inp" id="learnTxt" rows="4" placeholder="מה למדתי, במילים שלי"></textarea>
+        <label class="field">משפט אחד, כאילו אני מסביר לחבר (פיינמן)<input class="inp" id="feyn"></label>
+        <div class="row-btns">
+          <button class="btn btn-chalk" id="saveLearn">שמירה</button>
+          <button class="btn btn-line" id="genCards">כרטיסיות מה-AI</button>
+          <button class="btn btn-quiet" id="addCard">כרטיסייה ידנית</button>
+        </div>
+        <p class="note" id="learnNote"></p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">היומן</h2><span class="sub" id="logMeta"></span></div>
+      <div class="book" id="learnLog"></div>
+    </section>
+  </main>
+
+  <!-- ===================== ME ===================== -->
+  <main class="screen" id="s-me" aria-label="אני">
+    <h1 class="h-screen">אני</h1>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">המאמן</h2><span class="sub">רואה את שלושת העולמות</span></div>
+      <div class="panel">
+        <textarea class="inp" id="journal" rows="4" placeholder="מה היה היום? מה זז, איפה נתקעתי?"></textarea>
+        <button class="btn btn-chalk btn-wide" id="coachBtn" style="margin-top:var(--s3)">פידבק מהמאמן</button>
+        <div id="coachSkel" class="hidden"><div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:60%"></div></div>
+        <div class="ai-out hidden" id="coachOut"></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">הפקודות שלי</h2></div>
+      <div class="panel" id="habEd"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><h2 class="h-sec">הגדרות</h2></div>
+      <div class="panel" style="display:grid;gap:var(--s4)">
+        <label class="field">מפתח Anthropic (נשמר רק במכשיר, לא נכלל בגיבוי)<input class="inp ltr" id="apiKey" type="password" autocomplete="off" placeholder="sk-ant-..."></label>
+        <p class="note" id="keyNote"></p>
+        <div class="grid2">
+          <label class="field">אפליקציה ראשונה<input class="inp" id="app1" placeholder="שם"></label>
+          <label class="field">אפליקציה שנייה<input class="inp" id="app2" placeholder="שם"></label>
+        </div>
+        <div class="row-btns">
+          <button class="btn btn-line" id="expBtn">ייצוא גיבוי</button>
+          <button class="btn btn-line" id="impBtn">ייבוא</button>
+          <input type="file" id="impFile" accept=".json" class="hidden">
+        </div>
+        <p class="note" id="totals"></p>
+        <button class="btn btn-bear" id="resetBtn">איפוס מלא</button>
+      </div>
+    </section>
+  </main>
 </div>
 
-<!-- ============ HOME ============ -->
-<section id="tab-home">
-  <div class="card score-card" id="card-score">
-    <div class="score-num"><span id="scoreNum">0</span><span class="pct">%</span></div>
-    <div class="score-sub">הציון של היום</div>
-    <div class="score-tag" id="scoreTag"></div>
-    <div class="bar"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
-  </div>
+<div class="dock hidden" id="dock"><div class="dock-in"><span class="lbl">פוקוס</span><span class="num" id="dockT">90:00</span><button class="btn" id="dockStop">עצירה</button></div></div>
 
-  <div class="card mit-card" id="card-mit">
-    <div class="card-label"><span class="dot-ind"></span>המשימה הכי חשובה היום</div>
-    <textarea class="mit-input" id="mitInput" placeholder="מה הדבר האחד שאם תעשה אותו — היום מוצלח?"></textarea>
-    <div class="mit-done-row">
-      <button class="btn btn-primary small" id="mitBtn" onclick="toggleMit()">סיימתי אותה</button>
+<nav class="tabs" aria-label="ניווט ראשי"><div class="tabs-in">
+  <button class="tab" data-tab="today" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 9-9"/><path d="M15 6h6v6"/></svg>היום</button>
+  <button class="tab" data-tab="market"><svg viewBox="0 0 24 24"><path d="M6 3v18M4 7h4v8H4zM12 5v14M10 9h4v5h-4zM18 2v17M16 6h4v9h-4z"/></svg>שוק</button>
+  <button class="tab" data-tab="venture"><svg viewBox="0 0 24 24"><path d="M4 6h9M4 12h14M4 18h6"/><path d="M17 4.5l1.5 1.5L17 7.5M20 16.5l1.5 1.5-1.5 1.5" /></svg>מיזם<span class="badge hidden" id="vBadge"></span></button>
+  <button class="tab" data-tab="learn"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg>למידה<span class="badge hidden" id="lBadge"></span></button>
+  <button class="tab" data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.4-6 8-6s6.8 2 8 6"/></svg>אני</button>
+</div></nav>
+
+<!-- trade sheet -->
+<dialog class="sheet" id="tradeSheet" aria-label="עסקה">
+  <form class="sheet-in" method="dialog" id="tradeForm">
+    <div class="sheet-grab"></div>
+    <div class="sheet-head"><h2 class="h-sec" id="tradeTitle">עסקה חדשה</h2><button class="btn btn-quiet" value="cancel" formnovalidate>סגירה</button></div>
+    <div class="grid2">
+      <label class="field">טיקר<input class="inp ltr" id="fTicker" required autocapitalize="characters" placeholder="ANET"></label>
+      <label class="field">תאריך<input class="inp ltr" id="fDate" type="date"></label>
     </div>
-  </div>
-
-  <div class="card" id="card-streak">
-    <div class="card-label">רצף שבעת הימים</div>
-    <div class="streak-row" id="streakRow"></div>
-    <div class="streak-meta" id="streakMeta"></div>
-  </div>
-
-  <div class="evening-note hidden" id="eveningNote"></div>
-</section>
-
-<!-- ============ TASKS ============ -->
-<section id="tab-tasks" class="hidden">
-  <div class="card">
-    <div class="card-label"><span class="dot-ind"></span>הצ'קליסט של היום</div>
-    <div class="bar" style="margin:0 0 16px"><div class="bar-fill" id="barFill2" style="width:0%"></div></div>
-    <div class="section-title out">תפוקה — מזיז את המחט</div>
-    <div id="listOut"></div>
-    <div class="section-title inp" style="margin-top:18px">תשומה — בונה יכולת</div>
-    <div id="listIn"></div>
-  </div>
-</section>
-
-<!-- ============ FOCUS ============ -->
-<section id="tab-focus" class="hidden">
-  <div class="card">
-    <div class="card-label">טיימר פוקוס</div>
-    <div class="focus-sub" id="focusTask"></div>
-    <div class="timer-num" id="timerNum">25:00</div>
-    <div class="btn-row" style="margin-bottom:12px">
-      <button class="btn btn-ghost small preset" data-min="25" onclick="setPreset(25,this)">25 דק'</button>
-      <button class="btn btn-ghost small preset" data-min="50" onclick="setPreset(50,this)">50 דק'</button>
-      <button class="btn btn-ghost small preset" data-min="90" onclick="setPreset(90,this)">90 דק'</button>
+    <div class="seg" id="fSetup" role="group" aria-label="סטאפ">
+      <button type="button" data-v="pullback">פולבק</button><button type="button" data-v="breakout">פריצה</button><button type="button" data-v="trend">מגמה</button><button type="button" data-v="other">אחר</button>
     </div>
-    <button class="btn btn-primary" id="timerBtn" onclick="toggleTimer()">התחל</button>
-    <div class="focus-sub" style="margin-top:16px">היום: <b id="focusToday">0</b> דקות פוקוס</div>
-  </div>
-</section>
-
-<!-- ============ GROWTH ============ -->
-<section id="tab-growth" class="hidden">
-  <div class="card">
-    <div class="card-label">שבעת הימים האחרונים</div>
-    <div class="bars7" id="bars7"></div>
-  </div>
-  <div class="card">
-    <div class="card-label">שמונה שבועות אחרונים</div>
-    <div class="heatmap" id="heatmap"></div>
-  </div>
-  <div class="stats-grid card" style="background:transparent;border:none;box-shadow:none;padding:0;backdrop-filter:none">
-    <div class="stat-c"><div class="stat-v" id="stStreak">0</div><div class="stat-l">רצף נוכחי</div></div>
-    <div class="stat-c"><div class="stat-v" id="stBest">0</div><div class="stat-l">שיא אישי</div></div>
-    <div class="stat-c"><div class="stat-v" id="stAvg">0%</div><div class="stat-l">ממוצע השבוע</div></div>
-    <div class="stat-c"><div class="stat-v" id="stFocus">0</div><div class="stat-l">דקות פוקוס השבוע</div></div>
-  </div>
-  <div class="card mit-card">
-    <div class="card-label"><span class="dot-ind"></span>המאמן — ספר לו על היום</div>
-    <textarea class="journal" id="journal" placeholder="מה עשית היום? מה הלך ומה נתקע?"></textarea>
-    <button class="btn btn-primary" id="aiBtn" onclick="analyze()">קבל פידבק</button>
-    <div class="skeleton hidden" id="aiSkeleton"><div class="sk-line"></div><div class="sk-line"></div><div class="sk-line"></div></div>
-    <div class="ai-resp hidden" id="aiResp"></div>
-  </div>
-</section>
-
-<!-- ============ PROFILE ============ -->
-<section id="tab-profile" class="hidden">
-  <div class="card">
-    <div class="card-label">מפתח AI</div>
-    <input class="tinput ltr" id="apiKey" type="password" placeholder="Anthropic API Key">
-    <div class="key-status" id="keyStatus"></div>
-  </div>
-  <div class="card">
-    <div class="card-label">עריכת הצ'קליסט</div>
-    <div id="habitEditor"></div>
-  </div>
-  <div class="card">
-    <div class="card-label">נתונים</div>
-    <div class="btn-row">
-      <button class="btn btn-ghost small" onclick="exportData()">ייצוא גיבוי</button>
-      <button class="btn btn-ghost small" onclick="document.getElementById('importFile').click()">ייבוא</button>
+    <div class="grid3">
+      <label class="field">כניסה<input class="inp ltr" id="fEntry" inputmode="decimal" required></label>
+      <label class="field">סטופ<input class="inp ltr" id="fStop" inputmode="decimal" required></label>
+      <label class="field">יעד<input class="inp ltr" id="fTarget" inputmode="decimal" required></label>
     </div>
-    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(this)">
-    <div class="field-label" id="totals"></div>
-    <button class="btn btn-danger small" style="margin-top:10px" onclick="fullReset()">איפוס מלא של כל הנתונים</button>
-  </div>
-</section>
+    <p class="calc" id="fCalc"></p>
+    <div class="gate" id="fGate"></div>
+    <label class="field">יציאה (ריק אם העסקה פתוחה)<input class="inp ltr" id="fExit" inputmode="decimal"></label>
+    <div id="fPost" class="hidden" style="display:grid;gap:var(--s3)">
+      <div class="field">ציון ביצוע, בלי קשר לרווח
+        <div class="seg" id="fProc" role="group" aria-label="ציון ביצוע"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button></div>
+      </div>
+      <label class="field">הטעות העיקרית<select class="inp" id="fMistake"></select></label>
+    </div>
+    <label class="field">מה הרגשתי בכניסה<input class="inp" id="fEmo" placeholder="רגוע, פחד להחמיץ, נקמה..."></label>
+    <label class="field">לקח<textarea class="inp" id="fNote" rows="2"></textarea></label>
+    <p class="form-err" id="fErr"></p>
+    <div class="row-btns">
+      <button class="btn btn-chalk" value="save" id="fSave" style="flex:1">שמירה</button>
+      <button class="btn btn-bear hidden" value="delete" id="fDel" formnovalidate>מחיקה</button>
+    </div>
+  </form>
+</dialog>
 
-<!-- ============ NAV ============ -->
-<nav>
-  <button class="nav-btn active" data-tab="home" onclick="go('home',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10.5 12 3l9 7.5V21h-6v-6h-6v6H3z"/></svg>בית
-  </button>
-  <button class="nav-btn" data-tab="tasks" onclick="go('tasks',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/></svg>משימות
-  </button>
-  <button class="nav-btn" data-tab="focus" onclick="go('focus',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>פוקוס
-  </button>
-  <button class="nav-btn" data-tab="growth" onclick="go('growth',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>צמיחה
-  </button>
-  <button class="nav-btn" data-tab="profile" onclick="go('profile',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>פרופיל
-  </button>
-</nav>
+<!-- watch sheet -->
+<dialog class="sheet" id="watchSheet" aria-label="מועמדת">
+  <form class="sheet-in" method="dialog" id="watchForm">
+    <div class="sheet-grab"></div>
+    <div class="sheet-head"><h2 class="h-sec">מועמדת לרשימה</h2><button class="btn btn-quiet" value="cancel" formnovalidate>סגירה</button></div>
+    <label class="field">טיקר<input class="inp ltr" id="wTicker" required autocapitalize="characters"></label>
+    <div class="grid3">
+      <label class="field">ריצה היום %<input class="inp ltr" id="wRun" inputmode="decimal" placeholder="1.2"></label>
+      <label class="field">קצב נפח x<input class="inp ltr" id="wVol" inputmode="decimal" placeholder="0.9"></label>
+      <label class="field">תגובת דוח %<input class="inp ltr" id="wEr" inputmode="decimal" placeholder="-2"></label>
+    </div>
+    <label class="field" style="flex-direction:row;display:flex;gap:var(--s2);align-items:center;color:var(--ink-2)"><input type="checkbox" id="wNoEr" style="width:20px;height:20px;accent-color:#FFC53D">לא היה דוח ב-30 הימים האחרונים</label>
+    <p class="note">שדה ריק נשאר "חסר נתון", והמניה לא תסומן "עוברת".</p>
+    <button class="btn btn-chalk" value="save">הוספה לרשימה</button>
+  </form>
+</dialog>
+
+<!-- manual card sheet -->
+<dialog class="sheet" id="cardSheet" aria-label="כרטיסייה">
+  <form class="sheet-in" method="dialog">
+    <div class="sheet-grab"></div>
+    <div class="sheet-head"><h2 class="h-sec">כרטיסייה חדשה</h2><button class="btn btn-quiet" value="cancel" formnovalidate>סגירה</button></div>
+    <label class="field">שאלה<textarea class="inp" id="cQ" rows="2" required></textarea></label>
+    <label class="field">תשובה<textarea class="inp" id="cA" rows="3" required></textarea></label>
+    <button class="btn btn-chalk" value="save">הוספה</button>
+  </form>
+</dialog>
 
 <script>
 "use strict";
-/* ===================== state ===================== */
-const KEY = "sos_v2";
-const DEFAULT_HABITS = [
-  { id: "h1", type: "out", label: "הגשתי מועמדות למשרה / קידמתי תהליך קיים" },
-  { id: "h2", type: "out", label: "שלחתי פעולת FlowOps החוצה: פנייה / הצעה / פולו-אפ / פוסט" },
-  { id: "h3", type: "out", label: "סיימתי בלוק של 90 דק' עבודה עמוקה — בלי טלפון" },
-  { id: "h7", type: "out", label: "בדקתי את תיקי המניות והחלטתי: קנייה / מכירה / להחזיק" },
-  { id: "h4", type: "in",  label: "למדתי 30 דק' + כתבתי שורה: מה למדתי" },
-  { id: "h8", type: "in",  label: "קראתי ספר 10 דק' ומעלה" },
-  { id: "h5", type: "in",  label: "התאמנתי 20 דק' ומעלה" },
-  { id: "h6", type: "in",  label: "כתבתי את 3 המשימות של מחר" }
-];
-const QUOTES = [
-  "אין מוטיבציה בלי פעולה. פעולה יוצרת מוטיבציה.",
-  "כסף הוא תוצאה. פעולות נכונות הן הסיבה.",
-  "60 יום של עקביות = שינוי חיים.",
-  "היום הזה לא יחזור — תשתמש בו.",
-  "הפוקוס שלך הוא הנכס הכי יקר שלך."
-];
+/* ============================================================
+   DATA
+   ============================================================ */
+const KEY = "sos_v3", OLD_KEY = "sos_v2";
+const GANTT_URL = "https://claude.ai/artifact/Fj6EV4uyT4fR9rj26c6jwk";
+const GANTT_SNAPSHOT = "15.10.2026";
+// Snapshot of the shared Gantt: [id, phase, title, start, end, milestone, status, owner, stepsDone, stepsTotal]
+const GANTT = {"phases":[["p1","יישור קו והכנה"],["p2","עלייה לחנויות"],["p3","יוצרים ורשתות"],["p4","גיוס משקיעים"]],"tasks":[["kickoff","p1","פגישת פתיחה: יעדים ל-90 הימים הקרובים","2026-10-07","2026-10-07",1,"done","all",4,4],["t-founders","p1","הסכם מייסדים: חלוקה שווה ו-vesting","2026-10-08","2026-10-29",0,"todo","all",0,6],["t-company","p1","פתיחת חברה בע״מ, חשבון בנק והעברת הקוד לבעלות החברה","2026-10-11","2026-10-29",0,"todo","all",0,7],["t-comp","p1","בחינת 10 אפליקציות מתחרות","2026-10-08","2026-10-20",0,"todo","all",0,6],["t-diff","p1","מסמך בידול: למה אנחנו ולא המתחרים","2026-10-21","2026-10-27",0,"todo","all",0,6],["t-test","p1","בדיקה מלאה של האפליקציה על מכשירים שונים","2026-10-11","2026-10-27",0,"todo","all",0,6],["t-analytics","p1","מדידת הורדות, שימוש וקריסות","2026-10-11","2026-10-20",0,"todo","all",0,7],["t-fix","p1","תיקון באגים והכנת גרסה לחנויות","2026-10-18","2026-11-05",0,"todo","all",0,6],["t-devacc","p2","חשבונות מפתחים באפל ובגוגל על שם החברה","2026-10-25","2026-11-05",0,"todo","all",0,7],["t-legal","p2","מדיניות פרטיות ותנאי שימוש","2026-10-25","2026-11-03",0,"todo","all",0,7],["t-store","p2","עמוד בחנות: צילומי מסך, תיאור ומילות מפתח","2026-10-28","2026-11-05",0,"todo","all",0,7],["t-submit","p2","הגשה לאפל ולגוגל ומעבר בדיקה","2026-11-05","2026-11-12",0,"todo","all",0,6],["launch","p2","האפליקציה באוויר בחנויות","2026-11-15","2026-11-15",1,"todo","all",0,4],["t-first","p2","50 משתמשים ראשונים: מצרפים כל אחד באופן אישי","2026-11-15","2026-11-26",0,"todo","all",0,6],["t-own","p3","חשבון טיקטוק של האפליקציה: 1 עד 3 סרטונים ביום","2026-11-01","2027-01-28",0,"todo","all",0,7],["t-map","p3","מיפוי 40 יוצרים קטנים בנישה","2026-11-01","2026-11-12",0,"todo","all",0,6],["t-budget","p3","תקציב ומודל תשלום ליוצרים","2026-11-05","2026-11-12",0,"todo","all",0,6],["t-deals","p3","פנייה ליוצרים בהודעה ישירה וסגירת עסקאות","2026-11-12","2026-11-30",0,"todo","all",0,6],["t-links","p3","קישור מעקב וקוד הנחה לכל יוצר","2026-11-17","2026-11-24",0,"todo","all",0,6],["m-pilot","p3","פיילוט: 10 יוצרים קטנים עולים לאוויר","2026-12-01","2026-12-01",1,"todo","all",0,4],["t-pilot","p3","ניתוח הפיילוט: עלות להורדה מכל יוצר ומכל פורמט","2026-12-08","2026-12-15",0,"todo","all",0,6],["t-spark","p3","קידום ממומן לסרטונים שהצליחו (Spark Ads)","2026-12-15","2027-01-21",0,"todo","all",0,6],["t-wave2","p3","גל שני: מרחיבים עם היוצרים שהביאו תוצאות","2026-12-20","2027-01-21",0,"todo","all",0,6],["t-iter","p3","שיפורים במוצר לפי תגובות המשתמשים","2026-11-24","2027-01-28",0,"todo","all",0,6],["t-qa","p3","בדיקה מלאה לפני כל גרסה","2026-11-24","2027-01-28",0,"todo","all",0,6],["t-accel","p4","הגשה לתוכניות האצה: 8200 EISP ותוכניות שפתוחות עכשיו","2026-11-01","2026-11-30",0,"todo","all",0,6],["t-deck","p4","מצגת משקיעים: 10 עד 12 שקפים","2026-11-08","2026-11-26",0,"todo","all",0,6],["t-fin","p4","מודל כספי: כמה מגייסים ועל מה הכסף ילך","2026-11-15","2026-12-03",0,"todo","all",0,6],["t-list","p4","רשימת 40 משקיעים מ-Startup Nation Finder ו-972VC","2026-11-15","2026-12-03",0,"todo","all",0,6],["t-iia","p4","בדיקת זכאות למענק תנופה של רשות החדשנות","2026-12-01","2026-12-24",0,"todo","all",0,6],["t-data","p4","תיק מסמכים למשקיעים","2026-12-06","2026-12-17",0,"todo","all",0,6],["t-demo","p4","דמו חי ויציב לפגישות","2026-12-13","2026-12-17",0,"todo","all",0,6],["t-intro","p4","בקשות להיכרות עם משקיעים דרך מכרים","2026-12-13","2027-01-01",0,"todo","all",0,6],["m-ready","p4","מוכנים לפגישות: מצגת עם נתוני פיילוט","2026-12-17","2026-12-17",1,"todo","all",0,4],["t-meet","p4","סבב פגישות מרוכז עם משקיעים","2027-01-04","2027-02-04",0,"todo","all",0,6],["m-close","p4","יעד: סגירת סבב pre-seed","2027-03-04","2027-03-04",1,"todo","all",0,5],["t-accounts","p3","פתיחת חשבונות לאפליקציה: TikTok, Instagram, YouTube","2026-10-25","2026-10-28",0,"todo","all",0,6],["t-humanz","p3","בדיקת פלטפורמות יוצרים: Humanz ו-TikTok One","2026-11-01","2026-11-08",0,"todo","all",0,6],["t-ugc","p3","2 עד 3 סרטוני UGC מ-Fiverr לבדיקת פורמטים","2026-11-08","2026-11-19",0,"todo","all",0,6],["t-callpost","p3","פוסט \"מחפשים יוצרי תוכן\" בלינקדאין ובאינסטגרם","2026-11-10","2026-11-12",0,"todo","all",0,5],["t-groups","p3","שיתוף בקבוצות פייסבוק וקהילות וואטסאפ","2026-11-15","2026-11-30",0,"todo","all",0,6],["t-linkedin","p3","פוסט שבועי בלינקדאין על בניית האפליקציה, מכל שותף","2026-10-11","2027-02-04",0,"todo","all",0,6],["t-events","p4","כנסים ומפגשים להכרות עם משקיעים","2026-12-01","2027-02-18",0,"todo","all",0,6],["ev-sg","p4","Startup Grind: Founders & Investors Circle","2026-10-20","2026-10-20",1,"todo","all",0,5],["ev-tech1","p4","TECH1 2026: כנס ההייטק של כלכליסט","2026-10-28","2026-10-29",0,"todo","all",0,5],["ev-sv","p4","ערב פיץ' ונטוורקינג של Startup Valley","2026-10-29","2026-10-29",1,"todo","all",0,5],["ev-roadshow","p4","בדיקת תוכנית +RoadShow של כלכליסט ו-Tech1","2026-10-12","2026-10-22",0,"todo","all",0,3],["ev-watch","p4","מעקב אחרי כנסים שמועדם עוד לא פורסם","2026-11-01","2027-01-31",0,"todo","all",0,3],["tmv3oamqp","p1","מיילים + רשתות חברתיות","2026-10-11","2026-10-15",0,"todo","idan",0,0],["tmv3obd7d","p1","אפליקציה","2026-10-11","2026-10-15",0,"todo","daniel",0,0],["tmv3obi37","p1","לסגור לנו כנס","2026-10-11","2026-10-15",0,"todo","barak",0,0]]};
+const OWNERS = { barak: "ברק", daniel: "דניאל", idan: "עידן", all: "כולם" };
+const TASKS = GANTT.tasks.map(t => ({ id:t[0], phase:t[1], title:t[2], start:t[3], end:t[4], ms:!!t[5], status:t[6], owner:t[7], sd:t[8], st:t[9] }));
 
-let S = load();
+const DEFAULT_HABITS = [
+  { id: "v1", type: "out", label: "קידמתי משימה במיזם", sub: "משהו שזז בגאנט, לא רק דיבור" },
+  { id: "h7", type: "out", label: "שגרת שוק לפי השיטה", sub: "סורק, 3 בדיקות, יומן" },
+  { id: "h3", type: "out", label: "בלוק 90 דק׳ עבודה עמוקה", sub: "בלי טלפון" },
+  { id: "r1", type: "in",  label: "חזרה על הכרטיסיות" },
+  { id: "h4", type: "in",  label: "30 דק׳ למידה ומשפט אחד", sub: "מסמנים רק אחרי 30 דקות אמיתיות" },
+  { id: "h8", type: "in",  label: "קריאה 10 דק׳" },
+  { id: "h5", type: "in",  label: "אימון 20 דק׳" },
+  { id: "h6", type: "in",  label: "3 משימות למחר" }
+];
+const OLD_DEFAULT = ["h1","h2","h3","h7","h4","h8","h5","h6"].map(id => ({ id, type: ["h1","h2","h3","h7"].includes(id) ? "out" : "in" }));
+const TOPICS = { market: "מסחר", build: "AI ופיתוח", startup: "סטארטאפ" };
+const SETUPS = { pullback: "פולבק", breakout: "פריצה", trend: "מגמה", other: "אחר" };
+const SRS = [1, 3, 7, 14, 30, 60];
+const GATE = [
+  ["wk", "שבועי: SMA 30W ו-40W עולים, המחיר מעליהם"],
+  ["sup", "יש תמיכה ברורה, והסטופ מתחתיה"],
+  ["run", "לא רצה יותר מ-3% היום"],
+  ["vol", "קצב נפח 0.7x ומעלה"],
+  ["er", "לא נפלה יותר מ-4% על הדוח האחרון, או שלא היה דוח"]
+];
+const MIN_RR = 2;
+const MISTAKES = {
+  none: ["בלי טעות", ""],
+  chase: ["רדיפה", "ביום הכניסה, מה מגדיר רדיפה ומה עושים?|ריצה של יותר מ-3% ביום הכניסה. לא נכנסים, מחכים לפולבק."],
+  novol: ["אין נפח", "איך בודקים שיש דלק לפני כניסה?|קצב נפח מול הצפוי עד השעה הזו. מתחת ל-0.7x אין כניסה."],
+  supply: ["היצע בדוח", "מניה נפלה 6% על דוח שהיכה תחזיות. נכנסים?|לא. נפילה של יותר מ-4% על דוח ב-30 הימים האחרונים היא היצע מעל, גם כשהדוח טוב."],
+  early: ["יציאה מוקדמת", "מתי יוצאים מעסקה שעובדת?|ביעד או בסטופ שנקבעו מראש, או בשבירה של המבנה השבועי. לא מפחד לאבד רווח."],
+  movestop: ["הזזת סטופ", "המחיר מתקרב לסטופ. מה מותר לעשות?|כלום. סטופ זז רק לכיוון הרווח, אף פעם לא רחוק יותר."],
+  oversize: ["גודל יתר", "איך קובעים גודל פוזיציה?|לפי המרחק לסטופ והסיכון הקבוע לעסקה. לא לפי ביטחון."],
+  avgdown: ["ממוצע למטה", "עסקה יורדת לכיוון הסטופ. מוסיפים?|לא. מוסיפים רק לעסקה שעובדת, אף פעם לא למפסידה."],
+  holdloser: ["החזקת מפסיד", "המחיר עבר את הסטופ ואתה מקווה שיחזור. מה עושים?|יוצאים. הסטופ הוא ההחלטה שקיבלת כשהיית רגוע."],
+  noplan: ["כניסה בלי תוכנית", "מה חייב להיות כתוב לפני שלוחצים קנייה?|כניסה, סטופ, יעד ויחס של 2R לפחות, ושער הכניסה מלא."],
+  bias: ["ניתוח שבועי חלש", "מה בודקים בגרף השבועי לפני כניסה?|SMA 30W ו-40W עולים, המחיר מעליהם, ותמיכה ברורה שמתחתיה הסטופ."]
+};
+
+function blankDay() { return { checks: {}, mit: "", mitDone: false, journal: "", ai: "", focusMin: 0 }; }
+function freshState(apiKey) {
+  return {
+    version: 3,
+    settings: { apiKey: apiKey || "", apps: ["", ""] },
+    habits: DEFAULT_HABITS.map(h => ({ ...h })),
+    days: {},
+    meta: { streak: 0, bestStreak: 0, freezes: 0, lastDate: null, lastFreezeWeek: "" },
+    market: { trades: [], watch: [], reviews: {}, rule: null },
+    learn: { cards: [], log: [], topic: "market" },
+    venture: { mine: {}, commit: {}, blockers: [
+      { id: "b1", t: "פתיחת חברה בע״מ (תנאי למספר D-U-N-S)", due: "2026-10-29", done: false },
+      { id: "b2", t: "מספר D-U-N-S לחברה (תנאי לחשבונות המפתחים)", due: "2026-11-05", done: false }
+    ] },
+    ui: { range: 30 }
+  };
+}
+
+// score with an explicit habit list (used to freeze history at migration)
+function scoreWith(d, habits) {
+  if (!d) return 0;
+  const outs = habits.filter(h => h.type === "out").map(h => h.id);
+  const ins = habits.filter(h => h.type === "in").map(h => h.id);
+  const o = outs.filter(id => d.checks && d.checks[id]).length;
+  const i = ins.filter(id => d.checks && d.checks[id]).length;
+  let s = Math.round(o * 60 / Math.max(1, outs.length)) + Math.round(i * 40 / Math.max(1, ins.length));
+  if (o === 0) s = Math.min(s, 40);
+  return Math.min(100, s);
+}
 
 function load() {
   let s = null;
   try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
-  if (!s || s.version !== 2) {
-    s = {
-      version: 2,
-      settings: { apiKey: localStorage.getItem("ss_apikey") || "" },
-      habits: DEFAULT_HABITS,
-      days: {},
-      meta: { streak: 0, bestStreak: 0, freezes: 0, lastDate: null, lastFreezeWeek: "" }
-    };
-    ["ss_checks","ss_day","ss_streak","ss_apikey"].forEach(k => localStorage.removeItem(k));
-    persist(s);
+  if (s && s.version === 3) return hydrate(s);
+  // migrate from v2: v2 data stays untouched under its own key as the backup
+  let old = null;
+  try { old = JSON.parse(localStorage.getItem(OLD_KEY)); } catch (e) {}
+  s = freshState(old && old.settings ? old.settings.apiKey : "");
+  if (old && old.version === 2) {
+    const oldHabits = (old.habits && old.habits.length) ? old.habits : OLD_DEFAULT;
+    const today = todayKey();
+    Object.keys(old.days || {}).forEach(k => {
+      const d = Object.assign(blankDay(), old.days[k]);
+      if (k < today) { d.score = scoreWith(d, oldHabits); d.q = oldHabits.some(h => h.type === "out" && d.checks[h.id]); }
+      s.days[k] = d;
+    });
+    s.meta = Object.assign(s.meta, old.meta || {});
+    s.migratedFrom = 2; s.migratedAt = new Date().toISOString();
   }
-  // sync new default habits into an existing state (keeps section order)
-  const missing = DEFAULT_HABITS.filter(dh => !s.habits.some(h => h.id === dh.id));
-  if (missing.length) {
-    const merged = [];
-    DEFAULT_HABITS.forEach(dh => merged.push(s.habits.find(h => h.id === dh.id) || dh));
-    s.habits.forEach(h => { if (!merged.some(m => m.id === h.id)) merged.push(h); });
-    s.habits = merged;
-    persist(s);
-  }
-  // one-time wording fixes for habits saved with old default labels
-  s.habits.forEach(h => {
-    if (h.id === "h7" && h.label.includes("git pull")) h.label = "בדקתי את תיקי המניות והחלטתי: קנייה / מכירה / להחזיק";
-    if (h.id === "h8" && h.label.includes("20 דק")) h.label = "קראתי ספר 10 דק' ומעלה";
-  });
   persist(s);
   return s;
 }
-function persist(s) { localStorage.setItem(KEY, JSON.stringify(s || S)); }
+function hydrate(s) {
+  const f = freshState();
+  s.settings = Object.assign(f.settings, s.settings);
+  s.market = Object.assign(f.market, s.market);
+  s.learn = Object.assign(f.learn, s.learn);
+  s.venture = Object.assign(f.venture, s.venture);
+  s.ui = Object.assign(f.ui, s.ui);
+  s.meta = Object.assign(f.meta, s.meta);
+  if (!s.habits || !s.habits.length) s.habits = f.habits;
+  s.habits.forEach(h => { if (h.sub === "נרשם אוטומטית ביומן הלמידה") h.sub = "מסמנים רק אחרי 30 דקות אמיתיות"; });
+  return s;
+}
+function persist(s) { try { localStorage.setItem(KEY, JSON.stringify(s || S)); } catch (e) {} }
 
-function todayKey(d) {
-  d = d || new Date();
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
-}
-function keyOffset(offset) {
-  const d = new Date(); d.setDate(d.getDate() + offset); return todayKey(d);
-}
-function blankDay() { return { checks: {}, mit: "", mitDone: false, journal: "", ai: "", focusMin: 0 }; }
-function day(k) {
-  k = k || todayKey();
-  if (!S.days[k]) S.days[k] = blankDay();
-  return S.days[k];
-}
+let S = load();
 
-/* ===================== score & streak ===================== */
-function outIds() { return S.habits.filter(h => h.type === "out").map(h => h.id); }
-function inIds()  { return S.habits.filter(h => h.type === "in").map(h => h.id); }
-function computeScore(d) {
-  if (!d) return 0;
-  const o = outIds().filter(id => d.checks[id]).length;
-  const i = inIds().filter(id => d.checks[id]).length;
-  let score = Math.round(o * 60 / Math.max(1, outIds().length)) +
-              Math.round(i * 40 / Math.max(1, inIds().length));
-  if (o === 0) score = Math.min(score, 40);
-  return Math.min(100, score);
-}
-function qualifies(d) { return !!d && outIds().some(id => d.checks[id]); }
+/* ============================================================
+   UTIL
+   ============================================================ */
+const $ = id => document.getElementById(id);
+function todayKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function addDays(k, n) { const d = new Date(k + "T12:00:00"); d.setDate(d.getDate() + n); return todayKey(d); }
+function diffDays(a, b) { return Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 864e5); }
+function fmtD(k) { const d = new Date(k + "T12:00:00"); return d.getDate() + "." + (d.getMonth() + 1); }
+function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function num(v) { if (v === "" || v == null) return null; const n = parseFloat(String(v).replace(",", ".")); return isFinite(n) ? n : null; }
+function sign(n, d) { d = d == null ? 2 : d; return (n > 0 ? "+" : n < 0 ? "−" : "") + Math.abs(n).toFixed(d); }
+function buzz() { try { navigator.vibrate && navigator.vibrate(8); } catch (e) {} }
+const CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+function day(k) { k = k || todayKey(); if (!S.days[k]) S.days[k] = blankDay(); return S.days[k]; }
+
+/* ============================================================
+   SCORE · STREAK · INDEX
+   ============================================================ */
+function computeScore(d) { return scoreWith(d, S.habits); }
+function scoreOf(k) { const d = S.days[k]; if (!d) return 0; if (k < todayKey() && d.score != null) return d.score; return computeScore(d); }
+function qualifies(k) { const d = S.days[k]; if (!d) return false; if (k < todayKey() && d.q != null) return d.q; return S.habits.some(h => h.type === "out" && d.checks[h.id]); }
 
 function rollover() {
   const today = todayKey();
   if (S.meta.lastDate === today) return;
   if (S.meta.lastDate) {
-    let d = new Date(S.meta.lastDate + "T12:00:00");
-    const end = new Date(today + "T12:00:00");
-    while (todayKey(d) < today) {
-      const k = todayKey(d);
+    let k = S.meta.lastDate;
+    while (k < today) {
       const rec = S.days[k];
-      if (qualifies(rec)) {
-        S.meta.streak++;
-      } else if (S.meta.freezes > 0 && S.meta.streak > 0) {
-        S.meta.freezes--;
-        if (rec) rec.frozen = true; else S.days[k] = Object.assign(blankDay(), { frozen: true });
-      } else {
-        S.meta.streak = 0;
-      }
+      if (rec && rec.score == null) { rec.score = computeScore(rec); rec.q = S.habits.some(h => h.type === "out" && rec.checks[h.id]); }
+      if (qualifies(k)) S.meta.streak++;
+      else if (S.meta.freezes > 0 && S.meta.streak > 0) { S.meta.freezes--; (S.days[k] = S.days[k] || blankDay()).frozen = true; }
+      else S.meta.streak = 0;
       S.meta.bestStreak = Math.max(S.meta.bestStreak, S.meta.streak);
-      d.setDate(d.getDate() + 1);
+      k = addDays(k, 1);
     }
   }
-  // freeze earn: on Sunday, if last week avg >= 80
-  const now = new Date();
-  if (now.getDay() === 0 && S.meta.lastFreezeWeek !== today) {
+  if (new Date().getDay() === 0 && S.meta.lastFreezeWeek !== today) {
     let sum = 0, n = 0;
-    for (let i = 1; i <= 7; i++) { const r = S.days[keyOffset(-i)]; if (r) { sum += computeScore(r); n++; } }
+    for (let i = 1; i <= 7; i++) { const k = addDays(today, -i); if (S.days[k]) { sum += scoreOf(k); n++; } }
     if (n >= 4 && sum / n >= 80) { S.meta.freezes = Math.min(2, S.meta.freezes + 1); S.meta.lastFreezeWeek = today; }
   }
   S.meta.lastDate = today;
   persist();
 }
-function currentStreak() { return S.meta.streak + (qualifies(day()) ? 1 : 0); }
+function currentStreak() { return S.meta.streak + (qualifies(todayKey()) ? 1 : 0); }
 
-/* ===================== render ===================== */
-const DAY_LETTERS = ["א","ב","ג","ד","ה","ו","ש"];
-let lastScore = -1, renderedDay = null;
+/* ============================================================
+   NAV
+   ============================================================ */
+let current = "today";
+function go(tab) {
+  current = tab;
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === "s-" + tab));
+  document.querySelectorAll(".tab").forEach(b => { if (b.dataset.tab === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  window.scrollTo(0, 0);
+  render();
+}
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => go(b.dataset.tab));
+document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
 
-function renderAll() {
+/* ============================================================
+   RENDER: TODAY
+   ============================================================ */
+function render() {
   rollover();
-  renderedDay = todayKey();
-  renderHeader();
-  renderScore();
-  renderStreak();
-  renderChecklist();
-  renderMit();
-  renderGrowth();
-  renderFocusStats();
-  renderProfile();
+  const now = new Date();
+  $("dateline").textContent = now.toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "long" });
+  renderBadges();
+  if (current === "today") renderToday();
+  if (current === "market") renderMarket();
+  if (current === "venture") renderVenture();
+  if (current === "learn") renderLearn();
+  if (current === "me") renderMe();
 }
 
-function renderHeader() {
+function renderToday() {
+  renderHero();
+  const d = day();
+  $("mitIn").value = d.mit || "";
+  $("mitTick").setAttribute("aria-pressed", !!d.mitDone);
+  $("mitBox").classList.toggle("done", !!d.mitDone);
+  renderPlan();
+  renderBook();
+  renderTiles();
+}
+
+const DOW = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
+let selBar = null;
+function barInfo(k) {
+  const rec = S.days[k], isToday = k === todayKey();
+  if (!rec && !isToday) return { k, sc: null, out: false };
+  return { k, sc: scoreOf(k), out: qualifies(k), frozen: !!(rec && rec.frozen) };
+}
+function renderHero() {
+  const today = todayKey(), d = day();
+  const sc = computeScore(d), out = S.habits.some(h => h.type === "out" && d.checks[h.id]);
+  $("hScore").textContent = sc;
+  $("hVerdict").innerHTML = sc === 0 ? "<b>עוד לא התחלת</b>סמן פקודה כשהיא קורית" : out ? "<b>יום תפוקה</b>משהו יצא החוצה היום" : "<b>תשומה בלבד</b>בלי פעולת תפוקה הציון נעצר ב-40";
   const h = new Date().getHours();
-  let mode = "noon", greet = "צהריים טובים";
-  if (h >= 5 && h < 12) { mode = "morning"; greet = "בוקר טוב"; }
-  else if (h >= 18 || h < 5) { mode = "evening"; greet = "ערב טוב"; }
-  document.body.classList.remove("mode-morning","mode-noon","mode-evening");
-  document.body.classList.add("mode-" + mode);
-  document.getElementById("greeting").textContent = greet;
-  document.getElementById("dateLine").textContent =
-    new Date().toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "long" });
-  document.getElementById("insight").textContent = insight();
-
-  const note = document.getElementById("eveningNote");
-  const d = day();
-  const left = S.habits.filter(hb => !d.checks[hb.id]).length;
-  if (mode === "evening" && left > 0 && left < S.habits.length) {
-    note.classList.remove("hidden");
-    note.textContent = "היום נסגר בקרוב — עוד " + left + " משימות ישלימו את היום. הרצף שלך: " + currentStreak() + " ימים.";
-  } else note.classList.add("hidden");
-}
-
-function insight() {
-  const keys = Object.keys(S.days).filter(k => k !== todayKey() && computeScore(S.days[k]) > 0);
-  const opts = [];
-  if (currentStreak() >= 2) opts.push("אתה על רצף של " + currentStreak() + " ימים. שמור עליו.");
-  if (S.meta.bestStreak >= 3) {
-    const gap = S.meta.bestStreak - currentStreak();
-    if (gap > 0 && gap <= 3) opts.push("עוד " + gap + " ימים ותשבור את השיא האישי שלך (" + S.meta.bestStreak + ").");
-  }
-  if (keys.length >= 5) {
-    const byDow = {};
-    keys.forEach(k => { const dw = new Date(k + "T12:00:00").getDay(); (byDow[dw] = byDow[dw] || []).push(computeScore(S.days[k])); });
-    let best = -1, bestAvg = 0;
-    Object.keys(byDow).forEach(dw => { const a = byDow[dw].reduce((x,y)=>x+y,0)/byDow[dw].length; if (a > bestAvg) { bestAvg = a; best = dw; } });
-    if (best >= 0) opts.push("יום " + DAY_LETTERS[best] + "' הוא היום החזק שלך בשבוע (ממוצע " + Math.round(bestAvg) + "%).");
-    let sumT=0,nT=0,sumP=0,nP=0;
-    for (let i=1;i<=7;i++){const r=S.days[keyOffset(-i)];if(r){sumT+=computeScore(r);nT++;}}
-    for (let i=8;i<=14;i++){const r=S.days[keyOffset(-i)];if(r){sumP+=computeScore(r);nP++;}}
-    if (nT>=3 && nP>=3) {
-      const dlt = Math.round(sumT/nT - sumP/nP);
-      if (dlt > 5) opts.push("השבוע שלך חזק ב-" + dlt + "% מהשבוע שעבר. תמשיך.");
-      if (dlt < -5) opts.push("השבוע חלש ב-" + Math.abs(dlt) + "% מהקודם. היום זה היום להפוך את זה.");
-    }
-  }
-  if (!opts.length) return QUOTES[Math.floor(Math.random() * QUOTES.length)];
-  return opts[Math.floor(Math.random() * opts.length)];
-}
-
-function renderScore() {
-  const d = day();
-  const score = computeScore(d);
-  const el = document.getElementById("scoreNum");
-  animateNum(el, lastScore < 0 ? 0 : lastScore, score);
-  lastScore = score;
-  document.getElementById("barFill").style.width = score + "%";
-  document.getElementById("barFill2").style.width = score + "%";
-  document.documentElement.style.setProperty("--glowS", (score / 100).toFixed(2));
-  const tag = document.getElementById("scoreTag");
-  const o = outIds().filter(id => d.checks[id]).length;
-  if (score === 0) { tag.textContent = ""; }
-  else if (o > 0) { tag.textContent = "יום תפוקה — המחט זזה"; tag.className = "score-tag out-day"; }
-  else { tag.textContent = "תשומה בלבד — עדיין לא שלחת כלום החוצה"; tag.className = "score-tag in-day"; }
-  const card = document.getElementById("card-score");
-  if (score === 100 && !card.dataset.shone) { card.classList.add("shine-once"); card.dataset.shone = "1"; }
-  if (score < 100) { card.classList.remove("shine-once"); delete card.dataset.shone; }
-}
-
-function animateNum(el, from, to) {
-  if (from === to) { el.textContent = to; return; }
-  const t0 = performance.now(), dur = 500;
-  function step(t) {
-    const p = Math.min(1, (t - t0) / dur);
-    const e = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.round(from + (to - from) * e);
-    if (p < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
-
-function renderStreak() {
-  const row = document.getElementById("streakRow");
-  row.innerHTML = "";
-  for (let i = 6; i >= 0; i--) {
-    const k = keyOffset(-i);
-    const rec = S.days[k];
-    const p = document.createElement("div");
-    p.className = "pill";
-    if (rec && rec.frozen) p.classList.add("frozen");
-    else if (i === 0 ? qualifies(day()) : qualifies(rec)) p.classList.add("on");
-    if (i === 0) p.classList.add("today-ring");
-    p.textContent = DAY_LETTERS[new Date(k + "T12:00:00").getDay()];
-    row.appendChild(p);
-  }
-  const meta = document.getElementById("streakMeta");
-  let txt = "רצף נוכחי: <b>" + currentStreak() + "</b> ימים";
-  if (S.meta.freezes > 0) txt += " · הקפאות במלאי: <b>" + S.meta.freezes + "</b>";
-  if (S.meta.bestStreak > 0 && currentStreak() < S.meta.bestStreak) txt += " · השיא שלך: " + S.meta.bestStreak;
-  meta.innerHTML = txt;
-}
-
-function renderChecklist() {
-  const d = day();
-  const mk = (h) => {
-    const row = document.createElement("div");
-    row.className = "check-row" + (d.checks[h.id] ? " done" : "");
-    row.setAttribute("role","button");
-    row.innerHTML = '<div class="cbox">✓</div><div class="clabel"></div>';
-    row.querySelector(".clabel").textContent = h.label;
-    row.onclick = () => {
-      d.checks[h.id] = !d.checks[h.id];
-      persist();
-      row.classList.toggle("done", !!d.checks[h.id]);
-      renderScore(); renderStreak(); renderGrowth(); renderHeader();
-    };
-    return row;
-  };
-  const lo = document.getElementById("listOut"), li = document.getElementById("listIn");
-  lo.innerHTML = ""; li.innerHTML = "";
-  S.habits.forEach(h => (h.type === "out" ? lo : li).appendChild(mk(h)));
-}
-
-function renderMit() {
-  const d = day();
-  const inp = document.getElementById("mitInput");
-  inp.value = d.mit || "";
-  const card = document.getElementById("card-mit");
-  card.classList.toggle("completed", !!d.mitDone);
-  document.getElementById("mitBtn").textContent = d.mitDone ? "בוצע ✓" : "סיימתי אותה";
-}
-document.getElementById("mitInput").addEventListener("input", e => { day().mit = e.target.value; persist(); });
-function toggleMit() {
-  const d = day(); d.mitDone = !d.mitDone; persist(); renderMit();
-}
-
-function renderGrowth() {
-  // 7-day bars
-  const bars = document.getElementById("bars7"); bars.innerHTML = "";
-  for (let i = 6; i >= 0; i--) {
-    const k = keyOffset(-i);
-    const sc = i === 0 ? computeScore(day()) : computeScore(S.days[k]);
-    const w = document.createElement("div"); w.className = "b7";
-    const col = document.createElement("div"); col.className = "col" + (sc === 0 ? " zero" : "");
-    col.style.height = Math.max(3, sc) + "%";
-    const lbl = document.createElement("div"); lbl.className = "lbl";
-    lbl.textContent = DAY_LETTERS[new Date(k + "T12:00:00").getDay()];
-    w.appendChild(col); w.appendChild(lbl); bars.appendChild(w);
-  }
-  // heatmap 8 weeks
-  const hm = document.getElementById("heatmap"); hm.innerHTML = "";
-  const today = new Date();
-  const start = new Date(); start.setDate(start.getDate() - (7 * 7 + today.getDay()));
-  for (let c = 0; c < 8; c++) for (let r = 0; r < 7; r++) {
-    const d2 = new Date(start); d2.setDate(start.getDate() + c * 7 + r);
-    const cell = document.createElement("div"); cell.className = "hcell";
-    if (d2 <= today) {
-      const sc = computeScore(S.days[todayKey(d2)]);
-      if (sc > 0) cell.style.background = "rgba(255,197,61," + (0.12 + 0.7 * sc / 100).toFixed(2) + ")";
-      cell.title = todayKey(d2) + " — " + sc + "%";
-    } else cell.style.opacity = "0.25";
-    hm.appendChild(cell);
-  }
-  // stats
-  document.getElementById("stStreak").textContent = currentStreak();
-  document.getElementById("stBest").textContent = Math.max(S.meta.bestStreak, currentStreak());
-  let sum = 0, n = 0, fm = 0;
-  for (let i = 0; i < 7; i++) {
-    const r = i === 0 ? day() : S.days[keyOffset(-i)];
-    if (r) { sum += computeScore(r); n++; fm += r.focusMin || 0; }
-  }
-  document.getElementById("stAvg").textContent = (n ? Math.round(sum / n) : 0) + "%";
-  document.getElementById("stFocus").textContent = fm;
-  const j = document.getElementById("journal");
-  if (document.activeElement !== j) j.value = day().journal || "";
-  const resp = document.getElementById("aiResp");
-  if (day().ai) { resp.textContent = day().ai; resp.classList.remove("hidden"); }
-  else resp.classList.add("hidden");
-}
-document.getElementById("journal").addEventListener("input", e => { day().journal = e.target.value; persist(); });
-
-/* ===================== focus timer ===================== */
-let presetMin = 25, remaining = 25 * 60, timerInt = null, sessionStart = null;
-function setPreset(m, btn) {
-  if (timerInt) return;
-  presetMin = m; remaining = m * 60; drawTimer();
-  document.querySelectorAll(".preset").forEach(b => b.classList.remove("preset-on"));
-  btn.classList.add("preset-on");
-}
-function drawTimer() {
-  const mm = String(Math.floor(remaining / 60)).padStart(2,"0");
-  const ss = String(remaining % 60).padStart(2,"0");
-  const t = mm + ":" + ss;
-  document.getElementById("timerNum").textContent = t;
-  document.title = timerInt ? t + " · Success OS" : "Success OS";
-}
-function toggleTimer() {
-  const btn = document.getElementById("timerBtn");
-  const num = document.getElementById("timerNum");
-  if (timerInt) {
-    clearInterval(timerInt); timerInt = null;
-    bankFocus();
-    btn.textContent = "המשך"; num.classList.remove("running");
-    drawTimer();
-  } else {
-    sessionStart = Date.now();
-    timerInt = setInterval(() => {
-      remaining--;
-      if (remaining <= 0) {
-        clearInterval(timerInt); timerInt = null;
-        bankFocus(true);
-        remaining = presetMin * 60;
-        document.getElementById("timerBtn").textContent = "התחל";
-        num.classList.remove("running");
-        try { new Notification("Success OS", { body: "הבלוק הסתיים. סמן את זה בצ'קליסט." }); } catch (e) {}
-      }
-      drawTimer();
-    }, 1000);
-    btn.textContent = "עצור"; num.classList.add("running");
-    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
-  }
-}
-function bankFocus(full) {
-  if (!sessionStart) return;
-  const mins = Math.round((Date.now() - sessionStart) / 60000);
-  sessionStart = null;
-  if (mins >= 1) {
-    day().focusMin = (day().focusMin || 0) + mins;
-    if (full && presetMin >= 90) day().checks["h3"] = true;
-    persist(); renderFocusStats(); renderScore(); renderChecklist();
-  }
-}
-function renderFocusStats() {
-  document.getElementById("focusToday").textContent = day().focusMin || 0;
-  const ft = document.getElementById("focusTask");
-  ft.textContent = day().mit ? "מתמקד ב: " + day().mit : "בחר משימה בבית — ותתמקד בה כאן";
-}
-
-/* ===================== AI coach ===================== */
-async function analyze() {
-  const d = day();
-  const text = (d.journal || "").trim();
-  const key = S.settings.apiKey;
-  const score = computeScore(d);
-  const o = outIds().filter(id => d.checks[id]).length;
-  const done = S.habits.filter(h => d.checks[h.id]).length;
-  const resp = document.getElementById("aiResp");
-  const sk = document.getElementById("aiSkeleton");
-  if (!text) { resp.textContent = "כתוב קודם כמה מילים על היום."; resp.classList.remove("hidden"); return; }
-  if (!key) { d.ai = localFeedback(score, o, done); persist(); resp.textContent = d.ai; resp.classList.remove("hidden"); return; }
-
-  const hist = [];
-  for (let i = 1; i <= 7; i++) {
-    const k = keyOffset(-i), r = S.days[k];
-    if (r) hist.push(k + ": ציון " + computeScore(r) + "%" + (r.journal ? " — " + r.journal.slice(0, 120) : ""));
-  }
-  const btn = document.getElementById("aiBtn");
-  btn.disabled = true; resp.classList.add("hidden"); sk.classList.remove("hidden");
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": key,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-8",
-        max_tokens: 1500,
-        system: "אתה מאמן הצלחה ישיר וקשוח בעברית, שמכיר את המשתמש לאורך זמן. הוא מחפש עבודה כמפתח ובונה עסק אוטומציות AI בשם FlowOps. " +
-          "היום: ציון " + score + "%, " + o + " פעולות תפוקה (מועמדות/פנייה/עבודה עמוקה/ניתוח מניות), " + done + "/" + S.habits.length + " משימות. " +
-          "רצף: " + currentStreak() + " ימים. שבעת הימים האחרונים:\n" + (hist.join("\n") || "אין היסטוריה") +
-          "\nחוק: יום בלי תפוקה החוצה שווה מקסימום 40% — למידה לבד לא מספיקה." +
-          "\nפורמט: מה עבד / איפה ברחת / 3 משימות מדויקות למחר / משפט אמת אחד. קצר, בלי סוכר, בלי אימוג'ים. אם אתמול הבטיח משהו ביומן — תשאל אם עשה.",
-        messages: [{ role: "user", content: "היום שלי: " + text }]
-      })
-    });
-    const data = await res.json();
-    if (data.content && data.content[0]) d.ai = data.content[0].text;
-    else if (data.error) d.ai = "שגיאה: " + (data.error.message || data.error.type);
-    else d.ai = "שגיאה לא צפויה. נסה שוב.";
-  } catch (e) {
-    d.ai = "שגיאת חיבור. בדוק אינטרנט או את המפתח בפרופיל.";
-  }
-  persist();
-  sk.classList.add("hidden");
-  resp.textContent = d.ai; resp.classList.remove("hidden");
-  btn.disabled = false;
-}
-function localFeedback(score, o, done) {
-  if (o === 0) return "ציון " + score + "% — ולא יצאה ממך אף פעולה החוצה היום.\nלמידה זה נחמד, אבל אף אחד לא ישלם לך על זה.\nמחר: מועמדות אחת + פנייה אחת לפני הצהריים. בלי תירוצים.";
-  if (score >= 80) return "ציון " + score + "% — יום אמיתי. " + o + " פעולות תפוקה יצאו לעולם.\nמחר: אותו דבר בדיוק. עקביות מנצחת אינטנסיביות.";
-  return "ציון " + score + "% — בינוני. יש תפוקה (" + o + "), אבל נשארו " + (S.habits.length - done) + " משימות פתוחות.\nמחר: תתחיל מהדבר הכי כבד, לפני הטלפון.";
-}
-
-/* ===================== profile ===================== */
-function renderProfile() {
-  const kEl = document.getElementById("apiKey");
-  const st = document.getElementById("keyStatus");
-  if (S.settings.apiKey) {
-    kEl.placeholder = "•••• " + S.settings.apiKey.slice(-4);
-    st.textContent = "מחובר — המפתח שמור מקומית בלבד ולא נכלל בגיבוי";
-    st.className = "key-status ok";
-  } else { st.textContent = "בלי מפתח המאמן עובד במצב מקומי בסיסי"; st.className = "key-status"; }
-  const ed = document.getElementById("habitEditor"); ed.innerHTML = "";
-  S.habits.forEach(h => {
-    const row = document.createElement("div"); row.className = "habit-edit-row";
-    const tag = document.createElement("span"); tag.className = "tag " + (h.type === "out" ? "out" : "inp");
-    tag.textContent = h.type === "out" ? "תפוקה" : "תשומה";
-    const inp = document.createElement("input"); inp.className = "tinput"; inp.value = h.label;
-    inp.addEventListener("change", () => { h.label = inp.value; persist(); renderChecklist(); });
-    row.appendChild(tag); row.appendChild(inp); ed.appendChild(row);
+  $("tkMode").textContent = h < 12 ? " · בוקר" : h < 18 ? " · צהריים" : " · ערב";
+  const days = []; for (let i = 13; i >= 0; i--) days.push(barInfo(addDays(today, -i)));
+  const bars = $("bars"); bars.innerHTML = "";
+  days.forEach(b => {
+    const el = document.createElement("button");
+    el.className = "bar " + (b.sc == null ? "none" : b.out ? "out" : "in") + (b.k === today ? " today" : "") + (selBar === b.k ? " sel" : "");
+    el.innerHTML = '<i style="height:' + (b.sc == null ? 0 : Math.max(3, b.sc)) + '%"></i><span>' + DOW[new Date(b.k + "T12:00:00").getDay()] + "</span>";
+    el.setAttribute("aria-label", fmtD(b.k) + ": " + (b.sc == null ? "לא נפתח" : "ציון " + b.sc));
+    el.onclick = () => { selBar = selBar === b.k ? null : b.k; renderHero(); };
+    bars.appendChild(el);
   });
-  const nDays = Object.keys(S.days).filter(k => computeScore(S.days[k]) > 0 || k === todayKey()).length;
-  document.getElementById("totals").textContent = "סה\"כ ימים פעילים: " + nDays + " · שיא רצף: " + Math.max(S.meta.bestStreak, currentStreak());
+  const sel = selBar ? barInfo(selBar) : null;
+  if (sel) {
+    $("barsCap").innerHTML = sel.sc == null ? "<b>לא נפתח</b> ביום הזה" : "<b>ציון " + sel.sc + "</b> · " + (sel.out ? "יצאה פעולת תפוקה" : "רק תשומה") + (sel.frozen ? " · יום מוקפא" : "");
+    $("barsDate").textContent = new Date(sel.k + "T12:00:00").toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "numeric" });
+  } else { $("barsCap").textContent = "כל עמודה היא יום. לחיצה מראה את הפרטים."; $("barsDate").textContent = ""; }
+  const last7 = days.slice(-7).filter(b => b.sc != null);
+  $("qStreak").textContent = currentStreak();
+  $("qAvg").textContent = last7.length ? Math.round(last7.reduce((a, b) => a + b.sc, 0) / last7.length) : 0;
+  $("qOut").textContent = days.filter(b => b.out).length;
+  $("qFocus").textContent = d.focusMin || 0;
+  const rule = S.market.rule && S.market.rule.text;
+  $("ruleToday").classList.toggle("hidden", !rule);
+  $("ruleTodayT").textContent = rule || "";
 }
-document.getElementById("apiKey").addEventListener("change", e => {
-  S.settings.apiKey = e.target.value.trim(); persist(); e.target.value = ""; renderProfile();
+function renderPlan() {
+  const y = S.days[addDays(todayKey(), -1)];
+  const items = y && y.next && y.next.length ? y.next : null;
+  $("planSec").classList.toggle("hidden", !items);
+  if (!items) return;
+  y.nextDone = y.nextDone || [];
+  $("planMeta").textContent = y.nextDone.filter(Boolean).length + "/" + items.length;
+  const el = $("plan"); el.innerHTML = "";
+  items.forEach((t, i) => {
+    const on = !!y.nextDone[i];
+    const r = document.createElement("div"); r.className = "plan-row" + (on ? " on" : "");
+    r.innerHTML = '<button class="chk" aria-pressed="' + on + '" aria-label="בוצע">' + CHECK + '</button><div class="plan-t"></div>';
+    r.querySelector(".plan-t").textContent = t;
+    r.querySelector(".chk").onclick = () => { y.nextDone[i] = !y.nextDone[i]; persist(); buzz(); renderPlan(); };
+    el.appendChild(r);
+  });
+}
+
+$("mitIn").addEventListener("input", e => { day().mit = e.target.value; persist(); });
+$("mitTick").onclick = () => { const d = day(); d.mitDone = !d.mitDone; persist(); buzz(); renderToday(); };
+
+function renderBook() {
+  const d = day(), book = $("book");
+  book.innerHTML = "";
+  const outs = S.habits.filter(h => h.type === "out"), ins = S.habits.filter(h => h.type === "in");
+  const wOut = Math.round(60 / Math.max(1, outs.length)), wIn = Math.round(40 / Math.max(1, ins.length));
+  [["out", "תפוקה · מזיז את המחט", outs, wOut], ["in", "תשומה · בונה יכולת", ins, wIn]].forEach(([t, lbl, list, w]) => {
+    const g = document.createElement("div"); g.className = "book-grp";
+    g.innerHTML = "<span>" + lbl + '</span><span class="mono">' + list.length * w + "</span>";
+    book.appendChild(g);
+    list.forEach(h => {
+      const b = document.createElement("button");
+      const on = !!d.checks[h.id];
+      b.className = "ord " + t + (on ? " on" : "");
+      b.setAttribute("role", "checkbox"); b.setAttribute("aria-checked", on);
+      b.innerHTML = '<span class="box">' + CHECK + '</span><span class="lb">' + esc(h.label) + (h.sub ? "<small>" + esc(h.sub) + "</small>" : "") + '</span><span class="w num">+' + w + "</span>";
+      b.onclick = () => { d.checks[h.id] = !d.checks[h.id]; persist(); buzz(); renderToday(); };
+      book.appendChild(b);
+    });
+  });
+  const done = S.habits.filter(h => d.checks[h.id]).length;
+  const o = outs.some(h => d.checks[h.id]);
+  const foot = document.createElement("div"); foot.className = "book-foot";
+  foot.innerHTML = "<span>" + (o ? "יום תפוקה. המחט זזה." : "בלי פעולת תפוקה הציון נעצר ב-40.") + '</span><span class="num">' + done + "/" + S.habits.length + "</span>";
+  book.appendChild(foot);
+  $("ordMeta").textContent = "ציון " + computeScore(d);
+}
+
+function renderTiles() {
+  const today = todayKey();
+  // venture
+  const launch = TASKS.find(t => t.id === "launch");
+  const nextMs = TASKS.filter(t => t.ms && t.end >= today && t.status !== "done").sort((a, b) => a.end < b.end ? -1 : 1)[0];
+  const lateN = TASKS.filter(t => !t.ms && t.end < today && t.status !== "done" && !S.venture.mine[t.id]).length;
+  const dl = diffDays(today, launch.end);
+  $("tVenture").innerHTML =
+    '<div class="tile-k"><span>המיזם · עלייה לחנויות</span><span>' + (lateN ? '<span class="down">' + lateN + " באיחור</span>" : "בזמן") + "</span></div>" +
+    '<div class="countdown"><div class="tile-big num">' + Math.max(0, dl) + '</div><div class="cd-txt"><b>ימים עד העלייה לחנויות</b><span>' + (nextMs && nextMs.id !== "launch" ? "קודם: <bdi>" + esc(nextMs.title) + "</bdi>" + " בעוד " + diffDays(today, nextMs.end) + " ימים" : "") + "</span></div></div>";
+  // market
+  const m = marketStats();
+  $("tMarket").innerHTML = '<div class="tile-k"><span>משמעת מסחר</span></div><div class="tile-big num">' + (m.n ? m.disc + "<small>%</small>" : "—") + "</div><p>" + (m.n ? m.ruled + " מתוך " + m.n + " לפי הכללים" : "עוד אין עסקאות ביומן") + "</p>";
+  // learn
+  const due = dueCards().length;
+  $("tLearn").innerHTML = '<div class="tile-k"><span>חזרה</span></div><div class="tile-big num">' + due + "</div><p>" + (due ? "כרטיסיות מחכות היום" : S.learn.cards.length ? "הכל נקי להיום" : "עוד אין כרטיסיות") + "</p>";
+  // focus
+  renderFocusTile();
+}
+
+/* ---------- focus ---------- */
+let timer = null, remain = 90 * 60, startedAt = null;
+function renderFocusTile() {
+  const fm = day().focusMin || 0;
+  $("tFocus").innerHTML = '<div class="tile-k"><span>בלוק עבודה עמוקה</span><span class="num">' + fm + " דק׳ היום</span></div>" +
+    '<div style="display:flex;justify-content:space-between;align-items:center;gap:var(--s3)"><p style="color:var(--ink)">' + (timer ? "הבלוק רץ. הטלפון בצד." : day().mit ? "90 דקות על: " + esc(day().mit) : "90 דקות בלי טלפון. בסיום הפקודה נסגרת לבד.") + "</p>" + (timer ? "" : '<span class="btn btn-chalk" style="min-height:36px;flex-shrink:0">התחלה</span>') + "</div>";
+}
+$("tFocus").onclick = () => { if (!timer) startFocus(); };
+function fmtT(s) { return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }
+function startFocus() {
+  remain = 90 * 60; startedAt = Date.now();
+  $("dock").classList.remove("hidden");
+  const endAt = Date.now() + remain * 1000;
+  timer = setInterval(() => {
+    remain = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+    $("dockT").textContent = fmtT(remain);
+    document.title = fmtT(remain) + " · Success OS";
+    if (remain <= 0) stopFocus(true);
+  }, 1000);
+  $("dockT").textContent = fmtT(remain);
+  if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
+  renderFocusTile();
+}
+function stopFocus(full) {
+  clearInterval(timer); timer = null;
+  const mins = Math.round((Date.now() - startedAt) / 60000);
+  if (mins >= 1) day().focusMin = (day().focusMin || 0) + mins;
+  if (full) { day().checks.h3 = true; try { new Notification("Success OS", { body: "90 דקות. הבלוק נסגר." }); } catch (e) {} }
+  persist();
+  $("dock").classList.add("hidden"); document.title = "Success OS";
+  render();
+}
+$("dockStop").onclick = () => stopFocus(false);
+
+/* ============================================================
+   MARKET
+   ============================================================ */
+function tradeR(t) {
+  const e = num(t.entry), s = num(t.stop), x = num(t.exit);
+  if (e == null || s == null || x == null || e === s) return null;
+  const dir = s < e ? 1 : -1;
+  return dir * (x - e) / Math.abs(e - s);
+}
+function gateOf(t) {
+  if (!t.checks) return null;
+  const ans = GATE.map(g => t.checks[g[0]]);
+  if (ans.some(a => a == null)) return null;
+  return ans.every(Boolean) && (t.rr == null || t.rr >= MIN_RR);
+}
+function marketStats() {
+  const trades = S.market.trades.slice().sort((a, b) => a.date < b.date ? -1 : 1);
+  const last20 = trades.slice(-20);
+  const ruled = last20.filter(t => t.rules === true).length;
+  const closed = trades.filter(t => tradeR(t) != null);
+  const rs = closed.map(tradeR);
+  const total = rs.reduce((a, b) => a + b, 0);
+  const exp = rs.length ? total / rs.length : null;
+  const win = rs.length ? rs.filter(r => r > 0).length / rs.length * 100 : null;
+  const procs = last20.filter(t => t.proc).map(t => t.proc);
+  const procAvg = procs.length ? procs.reduce((a, b) => a + b, 0) / procs.length : null;
+  const mc = {}; last20.forEach(t => { if (t.mistake && t.mistake !== "none") mc[t.mistake] = (mc[t.mistake] || 0) + 1; });
+  const topMistake = Object.keys(mc).sort((a, b) => mc[b] - mc[a])[0] || null;
+  const luckyWins = closed.filter(t => tradeR(t) > 0 && (t.rules === false || (t.proc && t.proc <= 2))).length;
+  const gated = trades.filter(t => gateOf(t) != null).length;
+  return { n: last20.length, all: trades.length, gated, ruled, disc: last20.length ? Math.round(ruled / last20.length * 100) : 0, closed: closed.length, rs, total, exp, win, trades, procAvg, topMistake, topMistakeN: topMistake ? mc[topMistake] : 0, luckyWins };
+}
+function ladderStages(m) {
+  const reviews = Object.keys(S.market.reviews).length;
+  const disc20 = m.all >= 20 ? m.disc : 0;
+  return [
+    { t: "מתעד", d: "10 עסקאות עם שער כניסה מלא", p: Math.min(1, m.gated / 10), lbl: m.gated + "/10" },
+    { t: "ממושמע", d: "80% מהעסקאות עוברות את השער, על 20 עסקאות", p: Math.min(1, m.all / 20) * Math.min(1, disc20 / 80), lbl: m.all < 20 ? m.all + "/20 עסקאות" : "משמעת " + m.disc + "%", ok: m.all >= 20 && m.disc >= 80 },
+    { t: "רווחי", d: "תוחלת חיובית על 30 עסקאות סגורות", p: Math.min(1, m.closed / 30) * (m.exp != null && m.exp > 0 ? 1 : .5), lbl: m.closed + "/30 סגורות", ok: m.closed >= 30 && m.exp > 0 },
+    { t: "עקבי", d: "8 סקירות שבועיות עם כלל שנבדק", p: Math.min(1, reviews / 8), lbl: reviews + "/8" },
+    { t: "מקצוען", d: "50 עסקאות, משמעת 90%, תוחלת 0.3R", p: Math.min(1, m.closed / 50) * (m.disc >= 90 ? 1 : .6) * (m.exp >= .3 ? 1 : .6), lbl: m.closed + "/50", ok: m.closed >= 50 && m.disc >= 90 && m.exp >= .3 }
+  ].map(s => (s.ok == null && (s.ok = s.p >= 1), s));
+}
+function renderMarket() {
+  const m = marketStats();
+  const st = ladderStages(m);
+  const nowI = st.findIndex(s => !s.ok);
+  $("ladderMeta").textContent = nowI < 0 ? "כל השלבים הושלמו" : "שלב " + (nowI + 1) + " מתוך 5";
+  $("ladder").innerHTML = st.map((s, i) => {
+    const cls = s.ok ? "done" : i === nowI ? "now" : "locked";
+    return '<div class="lv ' + cls + '"><span class="lv-n">' + (i + 1) + '</span><div><div class="lv-t">' + s.t + '</div><div class="lv-d">' + s.d + '</div><div class="lv-d num" style="color:var(--ink-2)">' + s.lbl + '</div>' +
+      (i === nowI ? '<div class="meter"><i style="transform:scaleX(' + Math.max(.02, s.p).toFixed(3) + ')"></i></div>' : "") + "</div></div>";
+  }).join("");
+  const dash = "—", small = m.closed < 30;
+  $("mStats").innerHTML =
+    '<div class="stat"><span class="k">משמעת (20 אחרונות)</span><span class="v num">' + (m.n ? m.disc + "%" : dash) + '</span><span class="d">' + (m.n ? m.ruled + " מתוך " + m.n + " עברו את השער" : "אין עסקאות") + "</span></div>" +
+    '<div class="stat"><span class="k">ציון ביצוע ממוצע</span><span class="v num">' + (m.procAvg != null ? m.procAvg.toFixed(1) : dash) + '</span><span class="d">מתוך 5, בלי קשר לרווח</span></div>' +
+    '<div class="stat"><span class="k">הטעות החוזרת</span><span class="v" style="font-size:var(--t-lg)">' + (m.topMistake ? MISTAKES[m.topMistake][0] : dash) + '</span><span class="d">' + (m.topMistake ? m.topMistakeN + " פעמים ב-20 האחרונות" : "עוד אין טעויות מתועדות") + "</span></div>" +
+    '<div class="stat"><span class="k">תוחלת לעסקה</span><span class="v num ' + (!small && m.exp > 0 ? "up" : !small && m.exp < 0 ? "down" : "") + '">' + (!small && m.exp != null ? sign(m.exp) + "R" : dash) + '</span><span class="d">' + (small ? "מוצג מ-30 סגורות (יש " + m.closed + ")" : m.closed + " סגורות") + "</span></div>";
+  if (m.luckyWins) $("mStats").insertAdjacentHTML("beforeend", '<div class="stat" style="grid-column:1/-1"><span class="k">רווחים עם תהליך רע</span><span class="v num down">' + m.luckyWins + '</span><span class="d">עסקאות שהרוויחו למרות חריגה. הן מלמדות את הלקח הלא נכון.</span></div>');
+  // weekly discipline
+  const wk = weekKey(), wb = $("wkbars"); wb.innerHTML = "";
+  for (let i = 7; i >= 0; i--) {
+    const a = addDays(wk, -7 * i), b = addDays(a, 7);
+    const ts = m.trades.filter(t => t.date >= a && t.date < b && t.rules != null);
+    const pct = ts.length ? Math.round(ts.filter(t => t.rules).length / ts.length * 100) : null;
+    const c = document.createElement("div"); c.className = "wkb";
+    c.innerHTML = "<em>" + (pct == null ? "" : pct + "%") + '</em><i class="' + (pct == null ? "none" : pct < 80 ? "low" : "") + '" style="height:' + (pct == null ? 0 : Math.max(4, pct * .8)) + '%"></i><span>' + fmtD(a) + "</span>";
+    c.title = ts.length + " עסקאות";
+    wb.appendChild(c);
+  }
+  // R curve
+  $("rTotal").textContent = m.closed ? sign(m.total, 1) + "R" : "";
+  const rc = $("rcurve");
+  if (m.rs.length < 2) rc.innerHTML = '<div class="empty" style="padding-top:36px">העקומה תופיע אחרי שתי עסקאות סגורות</div>';
+  else {
+    const W = rc.clientWidth || 340, H = 120; let c = 0; const pts = [0].concat(m.rs.map(r => c += r));
+    const lo = Math.min(0, ...pts), hi = Math.max(0, ...pts), span = (hi - lo) || 1;
+    const X = i => i / (pts.length - 1) * W, Y = v => 6 + (1 - (v - lo) / span) * (H - 12);
+    let p = ""; pts.forEach((v, i) => p += (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1));
+    const col = c >= 0 ? "var(--bull)" : "var(--bear)";
+    rc.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none"><line x1="0" x2="' + W + '" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke="rgba(255,255,255,.14)" stroke-dasharray="2 4"/><path d="' + p + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round"/>' +
+      pts.slice(1).map((v, i) => '<circle cx="' + X(i + 1).toFixed(1) + '" cy="' + Y(v).toFixed(1) + '" r="2.5" fill="' + (m.rs[i] >= 0 ? "var(--bull)" : "var(--bear)") + '"/>').join("") + "</svg>";
+  }
+  renderWatch();
+  renderTrades(m);
+  // review
+  const rv = S.market.reviews[wk] || {};
+  ["rv1", "rv2", "rv3"].forEach((id, i) => { if (document.activeElement !== $(id)) $(id).value = rv["a" + i] || ""; });
+  const dow = new Date().getDay();
+  $("revMeta").textContent = rv.saved ? "נשמרה לשבוע הזה" : (dow === 5 || dow === 6 || dow === 0) ? "זמן לסקירה" : "שבוע של " + fmtD(wk);
+  const wts = m.trades.filter(t => t.date >= wk);
+  const wp = wts.filter(t => t.proc).map(t => t.proc);
+  const wm = wts.filter(t => t.mistake && t.mistake !== "none").map(t => MISTAKES[t.mistake][0]);
+  $("revData").innerHTML = wts.length ? "השבוע: <b>" + wts.length + "</b> עסקאות, <b>" + wts.filter(t => t.rules).length + "</b> עברו את השער" + (wp.length ? ", ציון ביצוע ממוצע <b>" + (wp.reduce((a, b) => a + b, 0) / wp.length).toFixed(1) + "</b>" : "") + (wm.length ? ". טעויות: " + esc(wm.join(", ")) : "") : "השבוע עוד אין עסקאות ביומן.";
+  const prev = rv.saved ? rv.prevRule : (S.market.rule && S.market.rule.wk !== wk ? S.market.rule.text : null);
+  $("revPrevWrap").classList.toggle("hidden", !prev);
+  $("revPrevRule").textContent = prev || "";
+  if (revKept === undefined || revKeptWk !== wk) { revKept = rv.kept || null; revKeptWk = wk; }
+  document.querySelectorAll("#revKept button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === revKept)));
+  const rule = S.market.rule && S.market.rule.text;
+  $("ruleMarket").classList.toggle("hidden", !rule);
+  $("ruleMarketT").textContent = rule || "";
+}
+let revKept, revKeptWk;
+document.querySelectorAll("#revKept button").forEach(b => b.onclick = () => { revKept = revKept === b.dataset.v ? null : b.dataset.v; document.querySelectorAll("#revKept button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === revKept))); });
+function weekKey() { const d = new Date(); d.setDate(d.getDate() - d.getDay()); return todayKey(d); }
+$("saveRev").onclick = () => {
+  const a = ["rv1", "rv2", "rv3"].map(id => $(id).value.trim());
+  if (!a.some(Boolean)) return;
+  const wk = weekKey(), old = S.market.reviews[wk] || {};
+  const prevRule = old.saved ? old.prevRule : (S.market.rule && S.market.rule.wk !== wk ? S.market.rule.text : null);
+  S.market.reviews[wk] = { a0: a[0], a1: a[1], a2: a[2], saved: todayKey(), prevRule: prevRule || null, kept: revKept || null };
+  if (a[2]) S.market.rule = { text: a[2], wk };
+  persist(); buzz(); renderMarket();
+};
+
+function watchVerdict(w) {
+  const erFail = w.er === "none" ? false : w.er == null ? null : w.er < -4;
+  const f = [w.run == null ? null : w.run > 3, w.vol == null ? null : w.vol < .7, erFail];
+  const msgs = [];
+  if (f[0]) msgs.push("רדיפה " + sign(w.run, 1) + "%");
+  if (f[1]) msgs.push("נפח " + w.vol + "x");
+  if (f[2]) msgs.push("היצע בדוח");
+  let v, cls = "";
+  if (msgs.length) { v = msgs.join(" · "); cls = "x"; }
+  else if (f.every(x => x === false)) { v = "עוברת"; cls = "ok"; }
+  else v = "חסר נתון";
+  if (w.added && w.added < todayKey()) { v += " · נבדקה " + fmtD(w.added); if (cls === "ok") cls = ""; }
+  return { f, v, cls };
+}
+function renderWatch() {
+  const el = $("watch");
+  if (!S.market.watch.length) { el.innerHTML = '<div class="empty"><b>הרשימה ריקה</b>מועמדת מהסורק נכנסת לכאן עם שלוש הבדיקות</div>'; return; }
+  el.innerHTML = "";
+  S.market.watch.forEach(w => {
+    const r = watchVerdict(w);
+    const row = document.createElement("div"); row.className = "wl-row";
+    row.innerHTML = '<span class="tkr">' + esc(w.ticker) + '</span><span class="dots3">' + r.f.map(x => "<i class=\"" + (x == null ? "na" : x ? "x" : "") + "\"></i>").join("") + '</span><span class="verdict ' + r.cls + '">' + esc(r.v) + '</span><button class="x-btn" aria-label="הסרה">' + '<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
+    row.querySelector(".x-btn").onclick = () => { S.market.watch = S.market.watch.filter(x => x.id !== w.id); persist(); renderWatch(); };
+    el.appendChild(row);
+  });
+}
+$("addWatch").onclick = () => { $("watchForm").reset(); $("watchSheet").showModal(); };
+$("watchSheet").addEventListener("close", () => {
+  if ($("watchSheet").returnValue !== "save") return;
+  const t = $("wTicker").value.trim().toUpperCase(); if (!t) return;
+  S.market.watch = S.market.watch.filter(x => x.ticker !== t);
+  S.market.watch.unshift({ id: uid(), ticker: t, run: num($("wRun").value), vol: num($("wVol").value), er: $("wNoEr").checked ? "none" : num($("wEr").value), added: todayKey() });
+  persist(); render();
 });
-function exportData() {
-  const copy = JSON.parse(JSON.stringify(S));
-  copy.settings.apiKey = "";
-  const blob = new Blob([JSON.stringify(copy, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "successos-backup-" + todayKey() + ".json";
-  a.click();
+
+function renderTrades(m) {
+  const el = $("trades");
+  const list = m.trades.slice().reverse();
+  if (!list.length) { el.innerHTML = '<div class="empty"><b>היומן ריק</b>כל עסקה נכנסת עם סטופ ויעד, ומסומנת אם עמדת בכללים</div>'; return; }
+  el.innerHTML = "";
+  list.forEach(t => {
+    const r = tradeR(t);
+    const b = document.createElement("button"); b.className = "tr-row";
+    b.innerHTML = '<span class="tkr">' + esc(t.ticker) + '</span><span class="tr-mid"><b>' + (SETUPS[t.setup] || "") + "</b> · " + fmtD(t.date) + " · " + (t.rules === true ? "עברה את השער" : t.rules === false ? '<span class="down">חריגה</span>' : "לא סומן") + (t.mistake && t.mistake !== "none" ? " · " + MISTAKES[t.mistake][0] : "") + (tradeR(t) > 0 && (t.rules === false || (t.proc && t.proc <= 2)) ? ' · <span class="down">רווח עם תהליך רע</span>' : "") + "</span>" +
+      (r == null ? '<span class="tag-open">פתוחה</span>' : '<span class="tr-r ' + (r >= 0 ? "up" : "down") + '">' + sign(r) + "R</span>");
+    b.onclick = () => openTrade(t);
+    el.appendChild(b);
+  });
 }
-function importData(inp) {
-  const f = inp.files[0]; if (!f) return;
+let editing = null, fSetup = "pullback", fChecks = {}, fProc = null;
+$("fMistake").innerHTML = Object.keys(MISTAKES).map(k => '<option value="' + k + '">' + MISTAKES[k][0] + "</option>").join("");
+function setSetup(v) { fSetup = v; document.querySelectorAll("#fSetup button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === v))); }
+document.querySelectorAll("#fSetup button").forEach(b => b.onclick = () => setSetup(b.dataset.v));
+function setProc(v) { fProc = v; document.querySelectorAll("#fProc button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.v === v))); }
+document.querySelectorAll("#fProc button").forEach(b => b.onclick = () => setProc(+b.dataset.v));
+function formRR() {
+  const e = num($("fEntry").value), s = num($("fStop").value), t = num($("fTarget").value);
+  if (e == null || s == null || t == null || e === s) return null;
+  return Math.abs(t - e) / Math.abs(e - s);
+}
+function renderGate() {
+  const rr = formRR();
+  let h = '<div class="gate-h"><span>שער כניסה</span><span class="num">' + GATE.filter(g => fChecks[g[0]] != null).length + "/" + GATE.length + "</span></div>";
+  GATE.forEach(g => {
+    const v = fChecks[g[0]];
+    h += '<div class="gate-row"><span>' + g[1] + '</span><div class="yn" data-k="' + g[0] + '"><button type="button" class="y" aria-pressed="' + (v === true) + '">כן</button><button type="button" class="n" aria-pressed="' + (v === false) + '">לא</button></div></div>';
+  });
+  h += '<div class="gate-row"><span>יחס סיכוי-סיכון ' + MIN_RR + "R ומעלה</span><span class=\"num " + (rr == null ? "" : rr >= MIN_RR ? "up" : "down") + '">' + (rr == null ? "—" : rr.toFixed(1) + "R") + "</span></div>";
+  const answered = GATE.every(g => fChecks[g[0]] != null);
+  const pass = answered && GATE.every(g => fChecks[g[0]]) && rr != null && rr >= MIN_RR;
+  h += '<div class="gate-v ' + (!answered ? "" : pass ? "ok" : "x") + '">' + (!answered ? "ענה על כל השורות לפני שמירה" : pass ? "העסקה עוברת את השיטה" : "העסקה מחוץ לשיטה. אפשר לשמור, והיא תיספר כחריגה") + "</div>";
+  $("fGate").innerHTML = h;
+  $("fGate").querySelectorAll(".yn").forEach(w => w.querySelectorAll("button").forEach((b, i) => b.onclick = () => { const k = w.dataset.k, val = i === 0; fChecks[k] = fChecks[k] === val ? null : val; renderGate(); }));
+  $("fSave").textContent = answered && !pass ? "שמירה כחריגה" : "שמירה";
+  $("fPost").classList.toggle("hidden", num($("fExit").value) == null);
+}
+function calcPreview() {
+  const e = num($("fEntry").value), s = num($("fStop").value), t = num($("fTarget").value);
+  if (e == null || s == null || e === s) { $("fCalc").textContent = ""; renderGate(); return; }
+  const risk = Math.abs(e - s), pct = risk / e * 100;
+  let txt = 'סיכון לפעולה <b>' + risk.toFixed(2) + "</b> (" + pct.toFixed(1) + "%)";
+  if (t != null) txt += ' · יחס סיכוי-סיכון <b>' + (Math.abs(t - e) / risk).toFixed(1) + "R</b>";
+  $("fCalc").innerHTML = txt;
+  renderGate();
+}
+["fEntry", "fStop", "fTarget", "fExit"].forEach(id => $(id).addEventListener("input", calcPreview));
+function openTrade(t) {
+  editing = t || null;
+  $("tradeForm").reset();
+  $("fErr").textContent = "";
+  $("tradeTitle").textContent = t ? "עסקה ב-" + t.ticker : "עסקה חדשה";
+  $("fDate").value = t ? t.date : todayKey();
+  $("fTicker").value = t ? t.ticker : "";
+  $("fEntry").value = t && t.entry != null ? t.entry : "";
+  $("fStop").value = t && t.stop != null ? t.stop : "";
+  $("fTarget").value = t && t.target != null ? t.target : "";
+  $("fExit").value = t && t.exit != null ? t.exit : "";
+  $("fEmo").value = t ? t.emotion || "" : "";
+  $("fNote").value = t ? t.note || "" : "";
+  $("fMistake").value = t && t.mistake ? t.mistake : "none";
+  fChecks = t && t.checks ? Object.assign({}, t.checks) : {};
+  setSetup(t ? t.setup : "pullback"); setProc(t && t.proc ? t.proc : null);
+  $("fDel").classList.toggle("hidden", !t);
+  calcPreview();
+  $("tradeSheet").showModal();
+}
+$("addTrade").onclick = () => openTrade(null);
+$("tradeForm").addEventListener("submit", e => {
+  if (!e.submitter || e.submitter.value !== "save") return;
+  if (!GATE.every(g => fChecks[g[0]] != null)) { e.preventDefault(); $("fErr").textContent = "שער הכניסה לא מלא. ענה כן או לא על כל שורה."; return; }
+  if (num($("fExit").value) != null && !fProc) { e.preventDefault(); $("fErr").textContent = "עסקה סגורה צריכה ציון ביצוע."; }
+});
+$("tradeSheet").addEventListener("close", () => {
+  const rv = $("tradeSheet").returnValue;
+  if (rv === "delete" && editing) { S.market.trades = S.market.trades.filter(x => x.id !== editing.id); persist(); render(); return; }
+  if (rv !== "save") return;
+  const rec = editing || { id: uid() };
+  const prevMistake = rec.mistake;
+  const rr = formRR();
+  Object.assign(rec, {
+    date: $("fDate").value || todayKey(), ticker: $("fTicker").value.trim().toUpperCase(), setup: fSetup,
+    entry: num($("fEntry").value), stop: num($("fStop").value), target: num($("fTarget").value), exit: num($("fExit").value),
+    checks: Object.assign({}, fChecks), rr: rr == null ? null : Math.round(rr * 100) / 100,
+    emotion: $("fEmo").value.trim(), note: $("fNote").value.trim()
+  });
+  rec.rules = gateOf(rec) === true && rr != null && rr >= MIN_RR;
+  if (rec.exit != null) { rec.proc = fProc; rec.mistake = $("fMistake").value; } else { rec.proc = null; rec.mistake = null; }
+  if (!rec.ticker) return;
+  if (!editing) S.market.trades.push(rec);
+  if (rec.mistake && rec.mistake !== "none" && rec.mistake !== prevMistake) mistakeCard(rec);
+  persist(); buzz(); render();
+});
+function mistakeCard(t) {
+  const tpl = MISTAKES[t.mistake][1]; if (!tpl) return;
+  const [q, a] = tpl.split("|");
+  if (S.learn.cards.some(c => c.src === "mistake:" + t.mistake && c.due > todayKey())) return;
+  S.learn.cards.push({ id: uid(), topic: "market", q, a: a + " (מהעסקה ב-" + t.ticker + ", " + fmtD(t.date) + ")", lvl: 0, due: addDays(todayKey(), 1), created: todayKey(), src: "mistake:" + t.mistake });
+}
+
+/* ============================================================
+   VENTURE
+   ============================================================ */
+function isDone(t) { return t.status === "done" || !!S.venture.mine[t.id]; }
+function renderVenture() {
+  const today = todayKey();
+  const apps = S.settings.apps.filter(Boolean);
+  $("vTitle").textContent = apps.length === 2 ? apps[0] + " ו-" + apps[1] : apps.length === 1 ? apps[0] : "המיזם";
+  const launch = TASKS.find(t => t.id === "launch");
+  const ms = TASKS.filter(t => t.ms && t.end >= today && !isDone(t)).sort((a, b) => a.end < b.end ? -1 : 1);
+  const next = ms[0];
+  const submit = TASKS.find(t => t.id === "t-submit");
+  const slackTxt = '<div class="slack">ההגשה לאפל ולגוגל מסתיימת ב-<b>' + fmtD(submit.end) + "</b>, <b>" + diffDays(submit.end, launch.end) + " ימים</b> לפני העלייה. דחייה בהגשה הראשונה נפוצה, אז כל יום עיכוב בחברה או ב-D-U-N-S נלקח ישר מהמרווח הזה.</div>";
+  $("vCount").innerHTML = '<div class="tile-big num">' + Math.max(0, diffDays(today, launch.end)) + '</div><div class="cd-txt"><b>ימים עד העלייה לחנויות</b><span>' + fmtD(launch.end) + " · תלוי בחברה ובמספר D-U-N-S" + "</span></div>" + slackTxt +
+    (next && next.id !== "launch" ? '<div style="grid-column:1/-1;border-top:1px solid var(--rule);padding-top:var(--s3);font-size:var(--t-sm);color:var(--ink-2)">אבן הדרך הקרובה: <b style="color:var(--ink)"><bdi>' + esc(next.title) + '</bdi></b> · בעוד <span class="num">' + diffDays(today, next.end) + "</span> ימים</div>" : "");
+  const work = TASKS.filter(t => !t.ms);
+  $("vPct").textContent = "";
+  drawRunway();
+  renderBlockers();
+  renderCommit();
+  // week
+  const horizon = addDays(today, 7);
+  const week = TASKS.filter(t => !t.ms && t.start <= horizon && t.end >= today && t.status !== "done").sort((a, b) => (a.owner === "barak") !== (b.owner === "barak") ? (a.owner === "barak" ? -1 : 1) : !!S.venture.mine[a.id] !== !!S.venture.mine[b.id] ? (S.venture.mine[a.id] ? 1 : -1) : a.end < b.end ? -1 : 1);
+  const late = TASKS.filter(t => !t.ms && t.end < today && t.status !== "done").sort((a, b) => a.end < b.end ? -1 : 1);
+  $("vWeekMeta").textContent = week.filter(t => !S.venture.mine[t.id]).length + " פתוחות";
+  $("vLateMeta").textContent = late.filter(t => !S.venture.mine[t.id]).length + " פתוחות";
+  fillTasks($("vWeek"), week, "אין משימות פתוחות לשבוע הקרוב");
+  fillTasks($("vLate"), late, "אין משימות באיחור");
+  $("vSnap").textContent = "המשימות והתאריכים הם תמונת מצב של הגאנט מ-" + GANTT_SNAPSHOT + ". הסימון כאן אישי ולא מגיע לדניאל ולעידן: מה שבוצע מסמנים גם בגאנט המשותף. לעדכון התמונה, בקש מ-Claude לרענן אותה.";
+}
+function renderBlockers() {
+  const today = todayKey(), el = $("vBlock");
+  const list = S.venture.blockers.slice().sort((a, b) => a.done !== b.done ? (a.done ? 1 : -1) : a.due < b.due ? -1 : 1);
+  $("vBlockMeta").textContent = list.filter(b => !b.done).length + " פתוחים";
+  el.innerHTML = "";
+  list.forEach(b => {
+    const left = diffDays(today, b.due);
+    const r = document.createElement("div"); r.className = "blk" + (b.done ? " on" : "");
+    r.innerHTML = '<button class="chk" aria-pressed="' + !!b.done + '" aria-label="נפתר">' + CHECK + '</button><div><div class="blk-t"></div><div class="blk-m' + (!b.done && left < 0 ? " late" : "") + '">' + (b.done ? "נפתר " + fmtD(b.done) : left < 0 ? "באיחור " + (-left) + " ימים · יעד " + fmtD(b.due) : left === 0 ? "היום" : "יעד " + fmtD(b.due) + " · בעוד " + left + " ימים") + '</div></div><button class="x-btn" aria-label="מחיקה"><svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
+    r.querySelector(".blk-t").textContent = b.t;
+    r.querySelector(".chk").onclick = () => { b.done = b.done ? false : todayKey(); persist(); buzz(); renderBlockers(); };
+    r.querySelector(".x-btn").onclick = () => { S.venture.blockers = S.venture.blockers.filter(x => x.id !== b.id); persist(); renderBlockers(); };
+    el.appendChild(r);
+  });
+  const add = document.createElement("div"); add.className = "blk-add";
+  add.innerHTML = '<input class="inp" id="bNew" placeholder="חסם חדש"><input class="inp ltr" id="bDue" type="date"><button class="btn btn-line" id="bAdd">הוספה</button>';
+  el.appendChild(add);
+  $("bDue").value = addDays(today, 7);
+  $("bAdd").onclick = () => { const t = $("bNew").value.trim(); if (!t) return; S.venture.blockers.push({ id: uid(), t, due: $("bDue").value || addDays(today, 7), done: false }); persist(); renderBlockers(); };
+}
+function renderCommit() {
+  const wk = weekKey(), c = S.venture.commit[wk] || {};
+  if (document.activeElement !== $("commitIn")) $("commitIn").value = c.text || "";
+  $("commitTick").setAttribute("aria-pressed", !!c.done);
+  $("commitBox").classList.toggle("done", !!c.done);
+  $("vCommitMeta").textContent = "שבוע של " + fmtD(wk);
+}
+$("commitIn").addEventListener("input", e => { const wk = weekKey(); S.venture.commit[wk] = Object.assign(S.venture.commit[wk] || {}, { text: e.target.value }); persist(); });
+$("commitTick").onclick = () => { const wk = weekKey(), c = S.venture.commit[wk] = S.venture.commit[wk] || {}; if (!c.text) return; c.done = c.done ? false : todayKey(); persist(); buzz(); renderCommit(); };
+function weeklySummary() {
+  const today = todayKey(), wk = weekKey(), c = S.venture.commit[wk] || {};
+  const launch = TASKS.find(t => t.id === "launch"), submit = TASKS.find(t => t.id === "t-submit");
+  const closed = TASKS.filter(t => S.venture.mine[t.id] && S.venture.mine[t.id] >= addDays(today, -7)).map(t => "- " + t.title);
+  const blk = S.venture.blockers.filter(b => !b.done).map(b => "- " + b.t + " (יעד " + fmtD(b.due) + (b.due < today ? ", באיחור" : "") + ")");
+  const late = TASKS.filter(t => !t.ms && t.end < today && !isDone(t));
+  return ["סיכום שבועי · ברק · שבוע של " + fmtD(wk),
+    "התוצר שלי השבוע: " + (c.text || "לא הוגדר") + (c.done ? " (נמסר)" : " (בעבודה)"),
+    "מה סגרתי:\n" + (closed.join("\n") || "- כלום עדיין"),
+    "חסמים פתוחים:\n" + (blk.join("\n") || "- אין"),
+    "עלייה לחנויות: עוד " + diffDays(today, launch.end) + " ימים. הגשה עד " + fmtD(submit.end) + ".",
+    "באיחור בגאנט: " + late.length + " משימות"].join("\n\n");
+}
+$("copySum").onclick = () => {
+  const txt = weeklySummary(), out = $("sumOut");
+  out.value = txt;
+  const show = () => { out.classList.remove("hidden"); out.focus(); out.select(); $("sumNote").textContent = "סמן את הטקסט והעתק ידנית."; };
+  try {
+    navigator.clipboard.writeText(txt).then(() => { out.classList.add("hidden"); $("sumNote").textContent = "הסיכום הועתק. אפשר להדביק בקבוצה."; }, show);
+  } catch (e) { show(); }
+};
+const showAll = {};
+function fillTasks(el, list, emptyTxt) {
+  const today = todayKey();
+  if (!list.length) { el.innerHTML = '<div class="empty">' + emptyTxt + "</div>"; return; }
+  el.innerHTML = "";
+  const cap = showAll[el.id] ? list.length : 6;
+  list.slice(0, cap).forEach(t => {
+    const on = !!S.venture.mine[t.id];
+    const row = document.createElement("div"); row.className = "task" + (on ? " on" : "");
+    const left = diffDays(today, t.end);
+    const phase = (GANTT.phases.find(p => p[0] === t.phase) || [, ""])[1];
+    row.innerHTML = '<button class="chk" aria-pressed="' + on + '" aria-label="החלק שלי בוצע">' + CHECK + '</button><div><div class="task-t"><bdi>' + esc(t.title) + '</bdi></div><div class="task-m"><span class="' + (left < 0 ? "late" : "") + '">' + (left < 0 ? "באיחור " + (-left) + " ימים" : left === 0 ? "היום" : "עד " + fmtD(t.end)) + "</span><span>" + esc(phase) + "</span>" +
+      (t.owner !== "all" ? '<span class="' + (t.owner === "barak" ? "mine" : "") + '">' + OWNERS[t.owner] + "</span>" : "") + (t.st ? '<span class="num">' + t.sd + "/" + t.st + " שלבים</span>" : "") + "</div></div>";
+    row.querySelector(".chk").onclick = () => {
+      if (S.venture.mine[t.id]) delete S.venture.mine[t.id]; else S.venture.mine[t.id] = todayKey();
+      persist(); buzz(); renderVenture(); renderBadges();
+    };
+    el.appendChild(row);
+  });
+  if (list.length > 6) {
+    const b = document.createElement("button"); b.className = "more";
+    b.textContent = showAll[el.id] ? "הצגת פחות" : "עוד " + (list.length - cap) + " משימות";
+    b.onclick = () => { showAll[el.id] = !showAll[el.id]; renderVenture(); };
+    el.appendChild(b);
+  }
+}
+function drawRunway() {
+  const t0 = "2026-10-04", t1 = "2027-03-10", span = diffDays(t0, t1);
+  const P = k => Math.max(0, Math.min(100, diffDays(t0, k) / span * 100));
+  const tx = P(todayKey());
+  const months = [["2026-10-04", "אוק׳"], ["2026-11-01", "נוב׳"], ["2026-12-01", "דצמ׳"], ["2027-01-01", "ינו׳"], ["2027-02-01", "פבר׳"], ["2027-03-01", "מרץ"]];
+  const grid = months.map(m => '<line x1="' + P(m[0]) + '%" x2="' + P(m[0]) + '%" y1="-4" y2="26" stroke="rgba(255,255,255,.07)"/>').join("") +
+    '<line x1="' + tx + '%" x2="' + tx + '%" y1="-4" y2="26" stroke="#FF6B5E" stroke-width="1.5"/>';
+  let h = '<div class="rw-row"><span></span><div class="rw-axis">' + months.map(m => '<span style="position:absolute;left:calc(' + P(m[0]) + '% + 3px);font-size:10.5px;line-height:14px;color:var(--ink-3)">' + m[1] + "</span>").join("") + "</div></div>";
+  GANTT.phases.forEach(p => {
+    const ts = TASKS.filter(t => t.phase === p[0]);
+    const a = ts.reduce((m, t) => t.start < m ? t.start : m, "9999"), b = ts.reduce((m, t) => t.end > m ? t.end : m, "0000");
+    const work = ts.filter(t => !t.ms), dn = work.filter(isDone).length, pr = work.length ? dn / work.length : 0;
+    const x1 = P(a), w = Math.max(1, P(b) - x1);
+    let svg = grid + '<rect x="' + x1 + '%" y="6" width="' + w + '%" height="10" rx="3" fill="rgba(255,255,255,.1)"/>' +
+      '<rect x="' + x1 + '%" y="6" width="' + (w * pr) + '%" height="10" rx="3" fill="#FFC53D"/>';
+    ts.filter(t => t.ms).forEach(t => { svg += '<svg x="' + P(t.end) + '%" y="11" overflow="visible"><rect x="-4.5" y="-4.5" width="9" height="9" transform="rotate(45)" fill="' + (isDone(t) ? "#FFC53D" : "#F4F4F6") + '" stroke="#0B0B0E" stroke-width="1.5"/></svg>'; });
+    h += '<div class="rw-row"><div class="rw-name">' + esc(p[1]) + '<span class="num">' + dn + "/" + work.length + '</span></div><div class="rw-track"><svg>' + svg + "</svg></div></div>";
+  });
+  $("runway").innerHTML = '<div class="rw">' + h + "</div>";
+}
+
+/* ============================================================
+   LEARN
+   ============================================================ */
+function dueCards() { const t = todayKey(); return S.learn.cards.filter(c => c.due <= t); }
+let revealed = false, attempt = "";
+function renderLearn() {
+  const due = dueCards();
+  $("dueMeta").textContent = due.length ? due.length + " ממתינות" : "";
+  const f = $("flash");
+  if (!due.length) {
+    f.innerHTML = '<div class="empty" style="margin:auto"><b>' + (S.learn.cards.length ? "סיימת את החזרה להיום" : "עוד אין כרטיסיות") + "</b>" + (S.learn.cards.length ? "הכרטיסייה הבאה תחזור בזמן שלה" : "כתוב מה למדת למטה, וצור ממנו כרטיסיות. טעות שמתעדת ביומן העסקאות יוצרת כרטיסייה לבד.") + "</div>";
+  } else {
+    const c = due[0];
+    let h = '<div><div class="flash-topic">' + (TOPICS[c.topic] || "") + (c.src ? " · מהטעויות שלך" : "") + '</div><div class="flash-q" style="margin-top:6px">' + esc(c.q) + "</div>";
+    if (!revealed) h += '<textarea class="inp attempt" id="fAttempt" rows="2" placeholder="קודם תענה במילים שלך, ואז תבדוק"></textarea>';
+    else h += (attempt ? '<div class="attempt-out">התשובה שלך: ' + esc(attempt) + "</div>" : "") + '<div class="flash-a" style="margin-top:var(--s3)">' + esc(c.a) + "</div>";
+    h += "</div>" + (revealed ? '<div class="flash-btns three"><button class="btn btn-line" data-g="0">קשה</button><button class="btn btn-line" data-g="1">טוב</button><button class="btn btn-chalk" data-g="2">קל</button></div>' : '<button class="btn btn-line btn-wide" id="fShow">בדיקה</button>');
+    f.innerHTML = h;
+    if (revealed) f.querySelectorAll("[data-g]").forEach(b => b.onclick = () => grade(c, +b.dataset.g));
+    else { $("fAttempt").value = attempt; $("fAttempt").oninput = e => attempt = e.target.value; $("fShow").onclick = () => { revealed = true; renderLearn(); }; }
+  }
+  document.querySelectorAll("#topicSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.t === S.learn.topic)));
+  const lg = $("learnLog");
+  $("logMeta").textContent = S.learn.log.length ? S.learn.log.length + " רשומות" : "";
+  lg.innerHTML = S.learn.log.length ? S.learn.log.slice(0, 12).map(l => '<div class="log-item"><div class="m">' + fmtD(l.date) + " · " + (TOPICS[l.topic] || "") + "</div><p>" + esc(l.feyn || l.text) + "</p></div>").join("") : '<div class="empty">היומן ריק</div>';
+}
+function grade(c, g) {
+  // 0 = hard: back to start, tomorrow; 1 = good: next interval; 2 = easy: skip one interval
+  c.lvl = g === 0 ? 0 : Math.min(SRS.length - 1, (c.lvl || 0) + g);
+  c.due = addDays(todayKey(), g === 0 ? 1 : SRS[c.lvl]);
+  revealed = false; attempt = "";
+  if (!dueCards().length) day().checks.r1 = true;
+  persist(); buzz(); renderLearn(); renderBadges();
+}
+document.querySelectorAll("#topicSeg button").forEach(b => b.onclick = () => { S.learn.topic = b.dataset.t; persist(); renderLearn(); });
+$("saveLearn").onclick = () => {
+  const text = $("learnTxt").value.trim(), feyn = $("feyn").value.trim();
+  if (!text && !feyn) { $("learnNote").textContent = "כתוב קודם מה למדת."; return; }
+  S.learn.log.unshift({ id: uid(), date: todayKey(), topic: S.learn.topic, text, feyn });
+  persist(); buzz();
+  $("learnNote").textContent = "נשמר ביומן. אם למדת 30 דקות, סמן את זה בפקודות היום.";
+  renderLearn();
+};
+$("addCard").onclick = () => { $("cQ").value = $("feyn").value.trim() ? "הסבר במשפט אחד: " + $("feyn").value.trim().slice(0, 60) : ""; $("cA").value = ""; $("cardSheet").showModal(); };
+$("cardSheet").addEventListener("close", () => {
+  if ($("cardSheet").returnValue !== "save") return;
+  const q = $("cQ").value.trim(), a = $("cA").value.trim(); if (!q || !a) return;
+  S.learn.cards.push({ id: uid(), topic: S.learn.topic, q, a, lvl: 0, due: todayKey(), created: todayKey() });
+  persist(); renderLearn(); renderBadges();
+});
+$("genCards").onclick = async () => {
+  const text = ($("learnTxt").value + "\n" + $("feyn").value).trim();
+  const note = $("learnNote");
+  if (!text) { note.textContent = "כתוב קודם מה למדת."; return; }
+  if (!S.settings.apiKey) { note.textContent = "צריך מפתח Anthropic במסך ״אני״. בינתיים אפשר ליצור כרטיסייה ידנית."; return; }
+  const btn = $("genCards"); btn.disabled = true; note.textContent = "יוצר כרטיסיות...";
+  try {
+    const out = await claude("אתה מומחה לחזרה מרווחת. מהטקסט של המשתמש צור 1 עד 3 כרטיסיות בעברית: שאלה שבודקת הבנה (לא שינון מילולי) ותשובה קצרה. החזר JSON בלבד, מערך של אובייקטים עם המפתחות q ו-a, בלי שום טקסט נוסף.", text, 800);
+    const m = out.match(/\[[\s\S]*\]/);
+    const arr = m ? JSON.parse(m[0]) : [];
+    let n = 0;
+    arr.forEach(c => { if (c && c.q && c.a) { S.learn.cards.push({ id: uid(), topic: S.learn.topic, q: String(c.q), a: String(c.a), lvl: 0, due: todayKey(), created: todayKey() }); n++; } });
+    persist();
+    note.textContent = n ? "נוספו " + n + " כרטיסיות לחזרה של היום." : "לא התקבלו כרטיסיות. נסה לנסח את הטקסט אחרת.";
+    renderLearn(); renderBadges();
+  } catch (e) { note.textContent = "שגיאה: " + e.message; }
+  btn.disabled = false;
+};
+
+/* ============================================================
+   ME · COACH
+   ============================================================ */
+async function claude(system, user, max) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-api-key": S.settings.apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+    body: JSON.stringify({ model: "claude-opus-5-5", max_tokens: max || 1500, system, messages: [{ role: "user", content: user }] })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || data.error.type);
+  return (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n");
+}
+function coachContext() {
+  const today = todayKey(), d = day();
+  const m = marketStats();
+  const launch = TASKS.find(t => t.id === "launch");
+  const week = TASKS.filter(t => !t.ms && t.start <= addDays(today, 7) && t.end >= today && !isDone(t)).map(t => "- " + t.title + " (עד " + fmtD(t.end) + ")");
+  const late = TASKS.filter(t => !t.ms && t.end < today && !isDone(t)).map(t => "- " + t.title);
+  const hist = [];
+  for (let i = 1; i <= 7; i++) { const k = addDays(today, -i), r = S.days[k]; if (r) hist.push(k + ": ציון " + scoreOf(k) + (r.journal ? " · " + r.journal.slice(0, 140) : "")); }
+  const lastTrades = m.trades.slice(-5).map(t => t.ticker + " " + (SETUPS[t.setup] || "") + " " + (t.rules === false ? "חריגה" + (t.checks ? " (נכשל: " + GATE.filter(g => t.checks[g[0]] === false).map(g => g[1]).join("; ") + (t.rr != null && t.rr < MIN_RR ? "; יחס " + t.rr + "R" : "") + ")" : "") : t.rules ? "עברה את השער" : "") + (tradeR(t) != null ? " " + sign(tradeR(t)) + "R" : " פתוחה") + (t.proc ? " · ביצוע " + t.proc + "/5" : "") + (t.mistake && t.mistake !== "none" ? " · טעות: " + MISTAKES[t.mistake][0] : "") + (t.emotion ? " · רגש: " + t.emotion : ""));
+  const y = S.days[addDays(today, -1)];
+  const yPlan = y && y.next ? y.next.map((t, i) => "- " + t + ((y.nextDone || [])[i] ? " (בוצע)" : " (לא בוצע)")).join("\n") : "אין";
+  const blk = S.venture.blockers.filter(b => !b.done).map(b => "- " + b.t + " (יעד " + fmtD(b.due) + ")").join("\n") || "אין";
+  const cm = S.venture.commit[weekKey()] || {};
+  const done = S.habits.filter(h => d.checks[h.id]).map(h => h.label), open = S.habits.filter(h => !d.checks[h.id]).map(h => h.label);
+  return [
+    "היום: ציון " + computeScore(d) + ", רצף " + currentStreak() + " ימים. הדבר האחד: " + (d.mit || "לא הוגדר") + (d.mitDone ? " (בוצע)" : " (לא בוצע)"),
+    "מה ביקשת ממנו אתמול למחר:\n" + yPlan,
+    "הכלל של השבוע במסחר: " + (S.market.rule ? S.market.rule.text : "לא הוגדר") + ". הטעות החוזרת: " + (m.topMistake ? MISTAKES[m.topMistake][0] : "אין") + ". ציון ביצוע ממוצע: " + (m.procAvg != null ? m.procAvg.toFixed(1) : "אין"),
+    "מיזם: התוצר שלו השבוע: " + (cm.text || "לא הוגדר") + (cm.done ? " (נמסר)" : "") + ". חסמים פתוחים:\n" + blk,
+    "בוצע: " + (done.join(", ") || "כלום") + ". לא בוצע: " + (open.join(", ") || "הכל בוצע"),
+    "שוק: משמעת " + (m.n ? m.disc + "% ב-" + m.n + " עסקאות" : "אין עסקאות") + ", תוחלת " + (m.exp != null ? m.exp.toFixed(2) + "R" : "אין") + ". עסקאות אחרונות:\n" + (lastTrades.join("\n") || "אין"),
+    "מיזם (שלושה שותפים שווים: ברק, דניאל, עידן; עלייה לחנויות ב-" + fmtD(launch.end) + ", בעוד " + diffDays(today, launch.end) + " ימים). השבוע:\n" + (week.slice(0, 8).join("\n") || "אין") + "\nבאיחור:\n" + (late.slice(0, 8).join("\n") || "אין"),
+    "למידה: " + dueCards().length + " כרטיסיות לחזרה. רשומה אחרונה: " + (S.learn.log[0] ? (S.learn.log[0].feyn || S.learn.log[0].text).slice(0, 160) : "אין"),
+    "7 הימים האחרונים:\n" + (hist.join("\n") || "אין היסטוריה")
+  ].join("\n\n");
+}
+$("journal").addEventListener("input", e => { day().journal = e.target.value; persist(); });
+$("coachBtn").onclick = async () => {
+  const d = day(), text = (d.journal || "").trim(), out = $("coachOut");
+  if (!text) { out.textContent = "כתוב קודם כמה מילים על היום."; out.classList.remove("hidden"); return; }
+  if (!S.settings.apiKey) { d.ai = localCoach(); persist(); out.textContent = d.ai; out.classList.remove("hidden"); return; }
+  $("coachBtn").disabled = true; out.classList.add("hidden"); $("coachSkel").classList.remove("hidden");
+  try {
+    d.ai = await claude(
+      "אתה המאמן האישי של ברק, ישיר וענייני, בעברית. ברק מתפתח כסוחר סווינג לפי שיטת מיכה (סורק פולבק ב-Finviz, ניתוח שבועי ב-Koyfin, ושלוש בדיקות: ריצה היום מעל 3%, נפח מתחת 0.7x, נפילה של יותר מ-4% על דוח). המדד שחשוב לו הוא משמעת, לא רווח. במקביל הוא מוציא לשוק אפליקציות עם השותפים דניאל ועידן לפי גאנט משותף. " +
+      "חוק: יום בלי פעולת תפוקה (משימה במיזם, שגרת שוק, בלוק עבודה עמוקה) נעצר ב-40." +
+      "\nפורמט, בסדר הזה: מה זז היום / איפה ברחת (שוק או מיזם, עם שם הדבר) / אם ביקשת משהו אתמול ולא בוצע, תגיד את זה במפורש / שורה שכתוב בה בדיוק 'מחר:' ואחריה 3 פעולות ממוספרות 1. 2. 3., כל אחת בשורה, אחת מהן מהמיזם אם יש חסם או משימה באיחור / משפט אמת אחד. קצר, בלי אימוג'ים, בלי מחמאות ריקות. אם יש חריגה משער הכניסה בעסקה, תתייחס אליה ישירות.\n\nהנתונים:\n" + coachContext(),
+      "היום שלי: " + text, 1200);
+  } catch (e) { d.ai = "שגיאה: " + e.message; }
+  const plan = parsePlan(d.ai); if (plan.length) d.next = plan;
+  persist(); $("coachSkel").classList.add("hidden"); out.textContent = d.ai; out.classList.remove("hidden"); $("coachBtn").disabled = false;
+};
+function parsePlan(txt) {
+  const i = txt.search(/מחר\s*:/);
+  const part = i >= 0 ? txt.slice(i) : txt;
+  const out = [];
+  part.split("\n").forEach(l => { const m = l.match(/^\s*(?:[1-3][.)]|[-•])\s*(.+)$/); if (m && out.length < 3) out.push(m[1].replace(/\*\*/g, "").trim()); });
+  return out;
+}
+function localCoach() {
+  const d = day(), sc = computeScore(d), m = marketStats();
+  const late = TASKS.filter(t => !t.ms && t.end < todayKey() && !isDone(t));
+  const blk = S.venture.blockers.filter(b => !b.done).sort((a, b) => a.due < b.due ? -1 : 1)[0];
+  const o = S.habits.some(h => h.type === "out" && d.checks[h.id]);
+  const plan = [];
+  if (blk) plan.push("לקדם את החסם: " + blk.t);
+  else if (late.length) plan.push("לסגור במיזם: " + late[0].title);
+  if (m.topMistake) plan.push("לפני כל עסקה: לבדוק שוב " + MISTAKES[m.topMistake][0]);
+  else plan.push("לעבור על הסורק ולהכניס מועמדת אחת עם שלוש הבדיקות");
+  plan.push(dueCards().length ? "לסיים את החזרה על הכרטיסיות" : "בלוק 90 דקות על הדבר האחד");
+  d.next = plan;
+  let s = "ציון " + sc + ". " + (o ? "יצאה פעולת תפוקה, המחט זזה." : "לא יצאה אף פעולת תפוקה. היום נעצר ב-40.");
+  if (m.n && m.disc < 80) s += "\nמשמעת המסחר " + m.disc + "%. העסקה הבאה רק עם שער כניסה מלא.";
+  s += "\n\nמחר:\n" + plan.map((t, i) => (i + 1) + ". " + t).join("\n");
+  return s + "\n(מאמן מקומי. עם מפתח Anthropic מקבלים ניתוח מלא.)";
+}
+function renderMe() {
+  const d = day();
+  if (document.activeElement !== $("journal")) $("journal").value = d.journal || "";
+  if (d.ai) { $("coachOut").textContent = d.ai; $("coachOut").classList.remove("hidden"); } else $("coachOut").classList.add("hidden");
+  // habits editor
+  const ed = $("habEd"); ed.innerHTML = '<p class="sub">הניסוח ניתן לעריכה. המשקלים מתחלקים לבד: 60 לתפוקה, 40 לתשומה.</p>';
+  S.habits.forEach(hb => {
+    const r = document.createElement("div"); r.className = "hab-row";
+    r.innerHTML = '<span class="hab-tag ' + hb.type + '">' + (hb.type === "out" ? "תפוקה" : "תשומה") + '</span><input class="inp">';
+    const inp = r.querySelector("input"); inp.value = hb.label;
+    inp.addEventListener("change", () => { hb.label = inp.value.trim() || hb.label; persist(); });
+    ed.appendChild(r);
+  });
+  $("apiKey").placeholder = S.settings.apiKey ? "•••• " + S.settings.apiKey.slice(-4) : "sk-ant-...";
+  $("keyNote").textContent = S.settings.apiKey ? "מחובר. המאמן והכרטיסיות עובדים עם claude-opus-5-5." : "בלי מפתח המאמן עובד במצב מקומי בסיסי.";
+  $("keyNote").className = "note" + (S.settings.apiKey ? " ok" : "");
+  $("app1").value = S.settings.apps[0] || ""; $("app2").value = S.settings.apps[1] || "";
+  const nDays = Object.keys(S.days).filter(k => scoreOf(k) > 0).length;
+  $("totals").textContent = nDays + " ימים פעילים · " + S.market.trades.length + " עסקאות · " + S.learn.cards.length + " כרטיסיות" + (S.migratedFrom ? " · הנתונים מגרסה 2 הועברו, והעותק המקורי נשמר במכשיר" : "");
+}
+$("apiKey").addEventListener("change", e => { S.settings.apiKey = e.target.value.trim(); e.target.value = ""; persist(); renderMe(); });
+$("app1").addEventListener("change", e => { S.settings.apps[0] = e.target.value.trim(); persist(); });
+$("app2").addEventListener("change", e => { S.settings.apps[1] = e.target.value.trim(); persist(); });
+$("expBtn").onclick = () => {
+  const copy = JSON.parse(JSON.stringify(S)); copy.settings.apiKey = "";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(copy, null, 2)], { type: "application/json" }));
+  a.download = "successos-v3-" + todayKey() + ".json"; a.click();
+};
+$("impBtn").onclick = () => $("impFile").click();
+$("impFile").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
   const rd = new FileReader();
   rd.onload = () => {
     try {
       const data = JSON.parse(rd.result);
-      if (data.version !== 2) throw new Error("bad version");
-      data.settings.apiKey = S.settings.apiKey;
-      S = data; persist(); lastScore = -1; renderAll();
-      alert("הגיבוי נטען בהצלחה");
-    } catch (e) { alert("קובץ לא תקין"); }
+      if (data.version === 3) { data.settings.apiKey = S.settings.apiKey; S = hydrate(data); persist(); }
+      else if (data.version === 2) { localStorage.setItem(OLD_KEY, JSON.stringify(data)); localStorage.removeItem(KEY); S = load(); }
+      else throw new Error();
+      render(); alert("הגיבוי נטען");
+    } catch (er) { alert("קובץ לא תקין"); }
   };
   rd.readAsText(f);
-}
-function fullReset() {
-  if (!confirm("למחוק את כל ההיסטוריה וההגדרות? אין דרך חזרה.")) return;
-  localStorage.removeItem(KEY);
-  location.reload();
-}
+};
+let resetArmed = false;
+$("resetBtn").onclick = () => {
+  if (!resetArmed) { resetArmed = true; $("resetBtn").textContent = "לחיצה נוספת מוחקת הכל"; setTimeout(() => { resetArmed = false; $("resetBtn").textContent = "איפוס מלא"; }, 3500); return; }
+  const k = S.settings.apiKey; S = freshState(k); persist(); resetArmed = false; $("resetBtn").textContent = "איפוס מלא"; go("today");
+};
 
-/* ===================== nav & lifecycle ===================== */
-function go(tab, btn) {
-  document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
-  document.getElementById("tab-" + tab).classList.remove("hidden");
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  window.scrollTo(0, 0);
+/* ============================================================
+   BADGES · BOOT
+   ============================================================ */
+function renderBadges() {
+  const today = todayKey();
+  const late = TASKS.filter(t => !t.ms && t.end < today && !isDone(t)).length;
+  const due = dueCards().length;
+  $("vBadge").textContent = late; $("vBadge").classList.toggle("hidden", !late);
+  $("lBadge").textContent = due; $("lBadge").classList.toggle("hidden", !due);
 }
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden && renderedDay !== todayKey()) { lastScore = -1; renderAll(); }
-});
-setInterval(() => { if (renderedDay !== todayKey()) { lastScore = -1; renderAll(); } }, 60000);
-
-renderAll();
+let bootDay = todayKey();
+setInterval(() => { if (todayKey() !== bootDay) { bootDay = todayKey(); render(); } }, 30000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
+render();
 </script>
 </body>
 </html>
